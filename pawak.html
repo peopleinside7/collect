@@ -533,10 +533,10 @@ function groupColumns(cols){
 
   cols.forEach(c=>{
     const label=c.label;
-    // Match patterns like "자녀1", "자녀2", etc.
+    // 1순위: "자녀N" 패턴 매칭 (자녀1, 자녀2, 자녀 3 등)
     const childMatch=label.match(/자녀\s*(\d+)/);
-    // Match "부모" or "부모성명" etc.
-    const parentMatch=/부모|부서/.test(label);
+    // 2순위: "부모" 키워드만 (부서는 제외 — 자녀 소속부서와 혼동 방지)
+    const parentMatch=/부모/.test(label);
 
     if(childMatch){
       const num=childMatch[1];
@@ -548,6 +548,7 @@ function groupColumns(cols){
       if(!groupMap[key]){groupMap[key]={title:'부모 정보',icon:'👨‍👩‍👧',cols:[],order:1};groups.push(groupMap[key])}
       groupMap[key].cols.push(c);
     } else {
+      // ungrouped: 파일첨부 직전(맨 아래)에 배치됨
       ungrouped.push(c);
     }
   });
