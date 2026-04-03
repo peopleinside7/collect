@@ -274,8 +274,9 @@ const DB={
     const url=SUPABASE_URL+'/rest/v1/'+path;
     const res=await fetch(url,{headers:opts.headers||HEADERS,...opts});
     if(!res.ok){const t=await res.text();console.error('DB Error:',res.status,t);if(res.status>=500)showToast('서버 오류가 발생했습니다','error');throw new Error(t)}
+    if(res.status===204)return null; // DELETE 등 빈 응답
     const ct=res.headers.get('content-type');
-    if(ct&&ct.includes('json')){return res.json()}
+    if(ct&&ct.includes('json')){try{return await res.json()}catch(e){return null}}
     return null;
   },
 
@@ -283,9 +284,14 @@ const DB={
   async getAdmin(){
     const rows=await this._fetch('admin?select=*&limit=1');
     if(rows&&rows.length)return rows[0];
-    // seed admin
-    const ins=await this._fetch('admin',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({username:'admin',password:'nuri0316',login_attempts:0,locked_until:null})});
-    return ins[0];
+    // seed admin (한 번만 시도, 실패 시 기본값 반환)
+    try{
+      const ins=await this._fetch('admin',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({username:'admin',password:'nuri0316',login_attempts:0,locked_until:null})});
+      return ins[0];
+    }catch(e){
+      console.error('Admin seed failed:',e);
+      return {id:1,username:'admin',password:'nuri0316',login_attempts:0,locked_until:null};
+    }
   },
   async setAdmin(a){
     await this._fetch('admin?id=eq.'+a.id,{method:'PATCH',headers:HEADERS_RETURN,body:JSON.stringify({password:a.password,login_attempts:a.login_attempts,locked_until:a.locked_until})});
@@ -320,11 +326,14 @@ const DB={
     await this._fetch('projects?id=eq.'+pid,{method:'PATCH',headers:HEADERS_RETURN,body:JSON.stringify(body)});
   },
   async deleteProject(pid){
-    // delete cells for rows in this project
+    // delete cells for rows in this project (batch by 50 to avoid URL length overflow)
     const rows=await this._fetch('data_rows?project_id=eq.'+pid+'&select=id');
     if(rows&&rows.length){
       const rids=rows.map(r=>r.id);
-      await this._fetch('data_cells?row_id=in.('+rids.join(',')+')',{method:'DELETE',headers:HEADERS});
+      for(let i=0;i<rids.length;i+=50){
+        const chunk=rids.slice(i,i+50);
+        await this._fetch('data_cells?row_id=in.('+chunk.join(',')+')',{method:'DELETE',headers:HEADERS});
+      }
     }
     await this._fetch('data_rows?project_id=eq.'+pid,{method:'DELETE',headers:HEADERS});
     await this._fetch('users?project_id=eq.'+pid,{method:'DELETE',headers:HEADERS});
@@ -332,12 +341,10 @@ const DB={
     await this._fetch('projects?id=eq.'+pid,{method:'DELETE',headers:HEADERS});
   },
   async setProjectColumns(pid,cols){
-    // delete old columns
+    // delete old columns first, then insert fresh (no ID reuse to avoid PK conflicts)
     await this._fetch('project_columns?project_id=eq.'+pid,{method:'DELETE',headers:HEADERS});
     if(cols.length){
-      const colRows=cols.map((c,i)=>({id:c.id||undefined,project_id:pid,label:c.label,col_order:c.order!==undefined?c.order:i}));
-      // remove undefined ids for new cols
-      colRows.forEach(r=>{if(!r.id)delete r.id});
+      const colRows=cols.map((c,i)=>({project_id:pid,label:c.label,col_order:c.order!==undefined?c.order:i}));
       const inserted=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
       return inserted;
     }
@@ -387,8 +394,11 @@ const DB={
   },
   async deleteRows(ids){
     if(!ids.length)return;
-    await this._fetch('data_cells?row_id=in.('+ids.join(',')+')',{method:'DELETE',headers:HEADERS});
-    await this._fetch('data_rows?id=in.('+ids.join(',')+')',{method:'DELETE',headers:HEADERS});
+    for(let i=0;i<ids.length;i+=50){
+      const chunk=ids.slice(i,i+50);
+      await this._fetch('data_cells?row_id=in.('+chunk.join(',')+')',{method:'DELETE',headers:HEADERS});
+      await this._fetch('data_rows?id=in.('+chunk.join(',')+')',{method:'DELETE',headers:HEADERS});
+    }
   },
   async deleteRowsByProject(pid){
     const rows=await this._fetch('data_rows?project_id=eq.'+pid+'&select=id');
@@ -402,8 +412,11 @@ const DB={
     const rows=await this._fetch('data_rows?project_id=eq.'+pid+'&user_id=eq.'+uid+'&select=id');
     if(rows&&rows.length){
       const ids=rows.map(r=>r.id);
-      await this._fetch('data_cells?row_id=in.('+ids.join(',')+')',{method:'DELETE',headers:HEADERS});
-      await this._fetch('data_rows?id=in.('+ids.join(',')+')',{method:'DELETE',headers:HEADERS});
+      for(let i=0;i<ids.length;i+=50){
+        const chunk=ids.slice(i,i+50);
+        await this._fetch('data_cells?row_id=in.('+chunk.join(',')+')',{method:'DELETE',headers:HEADERS});
+        await this._fetch('data_rows?id=in.('+chunk.join(',')+')',{method:'DELETE',headers:HEADERS});
+      }
     }
   },
 
@@ -454,11 +467,16 @@ const DB={
 
   // ── Version bump ──
   async bumpVersion(pid){
-    const ps=await this._fetch('projects?id=eq.'+pid+'&select=data_version');
-    if(ps&&ps.length){
-      const nv=(ps[0].data_version||0)+1;
-      await this._fetch('projects?id=eq.'+pid,{method:'PATCH',headers:HEADERS_RETURN,body:JSON.stringify({data_version:nv})});
-      return nv;
+    // RPC 미사용 환경: read→increment→write (최소 경쟁 조건 방어: 재읽기 후 +1)
+    for(let retry=0;retry<3;retry++){
+      const ps=await this._fetch('projects?id=eq.'+pid+'&select=data_version');
+      if(ps&&ps.length){
+        const nv=(ps[0].data_version||0)+1;
+        try{
+          await this._fetch('projects?id=eq.'+pid,{method:'PATCH',headers:HEADERS_RETURN,body:JSON.stringify({data_version:nv})});
+          return nv;
+        }catch(e){if(retry>=2)throw e;await new Promise(r=>setTimeout(r,100))}
+      }
     }
   },
   async getVersion(pid){
