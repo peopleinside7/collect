@@ -260,7 +260,7 @@ const DB={
   async _fetch(path,opts={}){
     const url=SUPABASE_URL+'/rest/v1/'+path;
     const res=await fetch(url,{headers:opts.headers||HEADERS,...opts});
-    if(!res.ok){const t=await res.text();console.error('DB Error:',res.status,t);throw new Error(t)}
+    if(!res.ok){const t=await res.text();console.error('DB Error:',res.status,t);if(res.status>=500)showToast('서버 오류가 발생했습니다','error');throw new Error(t)}
     const ct=res.headers.get('content-type');
     if(ct&&ct.includes('json')){return res.json()}
     return null;
@@ -303,7 +303,7 @@ const DB={
     if(data.layoutType!==undefined)body.layout_type=data.layoutType;
     if(data.displayOrder!==undefined)body.display_order=data.displayOrder;
     if(data.dataVersion!==undefined)body.data_version=data.dataVersion;
-    if(data.description!==undefined)try{body.description=data.description}catch(e){}
+    if(data.description!==undefined)body.description=data.description;
     await this._fetch('projects?id=eq.'+pid,{method:'PATCH',headers:HEADERS_RETURN,body:JSON.stringify(body)});
   },
   async deleteProject(pid){
@@ -345,7 +345,8 @@ const DB={
     return (await this._fetch(q)||[]).map(u=>({id:u.id,projectId:u.project_id,name:u.name,password:u.password,loginAttempts:u.login_attempts,lockedUntil:u.locked_until,createdAt:u.created_at}));
   },
   async getUserByName(projectId,name){
-    const rows=await this._fetch('users?project_id=eq.'+projectId+'&name=eq.'+encodeURIComponent(name)+'&select=*&limit=1');
+    const safeName=encodeURIComponent(name).replace(/'/g,'%27').replace(/\(/g,'%28').replace(/\)/g,'%29');
+    const rows=await this._fetch('users?project_id=eq.'+projectId+'&name=eq.'+safeName+'&select=*&limit=1');
     if(!rows||!rows.length)return null;
     const u=rows[0];
     return {id:u.id,projectId:u.project_id,name:u.name,password:u.password,loginAttempts:u.login_attempts,lockedUntil:u.locked_until,createdAt:u.created_at};
@@ -405,8 +406,8 @@ const DB={
       }
       return all.map(c=>({id:c.id,rowId:c.row_id,columnId:c.column_id,textValue:c.text_value||'',fileName:c.file_name||'',fileData:c.file_data||'',updatedAt:c.updated_at}));
     }
-    const rows=await this._fetch('data_cells?select=*');
-    return (rows||[]).map(c=>({id:c.id,rowId:c.row_id,columnId:c.column_id,textValue:c.text_value||'',fileName:c.file_name||'',fileData:c.file_data||'',updatedAt:c.updated_at}));
+    // rowIds가 없으면 빈 배열 반환 (전체 셀 조회 방지 — 데이터 누수 차단)
+    return [];
   },
   async createCell(c){
     const ins=await this._fetch('data_cells',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({row_id:c.rowId,column_id:c.columnId,text_value:c.textValue||'',file_name:c.fileName||null,file_data:c.fileData||null})});
@@ -480,7 +481,7 @@ function showToast(msg,type='info'){
   setTimeout(()=>{el.style.animation='slideOut .3s ease';setTimeout(()=>el.remove(),300)},3000);
 }
 
-function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}
 
 function downloadFileFromData(fileName, dataUrl){
   if(!dataUrl)return;
@@ -868,7 +869,7 @@ const App={
     document.getElementById('ecs').onclick=async()=>{
       const nm=document.getElementById('epn').value.trim();if(!nm){showToast('프로젝트명 필수','warning');return}
       p.name=nm;p.layoutType=editLayoutType;p.description=document.getElementById('epdesc').value||'';
-      try{await DB.updateProject(pid,{name:nm,layoutType:editLayoutType,description:p.description})}catch(e){await DB.updateProject(pid,{name:nm,layoutType:editLayoutType})}
+      await DB.updateProject(pid,{name:nm,layoutType:editLayoutType,description:p.description})
       const validCols=cols.filter(c=>c.label.trim()).map((c,i)=>({id:c.id||undefined,label:c.label.trim(),order:i}));
       await DB.setProjectColumns(pid,validCols);
       await DB.bumpVersion(pid);ov.remove();showToast('저장됨','success');
@@ -923,6 +924,7 @@ const App={
   // Polling
   startPolling(){
     this.stopPolling();
+    let pollErrors=0;
     this.state.pollingInterval=setInterval(async()=>{
       if(this.state.isEditing||!this.state.selectedProjectId)return;
       const pid=this.state.selectedProjectId;
@@ -930,7 +932,11 @@ const App={
         const v=await DB.getVersion(pid);
         const cv=this.state._versions[pid]||0;
         if(v!==cv){this.state._versions[pid]=v;await this.renderPV(pid)}
-      }catch(e){}
+        pollErrors=0;
+      }catch(e){
+        pollErrors++;
+        if(pollErrors>=3){this.stopPolling();console.warn('폴링 중지: 서버 연결 실패');showToast('서버 연결 끊김. 새로고침 해주세요.','warning')}
+      }
     },3000);
   },
   stopPolling(){if(this.state.pollingInterval){clearInterval(this.state.pollingInterval);this.state.pollingInterval=null}},
