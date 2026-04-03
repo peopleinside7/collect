@@ -68,7 +68,6 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .sidebar-item .gear{position:absolute;right:12px;opacity:0;transition:opacity .2s;font-size:14px;padding:4px;border-radius:4px}
 .sidebar-item:hover .gear{opacity:1}
 .sidebar-item .gear:hover{background:rgba(255,255,255,.1)}
-/* ── NEW: 새 프로젝트 버튼 강조 ── */
 .sidebar-add{padding:18px 20px;cursor:pointer;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 12px;border-radius:12px;background:linear-gradient(135deg,#39AFEA 0%,#5BC4F2 100%);color:#fff;box-shadow:0 4px 16px rgba(57,175,234,.35);transition:all .2s}
 .sidebar-add:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(57,175,234,.45);background:linear-gradient(135deg,#2A95CC 0%,#39AFEA 100%)}
 .main-content{flex:1;overflow-y:auto;padding:24px}
@@ -118,14 +117,12 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .data-table .col-add-btn:hover{background:var(--main-light)!important}
 .add-row-btn{width:100%;padding:10px;text-align:center;color:var(--text-secondary);font-size:13px;cursor:pointer;border-top:1px solid var(--border)}
 .add-row-btn:hover{background:var(--main-bg);color:var(--main)}
-/* ── File link with download support ── */
 .file-link{color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;gap:4px;text-decoration:underline}
 .file-link:hover{color:var(--accent-dark)}
 .row-checkbox{width:16px;height:16px;cursor:pointer;accent-color:var(--main)}
 .mini-dash{background:#fff;border-radius:16px;padding:16px 24px;margin-bottom:20px;box-shadow:0 4px 24px rgba(94,105,238,.08);display:flex;align-items:center;gap:24px;flex-wrap:wrap}
 .mini-dash .md-item{display:flex;align-items:center;gap:6px;font-size:13px}
 .mini-dash .md-label{color:var(--text-secondary)}.mini-dash .md-value{font-weight:700}
-/* ── User page ── */
 .user-page{min-height:100vh;background:var(--bg-page)}
 .user-header{background:var(--main-gradient);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .user-header .project-name{color:#fff;font-size:18px;font-weight:700}
@@ -133,7 +130,6 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .user-header .user-info button{background:rgba(255,255,255,.15);color:#fff;border-radius:6px;padding:6px 12px;font-size:12px}
 .user-header .user-info button:hover{background:rgba(255,255,255,.25)}
 .user-form-container{max-width:960px;margin:0 auto;padding:24px 16px}
-/* ── User table input (horizontal rows) ── */
 .user-table-wrap{overflow-x:auto;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(94,105,238,.06);margin-bottom:16px}
 .user-data-table{width:100%;border-collapse:collapse;min-width:500px}
 .user-data-table th{background:var(--main);color:#fff;font-weight:600;font-size:13px;padding:10px 12px;text-align:left;white-space:nowrap}
@@ -200,7 +196,6 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
   .admin-header .sb-toggle{display:inline-flex!important}
 }
 .admin-header .sb-toggle{display:none;background:rgba(255,255,255,.15);color:#fff;border-radius:6px;padding:6px 10px;font-size:16px;margin-right:8px}
-/* ── Layout type selector ── */
 .layout-selector{display:flex;gap:12px;margin-bottom:16px}
 .layout-option{flex:1;padding:16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;text-align:center;transition:all .2s}
 .layout-option:hover{border-color:var(--main-light);background:var(--main-bg)}
@@ -208,7 +203,6 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .layout-option .lo-icon{font-size:28px;margin-bottom:6px}
 .layout-option .lo-title{font-size:14px;font-weight:700;color:var(--text-primary)}
 .layout-option .lo-desc{font-size:11px;color:var(--text-secondary);margin-top:2px}
-/* ── Type2 vertical form ── */
 .vform-card{background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(94,105,238,.06)}
 .vform-card label{display:block;font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:8px}
 .vform-card input[type="text"],.vform-card textarea{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:8px;font-size:15px}
@@ -222,11 +216,11 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .file-list{margin-top:12px;display:flex;flex-direction:column;gap:6px}
 .file-list-item{display:flex;align-items:center;gap:8px;background:var(--main-bg);padding:8px 12px;border-radius:8px;font-size:13px}
 .file-list-item .fl-remove{color:var(--danger);cursor:pointer;margin-left:auto;font-size:16px}
-/* ── Type1 row-end file attach ── */
 .row-file-cell{min-width:80px}
 .row-file-btn{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-size:12px;cursor:pointer;white-space:nowrap}
 .row-file-btn:hover{color:var(--accent-dark)}
 .hidden{display:none!important}
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.7);z-index:9999;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:var(--main)}
 </style>
 </head>
 <body>
@@ -235,37 +229,226 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 <script>
 // ═══════════════════════════════════════════════════
 // People-In Hub — Smart Data Collector
-// Single-file SPA with LocalStorage backend
+// Single-file SPA with Supabase REST API backend
 // ═══════════════════════════════════════════════════
 
+const SUPABASE_URL='https://qhulwtunogbpzlbhtvcp.supabase.co';
+const SUPABASE_KEY='sb_publishable_OliwNHYmloBjvSfZTTPg3A_rsRQ8Z9k';
+const HEADERS={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
+const HEADERS_RETURN={...HEADERS,'Prefer':'return=representation'};
+const HEADERS_UPSERT={...HEADERS,'Prefer':'resolution=merge-duplicates,return=representation'};
+
 const DB={
-  _g(k){try{return JSON.parse(localStorage.getItem('pih_'+k))}catch(e){return null}},
-  _s(k,v){localStorage.setItem('pih_'+k,JSON.stringify(v))},
-  getAdmin(){return this._g('admin')||{username:'admin',password:'nuri0316',loginAttempts:0,lockedUntil:null}},
-  setAdmin(a){this._s('admin',a)},
-  getProjects(){return this._g('projects')||[]},
-  setProjects(p){this._s('projects',p)},
-  getUsers(){return this._g('users')||[]},
-  setUsers(u){this._s('users',u)},
-  getRows(){return this._g('rows')||[]},
-  setRows(r){this._s('rows',r)},
-  getCells(){return this._g('cells')||[]},
-  setCells(c){this._s('cells',c)},
-  nextId(k){let c=this._g('ctr_'+k)||0;c++;this._s('ctr_'+k,c);return c}
+  async _fetch(path,opts={}){
+    const url=SUPABASE_URL+'/rest/v1/'+path;
+    const res=await fetch(url,{headers:opts.headers||HEADERS,...opts});
+    if(!res.ok){const t=await res.text();console.error('DB Error:',res.status,t);throw new Error(t)}
+    const ct=res.headers.get('content-type');
+    if(ct&&ct.includes('json')){return res.json()}
+    return null;
+  },
+
+  // ── Admin ──
+  async getAdmin(){
+    const rows=await this._fetch('admin?select=*&limit=1');
+    if(rows&&rows.length)return rows[0];
+    // seed admin
+    const ins=await this._fetch('admin',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({username:'admin',password:'nuri0316',login_attempts:0,locked_until:null})});
+    return ins[0];
+  },
+  async setAdmin(a){
+    await this._fetch('admin?id=eq.'+a.id,{method:'PATCH',headers:HEADERS_RETURN,body:JSON.stringify({password:a.password,login_attempts:a.login_attempts,locked_until:a.locked_until})});
+  },
+
+  // ── Projects (with columns) ──
+  async getProjects(){
+    const ps=await this._fetch('projects?select=*,project_columns(*)&order=display_order');
+    return (ps||[]).map(p=>({
+      id:p.id,name:p.name,slug:p.slug,layoutType:p.layout_type,displayOrder:p.display_order,dataVersion:p.data_version,createdAt:p.created_at,
+      columns:(p.project_columns||[]).map(c=>({id:c.id,label:c.label,order:c.col_order})).sort((a,b)=>a.order-b.order)
+    }));
+  },
+  async createProject(p){
+    const ins=await this._fetch('projects',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({name:p.name,slug:p.slug,layout_type:p.layoutType,display_order:p.displayOrder,data_version:0})});
+    const proj=ins[0];
+    if(p.columns&&p.columns.length){
+      const colRows=p.columns.map((c,i)=>({project_id:proj.id,label:c.label,col_order:i}));
+      await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
+    }
+    return proj.id;
+  },
+  async updateProject(pid,data){
+    const body={};
+    if(data.name!==undefined)body.name=data.name;
+    if(data.layoutType!==undefined)body.layout_type=data.layoutType;
+    if(data.displayOrder!==undefined)body.display_order=data.displayOrder;
+    if(data.dataVersion!==undefined)body.data_version=data.dataVersion;
+    await this._fetch('projects?id=eq.'+pid,{method:'PATCH',headers:HEADERS_RETURN,body:JSON.stringify(body)});
+  },
+  async deleteProject(pid){
+    // delete cells for rows in this project
+    const rows=await this._fetch('data_rows?project_id=eq.'+pid+'&select=id');
+    if(rows&&rows.length){
+      const rids=rows.map(r=>r.id);
+      await this._fetch('data_cells?row_id=in.('+rids.join(',')+')',{method:'DELETE',headers:HEADERS});
+    }
+    await this._fetch('data_rows?project_id=eq.'+pid,{method:'DELETE',headers:HEADERS});
+    await this._fetch('users?project_id=eq.'+pid,{method:'DELETE',headers:HEADERS});
+    await this._fetch('project_columns?project_id=eq.'+pid,{method:'DELETE',headers:HEADERS});
+    await this._fetch('projects?id=eq.'+pid,{method:'DELETE',headers:HEADERS});
+  },
+  async setProjectColumns(pid,cols){
+    // delete old columns
+    await this._fetch('project_columns?project_id=eq.'+pid,{method:'DELETE',headers:HEADERS});
+    if(cols.length){
+      const colRows=cols.map((c,i)=>({id:c.id||undefined,project_id:pid,label:c.label,col_order:c.order!==undefined?c.order:i}));
+      // remove undefined ids for new cols
+      colRows.forEach(r=>{if(!r.id)delete r.id});
+      const inserted=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
+      return inserted;
+    }
+    return [];
+  },
+  async addColumn(pid,label,order){
+    const ins=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({project_id:pid,label:label,col_order:order})});
+    return ins[0];
+  },
+  async deleteColumn(cid){
+    await this._fetch('data_cells?column_id=eq.'+cid,{method:'DELETE',headers:HEADERS});
+    await this._fetch('project_columns?id=eq.'+cid,{method:'DELETE',headers:HEADERS});
+  },
+
+  // ── Users ──
+  async getUsers(projectId){
+    const q=projectId?'users?project_id=eq.'+projectId+'&select=*':'users?select=*';
+    return (await this._fetch(q)||[]).map(u=>({id:u.id,projectId:u.project_id,name:u.name,password:u.password,loginAttempts:u.login_attempts,lockedUntil:u.locked_until,createdAt:u.created_at}));
+  },
+  async getUserByName(projectId,name){
+    const rows=await this._fetch('users?project_id=eq.'+projectId+'&name=eq.'+encodeURIComponent(name)+'&select=*&limit=1');
+    if(!rows||!rows.length)return null;
+    const u=rows[0];
+    return {id:u.id,projectId:u.project_id,name:u.name,password:u.password,loginAttempts:u.login_attempts,lockedUntil:u.locked_until,createdAt:u.created_at};
+  },
+  async createUser(u){
+    const ins=await this._fetch('users',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({project_id:u.projectId,name:u.name,password:u.password,login_attempts:0,locked_until:null})});
+    return {id:ins[0].id,projectId:ins[0].project_id,name:ins[0].name,password:ins[0].password,loginAttempts:0,lockedUntil:null};
+  },
+  async updateUser(uid,data){
+    const body={};
+    if(data.password!==undefined)body.password=data.password;
+    if(data.loginAttempts!==undefined)body.login_attempts=data.loginAttempts;
+    if(data.lockedUntil!==undefined)body.locked_until=data.lockedUntil;
+    await this._fetch('users?id=eq.'+uid,{method:'PATCH',headers:HEADERS_RETURN,body:JSON.stringify(body)});
+  },
+
+  // ── Rows ──
+  async getRows(projectId){
+    const q=projectId?'data_rows?project_id=eq.'+projectId+'&select=*&order=row_order':'data_rows?select=*&order=row_order';
+    return (await this._fetch(q)||[]).map(r=>({id:r.id,projectId:r.project_id,userId:r.user_id,rowOrder:r.row_order,rowFileName:r.row_file_name||'',rowFileData:r.row_file_data||'',createdAt:r.created_at,updatedAt:r.updated_at}));
+  },
+  async createRow(r){
+    const ins=await this._fetch('data_rows',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({project_id:r.projectId,user_id:r.userId||null,row_order:r.rowOrder,row_file_name:r.rowFileName||'',row_file_data:r.rowFileData||''})});
+    return ins[0].id;
+  },
+  async deleteRows(ids){
+    if(!ids.length)return;
+    await this._fetch('data_cells?row_id=in.('+ids.join(',')+')',{method:'DELETE',headers:HEADERS});
+    await this._fetch('data_rows?id=in.('+ids.join(',')+')',{method:'DELETE',headers:HEADERS});
+  },
+  async deleteRowsByProject(pid){
+    const rows=await this._fetch('data_rows?project_id=eq.'+pid+'&select=id');
+    if(rows&&rows.length){
+      const ids=rows.map(r=>r.id);
+      await this._fetch('data_cells?row_id=in.('+ids.join(',')+')',{method:'DELETE',headers:HEADERS});
+    }
+    await this._fetch('data_rows?project_id=eq.'+pid,{method:'DELETE',headers:HEADERS});
+  },
+  async deleteRowsByUser(pid,uid){
+    const rows=await this._fetch('data_rows?project_id=eq.'+pid+'&user_id=eq.'+uid+'&select=id');
+    if(rows&&rows.length){
+      const ids=rows.map(r=>r.id);
+      await this._fetch('data_cells?row_id=in.('+ids.join(',')+')',{method:'DELETE',headers:HEADERS});
+      await this._fetch('data_rows?id=in.('+ids.join(',')+')',{method:'DELETE',headers:HEADERS});
+    }
+  },
+
+  // ── Cells ──
+  async getCells(rowIds){
+    if(rowIds&&rowIds.length){
+      // batch in chunks of 50
+      let all=[];
+      for(let i=0;i<rowIds.length;i+=50){
+        const chunk=rowIds.slice(i,i+50);
+        const rows=await this._fetch('data_cells?row_id=in.('+chunk.join(',')+')'+'&select=*');
+        all=all.concat(rows||[]);
+      }
+      return all.map(c=>({id:c.id,rowId:c.row_id,columnId:c.column_id,textValue:c.text_value||'',fileName:c.file_name||'',fileData:c.file_data||'',updatedAt:c.updated_at}));
+    }
+    const rows=await this._fetch('data_cells?select=*');
+    return (rows||[]).map(c=>({id:c.id,rowId:c.row_id,columnId:c.column_id,textValue:c.text_value||'',fileName:c.file_name||'',fileData:c.file_data||'',updatedAt:c.updated_at}));
+  },
+  async createCell(c){
+    const ins=await this._fetch('data_cells',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({row_id:c.rowId,column_id:c.columnId,text_value:c.textValue||'',file_name:c.fileName||null,file_data:c.fileData||null})});
+    return ins[0].id;
+  },
+  async createCells(cells){
+    if(!cells.length)return;
+    const body=cells.map(c=>({row_id:c.rowId,column_id:c.columnId,text_value:c.textValue||'',file_name:c.fileName||null,file_data:c.fileData||null}));
+    await this._fetch('data_cells',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(body)});
+  },
+  async updateCell(cid,data){
+    const body={};
+    if(data.textValue!==undefined)body.text_value=data.textValue;
+    if(data.fileName!==undefined)body.file_name=data.fileName;
+    if(data.fileData!==undefined)body.file_data=data.fileData;
+    body.updated_at=new Date().toISOString();
+    await this._fetch('data_cells?id=eq.'+cid,{method:'PATCH',headers:HEADERS_RETURN,body:JSON.stringify(body)});
+  },
+  async upsertCell(rowId,columnId,textValue){
+    // Try to find existing
+    const existing=await this._fetch('data_cells?row_id=eq.'+rowId+'&column_id=eq.'+columnId+'&select=*&limit=1');
+    if(existing&&existing.length){
+      await this._fetch('data_cells?id=eq.'+existing[0].id,{method:'PATCH',headers:HEADERS_RETURN,body:JSON.stringify({text_value:textValue,updated_at:new Date().toISOString()})});
+    } else {
+      await this._fetch('data_cells',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({row_id:rowId,column_id:columnId,text_value:textValue,file_name:null,file_data:null})});
+    }
+  },
+  async deleteCellsByColumn(cid){
+    await this._fetch('data_cells?column_id=eq.'+cid,{method:'DELETE',headers:HEADERS});
+  },
+
+  // ── Version bump ──
+  async bumpVersion(pid){
+    const ps=await this._fetch('projects?id=eq.'+pid+'&select=data_version');
+    if(ps&&ps.length){
+      const nv=(ps[0].data_version||0)+1;
+      await this._fetch('projects?id=eq.'+pid,{method:'PATCH',headers:HEADERS_RETURN,body:JSON.stringify({data_version:nv})});
+      return nv;
+    }
+  },
+  async getVersion(pid){
+    const ps=await this._fetch('projects?id=eq.'+pid+'&select=data_version');
+    return ps&&ps.length?ps[0].data_version||0:0;
+  }
 };
 
-function seedIfNeeded(){
-  if(DB.getProjects().length>0)return;
-  const p1={id:DB.nextId('p'),name:'차량등록 현황',slug:genSlug(),displayOrder:0,dataVersion:0,layoutType:1,
-    columns:[
-      {id:DB.nextId('c'),label:'성명',order:0},{id:DB.nextId('c'),label:'소속부서',order:1},{id:DB.nextId('c'),label:'연락처',order:2},
-      {id:DB.nextId('c'),label:'차량번호',order:3},{id:DB.nextId('c'),label:'차량명 (ex. 카니발 등)',order:4},
-      {id:DB.nextId('c'),label:'첨부파일 (차량등록증)',order:5}],createdAt:new Date().toISOString()};
-  const p2={id:DB.nextId('p'),name:'자녀 현황 파악',slug:genSlug(),displayOrder:1,dataVersion:0,layoutType:2,
-    columns:['부서명','부모성명','자녀1 이름','자녀1 생년월일','자녀1 기도제목','자녀2 이름','자녀2 생년월일','자녀2 기도제목','자녀3 이름','자녀3 생년월일','자녀3 기도제목','자녀4 이름','자녀4 생년월일','자녀4 기도제목','비고']
-      .map((l,i)=>({id:DB.nextId('c'),label:l,order:i})),createdAt:new Date().toISOString()};
-  DB.setProjects([p1,p2]);
+async function seedIfNeeded(){
+  const ps=await DB.getProjects();
+  if(ps.length>0)return;
+  // Seed admin
+  await DB.getAdmin();
+  // Seed project 1
+  const p1id=await DB.createProject({
+    name:'차량등록 현황',slug:genSlug(),displayOrder:0,layoutType:1,
+    columns:[{label:'성명'},{label:'소속부서'},{label:'연락처'},{label:'차량번호'},{label:'차량명 (ex. 카니발 등)'},{label:'첨부파일 (차량등록증)'}]
+  });
+  // Seed project 2
+  const p2id=await DB.createProject({
+    name:'자녀 현황 파악',slug:genSlug(),displayOrder:1,layoutType:2,
+    columns:['부서명','부모성명','자녀1 이름','자녀1 생년월일','자녀1 기도제목','자녀2 이름','자녀2 생년월일','자녀2 기도제목','자녀3 이름','자녀3 생년월일','자녀3 기도제목','자녀4 이름','자녀4 생년월일','자녀4 기도제목','비고'].map(l=>({label:l}))
+  });
 }
+
 function genSlug(){const c='abcdefghijklmnopqrstuvwxyz0123456789';let s='';for(let i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
 
 function showToast(msg,type='info'){
@@ -278,21 +461,25 @@ function showToast(msg,type='info'){
 
 function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
-// ── File download helper: converts base64 data URL to download ──
 function downloadFileFromData(fileName, dataUrl){
   if(!dataUrl)return;
-  const a=document.createElement('a');
-  a.href=dataUrl;
-  a.download=fileName||'download';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  const a=document.createElement('a');a.href=dataUrl;a.download=fileName||'download';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
+
+function showLoading(){
+  let ov=document.getElementById('loading-ov');
+  if(!ov){ov=document.createElement('div');ov.id='loading-ov';ov.className='loading-overlay';ov.textContent='불러오는 중...';document.body.appendChild(ov)}
+}
+function hideLoading(){const ov=document.getElementById('loading-ov');if(ov)ov.remove()}
 
 const App={
   state:{page:'',adminLoggedIn:false,selectedProjectId:null,userSession:null,isEditing:false,pollingInterval:null,_versions:{}},
 
-  init(){seedIfNeeded();this.route();window.addEventListener('hashchange',()=>this.route())},
+  async init(){
+    try{await seedIfNeeded()}catch(e){console.error('Seed error:',e)}
+    this.route();
+    window.addEventListener('hashchange',()=>this.route());
+  },
 
   route(){
     const h=location.hash||'#/admin/login';
@@ -313,22 +500,28 @@ const App={
         <button class="login-btn" id="abtn">로그인</button>
       </div></div>`;
     const pw=document.getElementById('apw'),btn=document.getElementById('abtn'),err=document.getElementById('aerr');
-    const go=()=>{
-      const admin=DB.getAdmin();
-      if(admin.lockedUntil&&new Date(admin.lockedUntil)>new Date()){
-        err.textContent=`잠금 중. ${Math.ceil((new Date(admin.lockedUntil)-new Date())/1000)}초 후 재시도`;err.classList.remove('hidden');return}
-      if(pw.value===admin.password){admin.loginAttempts=0;admin.lockedUntil=null;DB.setAdmin(admin);App.state.adminLoggedIn=true;showToast('로그인 성공','success');location.hash='#/admin'}
-      else{admin.loginAttempts=(admin.loginAttempts||0)+1;
-        if(admin.loginAttempts>=5){admin.lockedUntil=new Date(Date.now()+30000).toISOString();admin.loginAttempts=0;err.textContent='5회 실패 — 30초 잠금'}
-        else err.textContent=`비밀번호 불일치 (${admin.loginAttempts}/5)`;err.classList.remove('hidden');DB.setAdmin(admin)}
+    const go=async()=>{
+      try{
+        const admin=await DB.getAdmin();
+        if(admin.locked_until&&new Date(admin.locked_until)>new Date()){
+          err.textContent=`잠금 중. ${Math.ceil((new Date(admin.locked_until)-new Date())/1000)}초 후 재시도`;err.classList.remove('hidden');return}
+        if(pw.value===admin.password){
+          admin.login_attempts=0;admin.locked_until=null;await DB.setAdmin(admin);
+          App.state.adminLoggedIn=true;showToast('로그인 성공','success');location.hash='#/admin';
+        } else {
+          admin.login_attempts=(admin.login_attempts||0)+1;
+          if(admin.login_attempts>=5){admin.locked_until=new Date(Date.now()+30000).toISOString();admin.login_attempts=0;err.textContent='5회 실패 — 30초 잠금'}
+          else err.textContent=`비밀번호 불일치 (${admin.login_attempts}/5)`;
+          err.classList.remove('hidden');await DB.setAdmin(admin);
+        }
+      }catch(e){err.textContent='서버 연결 오류';err.classList.remove('hidden');console.error(e)}
     };
     btn.onclick=go;pw.onkeydown=e=>{if(e.key==='Enter')go()};pw.focus();
   },
 
   // ═══ ADMIN MAIN ═══
-  renderAdmin(){
+  async renderAdmin(){
     const app=document.getElementById('app');
-    // 모든 디바이스에서 접속 가능
     app.innerHTML=`
       <div class="admin-header">
         <div style="display:flex;align-items:center"><button class="sb-toggle" id="sbToggle">☰</button><span class="logo">People-In Hub</span></div>
@@ -337,17 +530,16 @@ const App={
       <div class="admin-body"><div class="sb-overlay" id="sbOv"></div><div class="sidebar" id="sb"></div><div class="main-content" id="mc"></div></div>`;
     document.getElementById('hpw').onclick=()=>this.showPwModal();
     document.getElementById('hlo').onclick=()=>{this.state.adminLoggedIn=false;this.stopPolling();location.hash='#/admin/login'};
-    // Mobile sidebar toggle
     const sbToggle=document.getElementById('sbToggle'),sbEl=document.getElementById('sb'),sbOv=document.getElementById('sbOv');
     if(sbToggle){sbToggle.onclick=()=>{sbEl.classList.toggle('sb-open');sbOv.classList.toggle('active')};sbOv.onclick=()=>{sbEl.classList.remove('sb-open');sbOv.classList.remove('active')}}
-    this.renderSB();
-    this.state.selectedProjectId?this.renderPV(this.state.selectedProjectId):this.renderDash();
+    await this.renderSB();
+    if(this.state.selectedProjectId)await this.renderPV(this.state.selectedProjectId);else await this.renderDash();
     this.startPolling();
   },
 
-  renderSB(){
+  async renderSB(){
     const sb=document.getElementById('sb');if(!sb)return;
-    const ps=DB.getProjects(),sel=this.state.selectedProjectId;
+    const ps=await DB.getProjects(),sel=this.state.selectedProjectId;
     sb.innerHTML=`
       <div class="sidebar-item ${sel===null?'active':''}" data-a="dash"><span>📊</span> 전체 현황</div>
       <div class="sidebar-section">내 프로젝트</div>
@@ -371,18 +563,21 @@ const App={
   },
 
   // ── Dashboard ──
-  renderDash(){
+  async renderDash(){
     const mc=document.getElementById('mc');if(!mc)return;
-    const ps=DB.getProjects(),rows=DB.getRows(),cells=DB.getCells(),users=DB.getUsers();
-    const tu=new Set(rows.filter(r=>r.userId).map(r=>r.userId)).size;
+    const ps=await DB.getProjects();
+    const allRows=await DB.getRows();
+    const rowIds=allRows.map(r=>r.id);
+    const cells=rowIds.length?await DB.getCells(rowIds):[];
+    const tu=new Set(allRows.filter(r=>r.userId).map(r=>r.userId)).size;
     mc.innerHTML=`
       <div class="stats-bar">
         <div class="stat-card"><div class="stat-icon purple">📊</div><div><div class="stat-num">${ps.length}</div><div class="stat-label">총 프로젝트</div></div></div>
         <div class="stat-card"><div class="stat-icon blue">👥</div><div><div class="stat-num">${tu}</div><div class="stat-label">총 응답자</div></div></div>
       </div>
       <div class="project-cards">${ps.map(p=>{
-        const pr=rows.filter(r=>r.projectId===p.id),uc=new Set(pr.filter(r=>r.userId).map(r=>r.userId)).size;
-        const cols=p.columns.sort((a,b)=>a.order-b.order);
+        const pr=allRows.filter(r=>r.projectId===p.id),uc=new Set(pr.filter(r=>r.userId).map(r=>r.userId)).size;
+        const cols=p.columns;
         return `<div class="project-card"><div class="project-card-top"></div><div class="project-card-body">
           <h3>📋 ${esc(p.name)}</h3>
           <div class="project-card-cols">${cols.slice(0,5).map(c=>{const cc=cells.filter(cl=>cl.columnId===c.id&&(cl.textValue||cl.fileName)).length;return `<div class="project-card-col"><span class="col-name">${esc(c.label)}</span><span class="badge">${cc}건</span></div>`}).join('')}${cols.length>5?`<div class="project-card-col"><span class="col-name">... 외 ${cols.length-5}개</span></div>`:''}</div>
@@ -392,13 +587,15 @@ const App={
   },
 
   // ── Project View ──
-  renderPV(pid){
+  async renderPV(pid){
     const mc=document.getElementById('mc');if(!mc)return;
-    const ps=DB.getProjects(),proj=ps.find(p=>p.id===pid);
-    if(!proj){this.renderDash();return}
-    const rows=DB.getRows().filter(r=>r.projectId===pid).sort((a,b)=>a.rowOrder-b.rowOrder);
-    const cells=DB.getCells(),users=DB.getUsers();
-    const cols=proj.columns.sort((a,b)=>a.order-b.order);
+    const ps=await DB.getProjects(),proj=ps.find(p=>p.id===pid);
+    if(!proj){await this.renderDash();return}
+    const rows=await DB.getRows(pid);
+    const rowIds=rows.map(r=>r.id);
+    const cells=rowIds.length?await DB.getCells(rowIds):[];
+    const users=await DB.getUsers(pid);
+    const cols=proj.columns;
     const uc=new Set(rows.filter(r=>r.userId).map(r=>r.userId)).size;
     const baseUrl=location.origin+location.pathname+'#/p/'+proj.slug;
 
@@ -429,7 +626,6 @@ const App={
             <th class="col-add-btn" id="addcol" style="cursor:pointer">＋</th>
           </tr></thead><tbody id="tbody">
             ${rows.map((row,idx)=>{
-              const u=row.userId?users.find(x=>x.id===row.userId):null;
               return `<tr data-rid="${row.id}">
                 <td><input type="checkbox" class="row-checkbox" data-rc="${row.id}"></td>
                 <td class="sticky-col col-no" style="left:0">${idx+1}</td>
@@ -440,18 +636,17 @@ const App={
                   const fd=cell?cell.fileData||'':'';
                   let display=esc(tv);
                   if(fn){
-                    display+=(tv?'<br>':'')+ `<a class="file-link" href="${esc(fd)}" download="${esc(fn)}" title="클릭하여 다운로드 / 우클릭 → 다른 이름으로 저장" data-fname="${esc(fn)}" data-fdata="${esc(fd)}">📎 ${esc(fn)}</a>`;
+                    display+=(tv?'<br>':'')+ `<a class="file-link" data-fname="${esc(fn)}" data-fdata="${esc(fd)}">📎 ${esc(fn)}</a>`;
                   }
                   return `<td data-rid="${row.id}" data-cid="${c.id}" class="ecell">${display}</td>`
                 }).join('')}
-                <td>${row.rowFileName?`<a class="file-link" href="${esc(row.rowFileData||'')}" download="${esc(row.rowFileName)}" data-fname="${esc(row.rowFileName)}" data-fdata="${esc(row.rowFileData||'')}">📎 ${esc(row.rowFileName)}</a>`:''}</td>
+                <td>${row.rowFileName?`<a class="file-link" data-fname="${esc(row.rowFileName)}" data-fdata="${esc(row.rowFileData||'')}">📎 ${esc(row.rowFileName)}</a>`:''}</td>
               </tr>`}).join('')}
           </tbody></table>
           <div class="add-row-btn" id="addrow">＋ 행 추가</div>
         </div>
       </div>`;
 
-    // Events
     document.getElementById('cpurl').onclick=()=>navigator.clipboard.writeText(baseUrl).then(()=>showToast('URL 복사됨','success'));
     document.getElementById('etpl').onclick=()=>this.dlTemplate(pid);
     document.getElementById('eexp').onclick=()=>this.exportCSV(pid);
@@ -461,66 +656,79 @@ const App={
     document.getElementById('addrow').onclick=()=>this.addRow(pid);
     document.querySelectorAll('.ecell').forEach(td=>td.ondblclick=()=>this.editCell(td,pid));
 
-    // File download click handler (for admin page)
     document.querySelectorAll('.file-link').forEach(link=>{
       link.onclick=e=>{
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault();e.stopPropagation();
         const fname=link.getAttribute('data-fname');
         const fdata=link.getAttribute('data-fdata');
         if(fdata) downloadFileFromData(fname,fdata);
         else showToast('파일 데이터를 찾을 수 없습니다','warning');
       };
-      // Right-click context menu support: the <a> tag with download attribute already supports "Save As"
     });
 
-    // Row checkboxes + Select All
     const rowCbs=document.querySelectorAll('.row-checkbox[data-rc]'),delBtn=document.getElementById('delrows'),si=document.getElementById('selinfo');
     const selectAllCb=document.getElementById('selectAll');
     const updateSelUI=()=>{const ck=[...document.querySelectorAll('.row-checkbox[data-rc]:checked')];ck.length?(delBtn.classList.remove('hidden'),si.textContent=ck.length+'개 선택됨'):(delBtn.classList.add('hidden'),si.textContent='');if(selectAllCb)selectAllCb.checked=rowCbs.length>0&&ck.length===rowCbs.length};
     rowCbs.forEach(cb=>cb.onchange=updateSelUI);
     if(selectAllCb)selectAllCb.onchange=()=>{rowCbs.forEach(cb=>{cb.checked=selectAllCb.checked});updateSelUI()};
-    delBtn.onclick=()=>{const ids=[...document.querySelectorAll('.row-checkbox[data-rc]:checked')].map(c=>+c.dataset.rc);if(!ids.length)return;this.showConfirm(`${ids.length}개 행을 삭제하시겠습니까?`,()=>{DB.setRows(DB.getRows().filter(r=>!ids.includes(r.id)));DB.setCells(DB.getCells().filter(c=>!ids.includes(c.rowId)));this.bumpV(pid);showToast('삭제됨','success');this.renderPV(pid)})};
+    delBtn.onclick=()=>{
+      const ids=[...document.querySelectorAll('.row-checkbox[data-rc]:checked')].map(c=>+c.dataset.rc);
+      if(!ids.length)return;
+      this.showConfirm(`${ids.length}개 행을 삭제하시겠습니까?`,async()=>{
+        await DB.deleteRows(ids);
+        await DB.bumpVersion(pid);
+        showToast('삭제됨','success');await this.renderPV(pid);
+      });
+    };
   },
 
   editCell(td,pid){
     if(td.querySelector('.cell-edit'))return;
     this.state.isEditing=true;
     const rid=+td.dataset.rid,cid=+td.dataset.cid;
-    const cells=DB.getCells(),cell=cells.find(c=>c.rowId===rid&&c.columnId===cid);
-    const old=cell?cell.textValue||'':'';
-    td.innerHTML=`<input type="text" class="cell-edit" value="${esc(old)}">`;
+    // Read current text from the cell display
+    const oldText=td.textContent.replace(/📎.*$/,'').trim();
+    td.innerHTML=`<input type="text" class="cell-edit" value="${esc(oldText)}">`;
     const inp=td.querySelector('input');inp.focus();inp.select();
-    const save=()=>{
-      const nv=inp.value;let ac=DB.getCells();
-      const ex=ac.find(c=>c.rowId===rid&&c.columnId===cid);
-      if(ex){ex.textValue=nv;ex.updatedAt=new Date().toISOString()}
-      else ac.push({id:DB.nextId('cl'),rowId:rid,columnId:cid,textValue:nv,fileName:null,fileData:null,filePath:null,fileSize:null,fileType:null,updatedAt:new Date().toISOString()});
-      DB.setCells(ac);this.bumpV(pid);this.state.isEditing=false;this.renderPV(pid);
+    const save=async()=>{
+      const nv=inp.value;
+      try{
+        await DB.upsertCell(rid,cid,nv);
+        await DB.bumpVersion(pid);
+      }catch(e){console.error(e)}
+      this.state.isEditing=false;
+      await this.renderPV(pid);
     };
     inp.onblur=save;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();save()}if(e.key==='Escape'){this.state.isEditing=false;this.renderPV(pid)}};
   },
 
-  addRow(pid){
-    const rows=DB.getRows(),pr=rows.filter(r=>r.projectId===pid);
-    rows.push({id:DB.nextId('r'),projectId:pid,userId:null,rowOrder:pr.length,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
-    DB.setRows(rows);this.bumpV(pid);showToast('행 추가됨','success');this.renderPV(pid);
+  async addRow(pid){
+    const rows=await DB.getRows(pid);
+    await DB.createRow({projectId:pid,userId:null,rowOrder:rows.length});
+    await DB.bumpVersion(pid);
+    showToast('행 추가됨','success');await this.renderPV(pid);
   },
 
-  showAddColModal(pid){
+  async showAddColModal(pid){
     const ov=document.createElement('div');ov.className='modal-overlay';
     ov.innerHTML=`<div class="modal" style="max-width:400px"><h2>새 항목 추가</h2><div class="form-group"><label>항목명</label><input type="text" id="ncn" placeholder="예: 이메일"></div><div class="modal-actions"><button class="btn btn-outline" id="ncc">취소</button><button class="btn btn-accent" id="ncs">추가</button></div></div>`;
     document.body.appendChild(ov);const inp=document.getElementById('ncn');inp.focus();
     document.getElementById('ncc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
-    const go=()=>{const n=inp.value.trim();if(!n){showToast('항목명 필수','warning');return}
-      const ps=DB.getProjects(),p=ps.find(x=>x.id===pid);p.columns.push({id:DB.nextId('c'),label:n,order:p.columns.length});DB.setProjects(ps);this.bumpV(pid);ov.remove();showToast('항목 추가됨','success');this.renderPV(pid)};
+    const go=async()=>{
+      const n=inp.value.trim();if(!n){showToast('항목명 필수','warning');return}
+      const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid);
+      await DB.addColumn(pid,n,p.columns.length);
+      await DB.bumpVersion(pid);ov.remove();showToast('항목 추가됨','success');await this.renderPV(pid);
+    };
     document.getElementById('ncs').onclick=go;inp.onkeydown=e=>{if(e.key==='Enter')go()};
   },
 
-  confirmDelCol(pid,cid){
-    const ps=DB.getProjects(),p=ps.find(x=>x.id===pid),c=p.columns.find(x=>x.id===cid);
-    this.showConfirm(`"${c.label}" 항목과 모든 데이터를 삭제합니까?`,()=>{
-      p.columns=p.columns.filter(x=>x.id!==cid);DB.setProjects(ps);DB.setCells(DB.getCells().filter(x=>x.columnId!==cid));this.bumpV(pid);showToast('삭제됨','success');this.renderPV(pid)});
+  async confirmDelCol(pid,cid){
+    const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid),c=p.columns.find(x=>x.id===cid);
+    this.showConfirm(`"${c.label}" 항목과 모든 데이터를 삭제합니까?`,async()=>{
+      await DB.deleteColumn(cid);
+      await DB.bumpVersion(pid);showToast('삭제됨','success');await this.renderPV(pid);
+    });
   },
 
   // ── Create Project ──
@@ -564,7 +772,6 @@ const App={
     render();document.getElementById('npn').focus();
     document.getElementById('aci').onclick=()=>{cols.push({label:''});render();const inps=document.querySelectorAll('#clist input');inps[inps.length-1].focus()};
 
-    // 엑셀 템플릿 다운로드 (프로젝트 생성용)
     document.getElementById('create-tpl-dl').onclick=(e)=>{
       e.preventDefault();
       let csv='\uFEFF항목명\n성명\n소속부서\n연락처\n';
@@ -573,38 +780,37 @@ const App={
       showToast('템플릿이 다운로드되었습니다','success');
     };
 
-    // 엑셀 업로드 → 항목 자동 반영
     document.getElementById('create-tpl-up').onchange=(e)=>{
       const file=e.target.files[0];if(!file)return;
       const reader=new FileReader();
       reader.onload=(ev)=>{
         const lines=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);
         if(lines.length<2){showToast('데이터가 없습니다','warning');return}
-        // 첫 줄은 헤더 스킵, 나머지를 항목으로 추가
         const newCols=lines.slice(1).map(l=>{const parsed=parseCSV(l);return {label:parsed[0]||''};}).filter(c=>c.label);
         if(newCols.length===0){showToast('유효한 항목이 없습니다','warning');return}
-        cols=newCols;
-        render();
+        cols=newCols;render();
         showToast(`${newCols.length}개 항목이 반영되었습니다`,'success');
       };
       reader.readAsText(file,'UTF-8');
     };
 
     document.getElementById('npc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
-    document.getElementById('nps').onclick=()=>{
+    document.getElementById('nps').onclick=async()=>{
       const nm=document.getElementById('npn').value.trim();if(!nm){showToast('프로젝트명 필수','warning');return}
       const vc=cols.filter(c=>c.label.trim());if(!vc.length){showToast('항목 1개 이상 필수','warning');return}
-      const ps=DB.getProjects();
-      const np={id:DB.nextId('p'),name:nm,slug:genSlug(),displayOrder:ps.length,dataVersion:0,layoutType:selectedLayoutType,columns:vc.map((c,i)=>({id:DB.nextId('c'),label:c.label.trim(),order:i})),createdAt:new Date().toISOString()};
-      ps.push(np);DB.setProjects(ps);this.state.selectedProjectId=np.id;ov.remove();
+      const ps=await DB.getProjects();
+      const npId=await DB.createProject({name:nm,slug:genSlug(),displayOrder:ps.length,layoutType:selectedLayoutType,columns:vc.map(c=>({label:c.label.trim()}))});
+      this.state.selectedProjectId=npId;ov.remove();
       showToast('프로젝트 생성됨','success');
-      navigator.clipboard.writeText(location.origin+location.pathname+'#/p/'+np.slug).then(()=>showToast('배포 URL 복사됨','info'));
-      this.renderSB();this.renderPV(np.id);
+      // get slug for clipboard
+      const nps=await DB.getProjects(),np=nps.find(x=>x.id===npId);
+      if(np)navigator.clipboard.writeText(location.origin+location.pathname+'#/p/'+np.slug).then(()=>showToast('배포 URL 복사됨','info'));
+      await this.renderSB();await this.renderPV(npId);
     };
   },
 
-  showSettingsModal(pid){
-    const ps=DB.getProjects(),p=ps.find(x=>x.id===pid);if(!p)return;
+  async showSettingsModal(pid){
+    const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid);if(!p)return;
     const ov=document.createElement('div');ov.className='modal-overlay';
     const curLT=p.layoutType||1;
     ov.innerHTML=`<div class="modal" style="max-width:560px"><h2>⚙️ 프로젝트 설정</h2>
@@ -624,27 +830,30 @@ const App={
     ov.querySelectorAll('.layout-option').forEach(opt=>{
       opt.onclick=()=>{ov.querySelectorAll('.layout-option').forEach(o=>o.classList.remove('selected'));opt.classList.add('selected');editLayoutType=+opt.dataset.lt};
     });
-    let cols=p.columns.sort((a,b)=>a.order-b.order).map(c=>({...c}));
+    let cols=p.columns.map(c=>({...c}));
     const render=()=>{
       const list=document.getElementById('eclist');
       list.innerHTML=cols.map((c,i)=>`<div class="drag-item"><span class="drag-num">${i+1}</span><div class="drag-arrows"><button data-eup="${i}" ${i===0?'disabled':''} title="위로">▲</button><button data-edn="${i}" ${i===cols.length-1?'disabled':''} title="아래로">▼</button></div><input type="text" value="${esc(c.label)}" data-i="${i}"><span class="drag-del" data-d="${i}" ${cols.length<=1?'style="visibility:hidden"':''}>✕</span></div>`).join('');
       list.querySelectorAll('input').forEach(inp=>inp.oninput=()=>{cols[+inp.dataset.i].label=inp.value});
-      list.querySelectorAll('[data-d]').forEach(d=>d.onclick=()=>{if(cols.length<=1)return;const rm=cols[+d.dataset.d];if(rm.id)DB.setCells(DB.getCells().filter(c=>c.columnId!==rm.id));cols.splice(+d.dataset.d,1);render()});
+      list.querySelectorAll('[data-d]').forEach(d=>d.onclick=async()=>{if(cols.length<=1)return;const rm=cols[+d.dataset.d];if(rm.id)await DB.deleteCellsByColumn(rm.id);cols.splice(+d.dataset.d,1);render()});
       list.querySelectorAll('[data-eup]').forEach(b=>b.onclick=()=>{const i=+b.dataset.eup;if(i>0){[cols[i-1],cols[i]]=[cols[i],cols[i-1]];render()}});
       list.querySelectorAll('[data-edn]').forEach(b=>b.onclick=()=>{const i=+b.dataset.edn;if(i<cols.length-1){[cols[i],cols[i+1]]=[cols[i+1],cols[i]];render()}});
     };
     render();
-    document.getElementById('eaci').onclick=()=>{cols.push({id:DB.nextId('c'),label:'',order:cols.length});render()};
+    document.getElementById('eaci').onclick=()=>{cols.push({id:null,label:'',order:cols.length});render()};
     document.getElementById('ecc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
-    document.getElementById('ecs').onclick=()=>{
+    document.getElementById('ecs').onclick=async()=>{
       const nm=document.getElementById('epn').value.trim();if(!nm){showToast('프로젝트명 필수','warning');return}
-      p.name=nm;p.layoutType=editLayoutType;p.columns=cols.filter(c=>c.label.trim()).map((c,i)=>({...c,label:c.label.trim(),order:i}));
-      DB.setProjects(ps);this.bumpV(pid);ov.remove();showToast('저장됨','success');this.renderSB();if(this.state.selectedProjectId===pid)this.renderPV(pid);
+      await DB.updateProject(pid,{name:nm,layoutType:editLayoutType});
+      const validCols=cols.filter(c=>c.label.trim()).map((c,i)=>({id:c.id||undefined,label:c.label.trim(),order:i}));
+      await DB.setProjectColumns(pid,validCols);
+      await DB.bumpVersion(pid);ov.remove();showToast('저장됨','success');
+      await this.renderSB();if(this.state.selectedProjectId===pid)await this.renderPV(pid);
     };
   },
 
-  showDelProjModal(pid){
-    const ps=DB.getProjects(),p=ps.find(x=>x.id===pid);if(!p)return;
+  async showDelProjModal(pid){
+    const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid);if(!p)return;
     const ov=document.createElement('div');ov.className='modal-overlay';
     ov.innerHTML=`<div class="modal" style="max-width:440px"><h2 style="color:var(--danger)">🗑️ 프로젝트 삭제</h2>
       <p style="margin-bottom:16px;color:var(--text-secondary);font-size:14px">모든 데이터가 삭제됩니다. 프로젝트명을 입력하세요.</p>
@@ -654,19 +863,15 @@ const App={
     const inp=document.getElementById('cfn'),btn=document.getElementById('dpd');
     inp.oninput=()=>{btn.disabled=inp.value!==p.name};
     document.getElementById('dpc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
-    btn.onclick=()=>{
+    btn.onclick=async()=>{
       if(inp.value!==p.name)return;
-      DB.setProjects(ps.filter(x=>x.id!==pid));
-      const rids=DB.getRows().filter(r=>r.projectId===pid).map(r=>r.id);
-      DB.setRows(DB.getRows().filter(r=>r.projectId!==pid));
-      DB.setCells(DB.getCells().filter(c=>!rids.includes(c.rowId)));
-      DB.setUsers(DB.getUsers().filter(u=>u.projectId!==pid));
+      await DB.deleteProject(pid);
       if(this.state.selectedProjectId===pid)this.state.selectedProjectId=null;
-      ov.remove();showToast('삭제됨','success');this.renderSB();this.renderDash();
+      ov.remove();showToast('삭제됨','success');await this.renderSB();await this.renderDash();
     };
   },
 
-  showPwModal(){
+  async showPwModal(){
     const ov=document.createElement('div');ov.className='modal-overlay';
     ov.innerHTML=`<div class="modal" style="max-width:400px"><h2>🔑 비밀번호 변경</h2>
       <div class="form-group"><label>현재 비밀번호</label><input type="password" id="pc"></div>
@@ -676,12 +881,12 @@ const App={
       <div class="modal-actions"><button class="btn btn-outline" id="pcc">취소</button><button class="btn btn-accent" id="pcs">변경</button></div></div>`;
     document.body.appendChild(ov);
     document.getElementById('pcc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
-    document.getElementById('pcs').onclick=()=>{
-      const a=DB.getAdmin(),c=document.getElementById('pc').value,n=document.getElementById('pn').value,cf=document.getElementById('pcf').value,err=document.getElementById('perr');
+    document.getElementById('pcs').onclick=async()=>{
+      const a=await DB.getAdmin(),c=document.getElementById('pc').value,n=document.getElementById('pn').value,cf=document.getElementById('pcf').value,err=document.getElementById('perr');
       if(c!==a.password){err.textContent='현재 비밀번호 불일치';err.classList.remove('hidden');return}
       if(n.length<4){err.textContent='4자 이상 필요';err.classList.remove('hidden');return}
       if(n!==cf){err.textContent='새 비밀번호 불일치';err.classList.remove('hidden');return}
-      a.password=n;DB.setAdmin(a);ov.remove();showToast('비밀번호 변경됨','success');
+      a.password=n;await DB.setAdmin(a);ov.remove();showToast('비밀번호 변경됨','success');
     };
   },
 
@@ -692,29 +897,41 @@ const App={
   },
 
   // Polling
-  startPolling(){this.stopPolling();this.state.pollingInterval=setInterval(()=>{if(this.state.isEditing||!this.state.selectedProjectId)return;const pid=this.state.selectedProjectId,ps=DB.getProjects(),p=ps.find(x=>x.id===pid);if(!p)return;const cv=this.state._versions[pid]||0;if(p.dataVersion!==cv){this.state._versions[pid]=p.dataVersion;this.renderPV(pid)}},3000)},
+  startPolling(){
+    this.stopPolling();
+    this.state.pollingInterval=setInterval(async()=>{
+      if(this.state.isEditing||!this.state.selectedProjectId)return;
+      const pid=this.state.selectedProjectId;
+      try{
+        const v=await DB.getVersion(pid);
+        const cv=this.state._versions[pid]||0;
+        if(v!==cv){this.state._versions[pid]=v;await this.renderPV(pid)}
+      }catch(e){}
+    },3000);
+  },
   stopPolling(){if(this.state.pollingInterval){clearInterval(this.state.pollingInterval);this.state.pollingInterval=null}},
-  bumpV(pid){const ps=DB.getProjects(),p=ps.find(x=>x.id===pid);if(p){p.dataVersion=(p.dataVersion||0)+1;DB.setProjects(ps)}},
 
   // Excel
-  dlTemplate(pid){
-    const p=DB.getProjects().find(x=>x.id===pid);if(!p)return;
-    const cols=p.columns.sort((a,b)=>a.order-b.order);
+  async dlTemplate(pid){
+    const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid);if(!p)return;
+    const cols=p.columns;
     let csv='\uFEFF'+'No.,'+cols.map(c=>'"'+c.label.replace(/"/g,'""')+'"').join(',')+'\n';
     csv+='1,'+cols.map(()=>'').join(',')+'\n';
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=p.name+'_양식.csv';a.click();showToast('양식 다운로드','success');
   },
 
-  exportCSV(pid){
-    const p=DB.getProjects().find(x=>x.id===pid);if(!p)return;
-    const cols=p.columns.sort((a,b)=>a.order-b.order),rows=DB.getRows().filter(r=>r.projectId===pid).sort((a,b)=>a.rowOrder-b.rowOrder),cells=DB.getCells(),users=DB.getUsers();
+  async exportCSV(pid){
+    const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid);if(!p)return;
+    const cols=p.columns,rows=await DB.getRows(pid);
+    const rowIds=rows.map(r=>r.id);
+    const cells=rowIds.length?await DB.getCells(rowIds):[];
     let csv='\uFEFF'+'No.,'+cols.map(c=>'"'+c.label.replace(/"/g,'""')+'"').join(',')+'\n';
     rows.forEach((r,i)=>{csv+=`${i+1},${cols.map(c=>{const cl=cells.find(x=>x.rowId===r.id&&x.columnId===c.id);let v=cl?(cl.textValue||''):'';if(cl&&cl.fileName)v+=(v?' ':'')+'[파일:'+cl.fileName+']';return '"'+v.replace(/"/g,'""')+'"'}).join(',')}\n`});
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=p.name+'_데이터.csv';a.click();showToast('내보내기 완료','success');
   },
 
-  showImportModal(pid){
+  async showImportModal(pid){
     const ov=document.createElement('div');ov.className='modal-overlay';
     ov.innerHTML=`<div class="modal" style="max-width:600px"><h2>📤 엑셀 일괄 업로드</h2>
       <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">CSV 파일 선택. 첫 행=헤더.</p>
@@ -730,20 +947,31 @@ const App={
       document.getElementById('cpv').innerHTML=h;document.getElementById('icf').classList.remove('hidden');
     };rd.readAsText(f,'UTF-8')};
     document.getElementById('icc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
-    document.getElementById('icf').onclick=()=>{
-      if(!parsed)return;const p=DB.getProjects().find(x=>x.id===pid),cols=p.columns.sort((a,b)=>a.order-b.order);
-      parsed.data.forEach(dl=>{
-        const rid=DB.nextId('r'),rows=DB.getRows(),mo=rows.filter(r=>r.projectId===pid).length;
-        rows.push({id:rid,projectId:pid,userId:null,rowOrder:mo,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});DB.setRows(rows);
-        const ac=DB.getCells();cols.forEach((col,ci)=>{const v=dl[ci+1]||'';if(v)ac.push({id:DB.nextId('cl'),rowId:rid,columnId:col.id,textValue:v,fileName:null,fileData:null,updatedAt:new Date().toISOString()})});DB.setCells(ac);
-      });
-      this.bumpV(pid);ov.remove();showToast(`${parsed.data.length}건 등록됨`,'success');this.renderPV(pid);
+    document.getElementById('icf').onclick=async()=>{
+      if(!parsed)return;
+      const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid),cols=p.columns;
+      const existingRows=await DB.getRows(pid);
+      const baseOrder=existingRows.length;
+      for(let di=0;di<parsed.data.length;di++){
+        const dl=parsed.data[di];
+        const rid=await DB.createRow({projectId:pid,userId:null,rowOrder:baseOrder+di});
+        const cellsToInsert=[];
+        cols.forEach((col,ci)=>{
+          const v=dl[ci+1]||'';
+          if(v)cellsToInsert.push({rowId:rid,columnId:col.id,textValue:v,fileName:null,fileData:null});
+        });
+        if(cellsToInsert.length)await DB.createCells(cellsToInsert);
+      }
+      await DB.bumpVersion(pid);ov.remove();showToast(`${parsed.data.length}건 등록됨`,'success');await this.renderPV(pid);
     };
   },
 
   // ═══ USER LOGIN ═══
-  renderUserLogin(slug){
-    const app=document.getElementById('app'),ps=DB.getProjects(),p=ps.find(x=>x.slug===slug);
+  async renderUserLogin(slug){
+    const app=document.getElementById('app');
+    let ps;
+    try{ps=await DB.getProjects()}catch(e){app.innerHTML=`<div class="error-page"><div class="error-card"><div class="icon">⚠️</div><h2>서버 연결 오류</h2><p>잠시 후 다시 시도해주세요.</p></div></div>`;return}
+    const p=ps.find(x=>x.slug===slug);
     if(!p){app.innerHTML=`<div class="error-page"><div class="error-card"><div class="icon">🔍</div><h2>프로젝트를 찾을 수 없습니다</h2><p>URL을 다시 확인해주세요.</p></div></div>`;return}
     app.innerHTML=`<div class="login-page"><div class="login-card">
       <div class="logo"><h1>People-In Hub</h1><p>📋 ${esc(p.name)}</p></div>
@@ -753,48 +981,66 @@ const App={
       <button class="login-btn" id="ulb">로그인</button>
     </div></div>`;
     const ni=document.getElementById('un'),pi=document.getElementById('upw'),err=document.getElementById('uerr');
-    const go=()=>{
+    const go=async()=>{
       const name=ni.value.trim(),pw=pi.value;if(!name){err.textContent='이름 필수';err.classList.remove('hidden');return}
-      let users=DB.getUsers(),u=users.find(x=>x.projectId===p.id&&x.name===name);
-      if(!u){if(pw!=='316'){err.textContent='최초 등록 시 비밀번호는 316입니다';err.classList.remove('hidden');return}
-        u={id:DB.nextId('u'),projectId:p.id,name,password:'316',loginAttempts:0,lockedUntil:null,createdAt:new Date().toISOString()};users.push(u);DB.setUsers(users);showToast(`${name}님 환영합니다!`,'success');
-      } else {
-        if(u.lockedUntil&&new Date(u.lockedUntil)>new Date()){err.textContent=`잠금 중. ${Math.ceil((new Date(u.lockedUntil)-new Date())/1000)}초 후`;err.classList.remove('hidden');return}
-        if(pw!==u.password){u.loginAttempts=(u.loginAttempts||0)+1;if(u.loginAttempts>=5){u.lockedUntil=new Date(Date.now()+30000).toISOString();u.loginAttempts=0;err.textContent='5회 실패 — 30초 잠금'}else err.textContent=`비밀번호 불일치 (${u.loginAttempts}/5)`;err.classList.remove('hidden');DB.setUsers(users);return}
-        u.loginAttempts=0;u.lockedUntil=null;DB.setUsers(users);showToast(`${name}님 반갑습니다!`,'success');
-      }
-      App.state.userSession={userId:u.id,projectId:p.id,slug:p.slug,name:u.name};location.hash=`#/p/${slug}/input`;
+      try{
+        let u=await DB.getUserByName(p.id,name);
+        if(!u){
+          if(pw!=='316'){err.textContent='최초 등록 시 비밀번호는 316입니다';err.classList.remove('hidden');return}
+          u=await DB.createUser({projectId:p.id,name,password:'316'});
+          showToast(`${name}님 환영합니다!`,'success');
+        } else {
+          if(u.lockedUntil&&new Date(u.lockedUntil)>new Date()){err.textContent=`잠금 중. ${Math.ceil((new Date(u.lockedUntil)-new Date())/1000)}초 후`;err.classList.remove('hidden');return}
+          if(pw!==u.password){
+            const la=(u.loginAttempts||0)+1;
+            if(la>=5){
+              await DB.updateUser(u.id,{loginAttempts:0,lockedUntil:new Date(Date.now()+30000).toISOString()});
+              err.textContent='5회 실패 — 30초 잠금';
+            }else{
+              await DB.updateUser(u.id,{loginAttempts:la});
+              err.textContent=`비밀번호 불일치 (${la}/5)`;
+            }
+            err.classList.remove('hidden');return;
+          }
+          await DB.updateUser(u.id,{loginAttempts:0,lockedUntil:null});
+          showToast(`${name}님 반갑습니다!`,'success');
+        }
+        App.state.userSession={userId:u.id,projectId:p.id,slug:p.slug,name:u.name};location.hash=`#/p/${slug}/input`;
+      }catch(e){err.textContent='서버 오류';err.classList.remove('hidden');console.error(e)}
     };
     document.getElementById('ulb').onclick=go;pi.onkeydown=e=>{if(e.key==='Enter')go()};ni.onkeydown=e=>{if(e.key==='Enter')pi.focus()};ni.focus();
   },
 
-  // ═══ USER INPUT — dispatches to Type1 or Type2 ═══
-  renderUserInput(slug){
+  // ═══ USER INPUT ═══
+  async renderUserInput(slug){
     const app=document.getElementById('app'),ses=this.state.userSession;if(!ses){location.hash='#/p/'+slug;return}
-    const ps=DB.getProjects(),proj=ps.find(x=>x.slug===slug);if(!proj){location.hash='#/p/'+slug;return}
+    let ps;
+    try{ps=await DB.getProjects()}catch(e){return}
+    const proj=ps.find(x=>x.slug===slug);if(!proj){location.hash='#/p/'+slug;return}
     const layoutType=proj.layoutType||1;
-    const cols=proj.columns.sort((a,b)=>a.order-b.order);
-    const allRows=DB.getRows().filter(r=>r.projectId===proj.id&&r.userId===ses.userId).sort((a,b)=>a.rowOrder-b.rowOrder);
-    const allCells=DB.getCells();
+    const cols=proj.columns;
+    const allRows=await DB.getRows(proj.id);
+    const userRows=allRows.filter(r=>r.userId===ses.userId).sort((a,b)=>a.rowOrder-b.rowOrder);
+    const rowIds=userRows.map(r=>r.id);
+    const allCells=rowIds.length?await DB.getCells(rowIds):[];
 
-    let rowsData=allRows.map(r=>{
+    let rowsData=userRows.map(r=>{
       const rd={rowId:r.id,cells:{},files:{}};
       cols.forEach(c=>{const cell=allCells.find(cl=>cl.rowId===r.id&&cl.columnId===c.id);
         rd.cells[c.id]={textValue:cell?cell.textValue||'':'',fileName:cell?cell.fileName||'':'',fileData:cell?cell.fileData||'':''};
       });
-      // Collect row-level files (stored in a special "rowfile" key on the row)
       rd.rowFileName=r.rowFileName||'';
       rd.rowFileData=r.rowFileData||'';
       return rd;
     });
     if(rowsData.length===0) rowsData.push({rowId:null,cells:{},rowFileName:'',rowFileData:''});
-    const lastSaved=allRows.length?allRows[allRows.length-1].updatedAt:null;
+    const lastSaved=userRows.length?userRows[userRows.length-1].updatedAt:null;
 
     if(layoutType===1) this._renderType1(app,proj,cols,rowsData,lastSaved,slug,ses);
     else this._renderType2(app,proj,cols,rowsData,lastSaved,slug,ses);
   },
 
-  // ── TYPE 1: 가로형 (Table) — 파일첨부는 행 맨 우측 ──
+  // ── TYPE 1 ──
   _renderType1(app,proj,cols,rowsData,lastSaved,slug,ses){
     const fileState={};
     rowsData.forEach((rd,idx)=>{
@@ -841,7 +1087,6 @@ const App={
         </div>
       </div>`;
 
-    // Row-level file handlers
     document.querySelectorAll('[data-rfidx]').forEach(inp=>{
       inp.onchange=e=>{const idx=inp.dataset.rfidx,file=e.target.files[0];if(!file)return;
         if(file.size>20*1024*1024){showToast('파일 20MB 초과','error');return}
@@ -860,9 +1105,9 @@ const App={
     this._bindCommonUserEvents(proj,cols,rowsData,fileState,slug,ses,1);
   },
 
-  // ── TYPE 2: 세로형 (Form) — 파일첨부는 맨 아래 ──
+  // ── TYPE 2 ──
   _renderType2(app,proj,cols,rowsData,lastSaved,slug,ses){
-    const rd=rowsData[0]; // Type2는 1사용자 1행
+    const rd=rowsData[0];
     const fileState={};
     if(rd.rowFileName) fileState['row-0']={name:rd.rowFileName,data:rd.rowFileData};
 
@@ -900,7 +1145,6 @@ const App={
         </div>
       </div>`;
 
-    // Drop zone click + drag & drop
     const dropZone=document.getElementById('dropZone'),vInput=document.getElementById('vfileInput');
     dropZone.onclick=()=>vInput.click();
     dropZone.ondragover=e=>{e.preventDefault();dropZone.classList.add('dragover')};
@@ -915,7 +1159,6 @@ const App={
         document.getElementById('vfileRemove').onclick=()=>{delete fileState['row-0'];document.getElementById('vfileList').innerHTML=''};
       };reader.readAsDataURL(file);
     };
-    // Existing file remove
     const vfr=document.getElementById('vfileRemove');
     if(vfr) vfr.onclick=()=>{delete fileState['row-0'];document.getElementById('vfileList').innerHTML=''};
 
@@ -929,7 +1172,6 @@ const App={
     document.getElementById('utpl').onclick=()=>this.dlTemplate(proj.id);
     document.getElementById('uexup').onclick=()=>this.showUserExcelUpload(proj.id,ses.userId,slug,cols);
 
-    // Add row (Type1 only)
     const addRowBtn=document.getElementById('uaddrow');
     if(addRowBtn){
       addRowBtn.onclick=()=>{
@@ -939,7 +1181,6 @@ const App={
       };
     }
 
-    // Delete row (Type1)
     document.querySelectorAll('[data-delrow]').forEach(btn=>{
       btn.onclick=()=>{
         if(rowsData.length<=1)return;
@@ -952,42 +1193,44 @@ const App={
     });
 
     // Save
-    document.getElementById('usave').onclick=()=>{
-      let allR=DB.getRows(),allC=DB.getCells();
-      const oldRowIds=allR.filter(r=>r.projectId===proj.id&&r.userId===ses.userId).map(r=>r.id);
-      allR=allR.filter(r=>!oldRowIds.includes(r.id));
-      allC=allC.filter(c=>!oldRowIds.includes(c.rowId));
+    document.getElementById('usave').onclick=async()=>{
+      try{
+        // Delete old rows for this user in this project
+        await DB.deleteRowsByUser(proj.id,ses.userId);
 
-      const baseOrder=allR.filter(r=>r.projectId===proj.id).length;
-      const saveRows=layoutType===2?[rowsData[0]]:rowsData;
+        const allProjectRows=await DB.getRows(proj.id);
+        const baseOrder=allProjectRows.length;
+        const saveRows=layoutType===2?[rowsData[0]]:rowsData;
 
-      saveRows.forEach((rd,idx)=>{
-        const newRowId=DB.nextId('r');
-        const rf=fileState[`row-${idx}`]||null;
-        allR.push({id:newRowId,projectId:proj.id,userId:ses.userId,rowOrder:baseOrder+idx,
-          rowFileName:rf?rf.name:'',rowFileData:rf?rf.data:'',
-          createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
+        for(let idx=0;idx<saveRows.length;idx++){
+          const rd=saveRows[idx];
+          const rf=fileState[`row-${idx}`]||null;
+          const newRowId=await DB.createRow({
+            projectId:proj.id,userId:ses.userId,rowOrder:baseOrder+idx,
+            rowFileName:rf?rf.name:'',rowFileData:rf?rf.data:''
+          });
 
-        cols.forEach(c=>{
-          const textInp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
-          const tv=textInp?textInp.value:'';
-          if(tv){
-            allC.push({id:DB.nextId('cl'),rowId:newRowId,columnId:c.id,textValue:tv,fileName:null,fileData:null,updatedAt:new Date().toISOString()});
-          }
-        });
-      });
+          const cellsToInsert=[];
+          cols.forEach(c=>{
+            const textInp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
+            const tv=textInp?textInp.value:'';
+            if(tv){
+              cellsToInsert.push({rowId:newRowId,columnId:c.id,textValue:tv,fileName:null,fileData:null});
+            }
+          });
+          if(cellsToInsert.length)await DB.createCells(cellsToInsert);
+        }
 
-      DB.setRows(allR);DB.setCells(allC);this.bumpV(proj.id);
-      showToast('저장되었습니다 ✅','success');this.renderUserInput(slug);
+        await DB.bumpVersion(proj.id);
+        showToast('저장되었습니다 ✅','success');await this.renderUserInput(slug);
+      }catch(e){showToast('저장 오류','error');console.error(e)}
     };
 
     // Delete all
     document.getElementById('udel').onclick=()=>{
-      this.showConfirm('내 데이터 전체를 삭제하시겠습니까?',()=>{
-        const oldIds=DB.getRows().filter(r=>r.projectId===proj.id&&r.userId===ses.userId).map(r=>r.id);
-        DB.setRows(DB.getRows().filter(r=>!oldIds.includes(r.id)));
-        DB.setCells(DB.getCells().filter(c=>!oldIds.includes(c.rowId)));
-        this.bumpV(proj.id);showToast('삭제됨','success');this.renderUserInput(slug);
+      this.showConfirm('내 데이터 전체를 삭제하시겠습니까?',async()=>{
+        await DB.deleteRowsByUser(proj.id,ses.userId);
+        await DB.bumpVersion(proj.id);showToast('삭제됨','success');await this.renderUserInput(slug);
       });
     };
   },
@@ -1006,7 +1249,7 @@ const App={
     });
   },
 
-  showUserPwModal(uid){
+  async showUserPwModal(uid){
     const ov=document.createElement('div');ov.className='modal-overlay';
     ov.innerHTML=`<div class="modal" style="max-width:400px"><h2>🔑 비밀번호 변경</h2>
       <div class="form-group"><label>현재 비밀번호</label><input type="password" id="upc"></div>
@@ -1016,17 +1259,18 @@ const App={
       <div class="modal-actions"><button class="btn btn-outline" id="upcc">취소</button><button class="btn btn-accent" id="upcs">변경</button></div></div>`;
     document.body.appendChild(ov);
     document.getElementById('upcc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
-    document.getElementById('upcs').onclick=()=>{
-      let users=DB.getUsers();const u=users.find(x=>x.id===uid);if(!u)return;
+    document.getElementById('upcs').onclick=async()=>{
+      // fetch user from supabase
+      const users=await DB.getUsers();const u=users.find(x=>x.id===uid);if(!u)return;
       const c=document.getElementById('upc').value,n=document.getElementById('upn').value,cf=document.getElementById('upcf').value,err=document.getElementById('upe');
       if(c!==u.password){err.textContent='현재 비밀번호 불일치';err.classList.remove('hidden');return}
       if(n.length<4){err.textContent='4자 이상';err.classList.remove('hidden');return}
       if(n!==cf){err.textContent='불일치';err.classList.remove('hidden');return}
-      u.password=n;DB.setUsers(users);ov.remove();showToast('변경됨','success');
+      await DB.updateUser(uid,{password:n});ov.remove();showToast('변경됨','success');
     };
   },
 
-  showUserExcelUpload(pid,userId,slug,projCols){
+  async showUserExcelUpload(pid,userId,slug,projCols){
     const ov=document.createElement('div');ov.className='modal-overlay';
     ov.innerHTML=`<div class="modal" style="max-width:600px"><h2>📤 엑셀 업로드</h2>
       <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">CSV 업로드 시 기존 데이터를 덮어씁니다. <strong>여러 줄 데이터도 지원됩니다.</strong></p>
@@ -1042,28 +1286,27 @@ const App={
       document.getElementById('ucpv').innerHTML=h;document.getElementById('uccf').classList.remove('hidden');
     };rd.readAsText(f,'UTF-8')};
     document.getElementById('uccc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
-    document.getElementById('uccf').onclick=()=>{
+    document.getElementById('uccf').onclick=async()=>{
       if(!parsed)return;
-      const p=DB.getProjects().find(x=>x.id===pid),cols=p.columns.sort((a,b)=>a.order-b.order);
+      const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid),cols=p.columns;
 
       // Delete existing rows for this user
-      let allR=DB.getRows(),allC=DB.getCells();
-      const oldIds=allR.filter(r=>r.projectId===pid&&r.userId===userId).map(r=>r.id);
-      allR=allR.filter(r=>!oldIds.includes(r.id));
-      allC=allC.filter(c=>!oldIds.includes(c.rowId));
+      await DB.deleteRowsByUser(pid,userId);
 
-      // Create new rows for EACH data line
-      const baseOrder=allR.filter(r=>r.projectId===pid).length;
-      parsed.data.forEach((dl,idx)=>{
-        const rid=DB.nextId('r');
-        allR.push({id:rid,projectId:pid,userId:userId,rowOrder:baseOrder+idx,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
+      const existingRows=await DB.getRows(pid);
+      const baseOrder=existingRows.length;
+
+      for(let di=0;di<parsed.data.length;di++){
+        const dl=parsed.data[di];
+        const rid=await DB.createRow({projectId:pid,userId:userId,rowOrder:baseOrder+di});
+        const cellsToInsert=[];
         cols.forEach((col,ci)=>{
           const v=dl[ci+1]||'';
-          if(v)allC.push({id:DB.nextId('cl'),rowId:rid,columnId:col.id,textValue:v,fileName:null,fileData:null,updatedAt:new Date().toISOString()});
+          if(v)cellsToInsert.push({rowId:rid,columnId:col.id,textValue:v,fileName:null,fileData:null});
         });
-      });
-      DB.setRows(allR);DB.setCells(allC);
-      this.bumpV(pid);ov.remove();showToast(`${parsed.data.length}건 등록됨`,'success');this.renderUserInput(slug);
+        if(cellsToInsert.length)await DB.createCells(cellsToInsert);
+      }
+      await DB.bumpVersion(pid);ov.remove();showToast(`${parsed.data.length}건 등록됨`,'success');await this.renderUserInput(slug);
     };
   },
 };
