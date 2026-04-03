@@ -1216,12 +1216,7 @@ const App={
           ${(()=>{
             const {groups,ungrouped}=groupColumns(cols);
             let html='';
-            // Render ungrouped fields first
-            ungrouped.forEach(c=>{
-              const cd=rd.cells[c.id]||{textValue:''};
-              html+=`<div class="ungrouped-field"><label>${esc(c.label)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="내용을 입력하세요"></div>`;
-            });
-            // Render grouped sections
+            // Render grouped sections first
             groups.forEach(g=>{
               html+=`<div class="group-section"><div class="group-header"><span class="group-icon">${g.icon}</span>${esc(g.title)}</div>`;
               g.cols.forEach(c=>{
@@ -1230,6 +1225,11 @@ const App={
                 html+=`<div class="group-field"><label>${esc(shortLabel)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="내용을 입력하세요"></div>`;
               });
               html+=`</div>`;
+            });
+            // Render ungrouped fields (비고 등) after groups, before file attach
+            ungrouped.forEach(c=>{
+              const cd=rd.cells[c.id]||{textValue:''};
+              html+=`<div class="ungrouped-field"><label>${esc(c.label)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="내용을 입력하세요"></div>`;
             });
             return html;
           })()}
