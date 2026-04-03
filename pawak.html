@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>People-In Hub — Smart Data Collector</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+:root {
+  --main:#5E69EE;--main-light:#7B85F3;--main-dark:#4A54D4;--main-bg:#EEEFFE;
+  --main-gradient:linear-gradient(135deg,#5E69EE 0%,#7B61FF 50%,#39AFEA 100%);
+  --secondary:#4F4FFB;--secondary-light:#6B6BFC;--secondary-dark:#3A3AD9;--secondary-bg:#F0F0FE;
+  --accent:#39AFEA;--accent-light:#5BC4F2;--accent-dark:#2A95CC;
+  --bg-white:#FFFFFF;--bg-page:#F7F8FC;
+  --bg-sidebar:#1A1A3E;--bg-sidebar-hover:#2A2A5E;--bg-sidebar-active:#5E69EE;
+  --text-primary:#1A1A2E;--text-secondary:#6B7280;--text-on-main:#FFFFFF;
+  --text-on-sidebar:#B8B8D0;--text-on-sidebar-active:#FFFFFF;
+  --border:#E0E3F1;--border-focus:#5E69EE;
+  --success:#10B981;--warning:#F59E0B;--danger:#EF4444;--info:#39AFEA;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard','Apple SD Gothic Neo',system-ui,sans-serif;background:var(--bg-page);color:var(--text-primary)}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;border:none;font-family:inherit;font-size:inherit;transition:all .2s ease}
+input,textarea,select{font-family:inherit;font-size:inherit;transition:all .2s ease}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-offset:2px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;font-weight:600;font-size:14px}
+.btn-main{background:var(--main);color:#fff}.btn-main:hover{background:var(--main-light);box-shadow:0 0 20px rgba(94,105,238,.3)}
+.btn-accent{background:var(--accent);color:#fff}.btn-accent:hover{background:var(--accent-light);box-shadow:0 0 20px rgba(57,175,234,.3)}
+.btn-secondary{background:transparent;color:var(--secondary);border:2px solid var(--secondary)}.btn-secondary:hover{background:var(--secondary-bg)}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#dc2626}
+.btn-outline{background:transparent;color:var(--text-secondary);border:1px solid var(--border)}.btn-outline:hover{background:var(--main-bg);border-color:var(--main);color:var(--main)}
+.btn-sm{padding:6px 14px;font-size:13px}.btn-xs{padding:4px 10px;font-size:12px}
+#toast-container{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:8px}
+.toast{padding:14px 20px;border-radius:12px;color:#fff;font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.15);animation:slideIn .3s ease;min-width:250px;display:flex;align-items:center;gap:10px}
+.toast.success{background:var(--success)}.toast.error{background:var(--danger)}.toast.info{background:var(--info)}.toast.warning{background:var(--warning)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:5000;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease}
+.modal{background:#fff;border-radius:24px;padding:32px;max-width:560px;width:90%;max-height:85vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2)}
+.modal h2{font-size:20px;font-weight:700;margin-bottom:24px;color:var(--text-primary)}
+.modal-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:24px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.login-page{min-height:100vh;background:var(--main-gradient);display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:#fff;border-radius:24px;padding:48px 40px;max-width:400px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.15)}
+.login-card .logo{text-align:center;margin-bottom:32px}
+.login-card .logo h1{font-size:26px;font-weight:800;background:var(--main-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-card .logo p{color:var(--text-secondary);font-size:14px;margin-top:4px}
+.form-group{margin-bottom:20px}
+.form-group label{display:block;font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:6px}
+.form-group input{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:8px;font-size:15px}
+.form-group input:focus{border-color:var(--main)}
+.login-btn{width:100%;padding:14px;border-radius:12px;background:var(--accent);color:#fff;font-size:16px;font-weight:700}
+.login-btn:hover{background:var(--accent-light);box-shadow:0 0 20px rgba(57,175,234,.3)}
+.login-error{color:var(--danger);font-size:13px;margin-top:8px;text-align:center}
+.admin-header{height:64px;background:var(--main-gradient);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100}
+.admin-header .logo{color:#fff;font-size:20px;font-weight:800;letter-spacing:-.5px}
+.admin-header .actions{display:flex;gap:8px}
+.admin-header .actions button{background:rgba(255,255,255,.15);color:#fff;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:500}
+.admin-header .actions button:hover{background:rgba(255,255,255,.25)}
+.admin-body{display:flex;height:calc(100vh - 64px)}
+.sidebar{width:260px;min-width:260px;background:var(--bg-sidebar);color:var(--text-on-sidebar);overflow-y:auto;display:flex;flex-direction:column}
+.sidebar-section{padding:16px 16px 8px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(184,184,208,.6)}
+.sidebar-item{padding:12px 20px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:10px;transition:all .2s;position:relative;border-left:4px solid transparent}
+.sidebar-item:hover{background:var(--bg-sidebar-hover)}
+.sidebar-item.active{background:var(--bg-sidebar-active);color:#fff;border-left-color:#fff}
+.sidebar-item .gear{position:absolute;right:12px;opacity:0;transition:opacity .2s;font-size:14px;padding:4px;border-radius:4px}
+.sidebar-item:hover .gear{opacity:1}
+.sidebar-item .gear:hover{background:rgba(255,255,255,.1)}
+/* ── NEW: 새 프로젝트 버튼 강조 ── */
+.sidebar-add{padding:18px 20px;cursor:pointer;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 12px;border-radius:12px;background:linear-gradient(135deg,#39AFEA 0%,#5BC4F2 100%);color:#fff;box-shadow:0 4px 16px rgba(57,175,234,.35);transition:all .2s}
+.sidebar-add:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(57,175,234,.45);background:linear-gradient(135deg,#2A95CC 0%,#39AFEA 100%)}
+.main-content{flex:1;overflow-y:auto;padding:24px}
+.stats-bar{display:flex;gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:16px;padding:20px 24px;box-shadow:0 4px 24px rgba(94,105,238,.08);display:flex;align-items:center;gap:16px;flex:1}
+.stat-card .stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.stat-card .stat-icon.purple{background:var(--main-bg)}.stat-card .stat-icon.blue{background:#E8F7FE}
+.stat-card .stat-num{font-size:28px;font-weight:800}.stat-card .stat-label{font-size:13px;color:var(--text-secondary)}
+.project-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.project-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(94,105,238,.12);transition:all .2s}
+.project-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(94,105,238,.18)}
+.project-card-top{height:6px;background:var(--main)}
+.project-card-body{padding:20px}
+.project-card-body h3{font-size:16px;font-weight:700;margin-bottom:12px}
+.project-card-cols{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.project-card-col{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.project-card-col .col-name{color:var(--text-secondary)}
+.badge{background:var(--accent);color:#fff;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600}
+.project-card-footer{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border)}
+.project-card-footer .users{font-size:13px;color:var(--text-secondary)}
+.project-card-footer .goto{color:var(--accent);font-size:13px;font-weight:600;cursor:pointer}
+.project-card-footer .goto:hover{text-decoration:underline}
+.project-info-bar{background:#fff;border-radius:16px;padding:20px 24px;margin-bottom:20px;box-shadow:0 4px 24px rgba(94,105,238,.08)}
+.project-info-bar h2{font-size:18px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.url-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-size:14px}
+.url-row .url{color:var(--text-secondary);background:var(--bg-page);padding:8px 14px;border-radius:8px;flex:1;font-family:monospace;font-size:13px}
+.tool-row{display:flex;gap:10px;flex-wrap:wrap}
+.table-container{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(94,105,238,.08)}
+.table-toolbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border)}
+.table-scroll{overflow-x:auto;max-height:calc(100vh - 340px);overflow-y:auto}
+.data-table{width:100%;border-collapse:collapse;min-width:600px}
+.data-table thead{position:sticky;top:0;z-index:10}
+.data-table th{background:var(--main);color:#fff;font-weight:600;font-size:13px;padding:12px 14px;text-align:left;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1);position:relative}
+.data-table th:last-child{border-right:none}
+.data-table th .col-del{position:absolute;top:4px;right:4px;background:rgba(255,255,255,.2);border:none;color:#fff;width:20px;height:20px;border-radius:4px;font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.data-table th:hover .col-del{display:flex}
+.data-table td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border);position:relative}
+.data-table tr:nth-child(even) td{background:var(--bg-white)}
+.data-table tr:nth-child(odd) td{background:var(--main-bg)}
+.data-table tr:hover td{background:var(--secondary-bg)}
+.data-table .cell-edit{width:100%;border:2px solid var(--border-focus);border-radius:4px;padding:6px 8px;font-size:13px;background:#fff}
+.data-table .sticky-col{position:sticky;z-index:5}
+.data-table .col-no{width:50px;min-width:50px;left:0}
+.data-table .col-writer{width:90px;min-width:90px;left:50px}
+.data-table td.col-no,.data-table td.col-writer{background:var(--bg-page)!important;font-weight:500}
+.data-table .col-add-btn{width:40px;background:var(--main-dark)!important;text-align:center;cursor:pointer}
+.data-table .col-add-btn:hover{background:var(--main-light)!important}
+.add-row-btn{width:100%;padding:10px;text-align:center;color:var(--text-secondary);font-size:13px;cursor:pointer;border-top:1px solid var(--border)}
+.add-row-btn:hover{background:var(--main-bg);color:var(--main)}
+/* ── File link with download support ── */
+.file-link{color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;gap:4px;text-decoration:underline}
+.file-link:hover{color:var(--accent-dark)}
+.row-checkbox{width:16px;height:16px;cursor:pointer;accent-color:var(--main)}
+.mini-dash{background:#fff;border-radius:16px;padding:16px 24px;margin-bottom:20px;box-shadow:0 4px 24px rgba(94,105,238,.08);display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.mini-dash .md-item{display:flex;align-items:center;gap:6px;font-size:13px}
+.mini-dash .md-label{color:var(--text-secondary)}.mini-dash .md-value{font-weight:700}
+/* ── User page ── */
+.user-page{min-height:100vh;background:var(--bg-page)}
+.user-header{background:var(--main-gradient);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.user-header .project-name{color:#fff;font-size:18px;font-weight:700}
+.user-header .user-info{display:flex;align-items:center;gap:12px;color:#fff;font-size:14px}
+.user-header .user-info button{background:rgba(255,255,255,.15);color:#fff;border-radius:6px;padding:6px 12px;font-size:12px}
+.user-header .user-info button:hover{background:rgba(255,255,255,.25)}
+.user-form-container{max-width:960px;margin:0 auto;padding:24px 16px}
+/* ── User table input (horizontal rows) ── */
+.user-table-wrap{overflow-x:auto;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(94,105,238,.06);margin-bottom:16px}
+.user-data-table{width:100%;border-collapse:collapse;min-width:500px}
+.user-data-table th{background:var(--main);color:#fff;font-weight:600;font-size:13px;padding:10px 12px;text-align:left;white-space:nowrap}
+.user-data-table td{padding:6px 8px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:top}
+.user-data-table tr:nth-child(even) td{background:var(--bg-white)}
+.user-data-table tr:nth-child(odd) td{background:var(--main-bg)}
+.user-data-table input[type="text"]{width:100%;min-width:100px;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:13px}
+.user-data-table input[type="text"]:focus{border-color:var(--main)}
+.user-data-table .file-cell{display:flex;flex-direction:column;gap:4px}
+.user-data-table .file-cell .file-attach-label{color:var(--accent);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:2px}
+.user-data-table .file-cell .file-preview-sm{font-size:11px;color:var(--text-secondary);display:flex;align-items:center;gap:4px;background:var(--main-bg);padding:3px 6px;border-radius:4px;margin-top:2px}
+.user-data-table .file-cell .file-preview-sm .fremove{color:var(--danger);cursor:pointer;margin-left:4px}
+.user-row-actions{display:flex;align-items:center;gap:4px}
+.user-row-actions button{padding:4px 8px;font-size:12px;border-radius:4px}
+.user-add-row{padding:12px;text-align:center;color:var(--accent);font-weight:600;cursor:pointer;font-size:14px;border-top:1px solid var(--border)}
+.user-add-row:hover{background:var(--main-bg)}
+.user-excel-section{background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(94,105,238,.06)}
+.user-excel-section h3{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text-secondary);display:flex;align-items:center;gap:8px}
+.user-excel-btns{display:flex;gap:10px;flex-wrap:wrap}
+.user-actions{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.save-btn{width:100%;padding:16px;border-radius:12px;background:var(--accent);color:#fff;font-size:16px;font-weight:700}
+.save-btn:hover{background:var(--accent-light);box-shadow:0 0 24px rgba(57,175,234,.3)}
+.delete-my-btn{width:100%;padding:14px;border-radius:12px;background:transparent;color:var(--danger);border:2px solid var(--danger);font-size:14px;font-weight:600}
+.delete-my-btn:hover{background:var(--danger);color:#fff}
+.last-saved{text-align:center;font-size:13px;color:var(--text-secondary)}
+.desktop-guard{min-height:100vh;background:var(--main-gradient);display:flex;align-items:center;justify-content:center;padding:32px}
+.desktop-guard .guard-card{background:#fff;border-radius:24px;padding:48px;max-width:420px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.15)}
+.desktop-guard .guard-card .icon{font-size:64px;margin-bottom:16px}
+.desktop-guard .guard-card h2{font-size:20px;font-weight:700;margin-bottom:12px}
+.desktop-guard .guard-card p{color:var(--text-secondary);font-size:14px;line-height:1.6}
+.error-page{min-height:100vh;background:var(--main-gradient);display:flex;align-items:center;justify-content:center}
+.error-card{background:#fff;border-radius:24px;padding:48px;max-width:420px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.15)}
+.error-card .icon{font-size:64px;margin-bottom:16px}
+.error-card h2{font-size:20px;font-weight:700;margin-bottom:8px}
+.error-card p{color:var(--text-secondary);margin-bottom:24px}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg-page)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}::-webkit-scrollbar-thumb:hover{background:var(--text-secondary)}
+.drag-item{background:var(--main-bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.drag-item .drag-handle{cursor:grab;color:var(--text-secondary)}.drag-item .drag-num{color:var(--text-secondary);font-size:13px;width:24px}
+.drag-item input{flex:1;border:none;background:transparent;font-size:14px;padding:4px}.drag-item input:focus{outline:none}
+.drag-item .drag-del{color:var(--danger);cursor:pointer;padding:4px;opacity:.6}.drag-item .drag-del:hover{opacity:1}
+.drag-item .drag-arrows{display:flex;gap:2px}
+.drag-item .drag-arrows button{background:var(--main);color:#fff;border:none;border-radius:4px;width:24px;height:24px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;padding:0;line-height:1}
+.drag-item .drag-arrows button:hover{background:var(--main-light);box-shadow:0 0 8px rgba(94,105,238,.3)}
+.drag-item .drag-arrows button:disabled{background:var(--border);color:var(--text-secondary);cursor:default;box-shadow:none}
+.dropdown{position:fixed;background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);padding:8px;min-width:160px;z-index:200}
+.dropdown-item{padding:10px 14px;font-size:13px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.dropdown-item:hover{background:var(--main-bg)}
+.dropdown-item.danger{color:var(--danger)}.dropdown-item.danger:hover{background:#FEE2E2}
+@media(max-width:767px){
+  .user-form-container{padding:16px}.user-excel-btns{flex-direction:column}.user-header{padding:12px 16px}.user-header .project-name{font-size:16px}
+  .sidebar{width:200px;min-width:200px}
+  .admin-header{padding:0 12px}.admin-header .logo{font-size:16px}
+  .main-content{padding:12px}
+  .stats-bar{flex-direction:column}
+  .mini-dash{flex-direction:column;gap:8px}
+  .project-info-bar .url-row{flex-direction:column;gap:6px}
+  .tool-row{flex-direction:column}
+}
+@media(max-width:480px){
+  .sidebar{position:fixed;left:-260px;top:64px;height:calc(100vh - 64px);z-index:90;transition:left .3s ease;box-shadow:4px 0 24px rgba(0,0,0,.3)}
+  .sidebar.sb-open{left:0}
+  .sb-overlay{display:none;position:fixed;inset:0;top:64px;background:rgba(0,0,0,.3);z-index:89}
+  .sb-overlay.active{display:block}
+  .admin-header .sb-toggle{display:inline-flex!important}
+}
+.admin-header .sb-toggle{display:none;background:rgba(255,255,255,.15);color:#fff;border-radius:6px;padding:6px 10px;font-size:16px;margin-right:8px}
+/* ── Layout type selector ── */
+.layout-selector{display:flex;gap:12px;margin-bottom:16px}
+.layout-option{flex:1;padding:16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;text-align:center;transition:all .2s}
+.layout-option:hover{border-color:var(--main-light);background:var(--main-bg)}
+.layout-option.selected{border-color:var(--main);background:var(--main-bg);box-shadow:0 0 0 3px rgba(94,105,238,.15)}
+.layout-option .lo-icon{font-size:28px;margin-bottom:6px}
+.layout-option .lo-title{font-size:14px;font-weight:700;color:var(--text-primary)}
+.layout-option .lo-desc{font-size:11px;color:var(--text-secondary);margin-top:2px}
+/* ── Type2 vertical form ── */
+.vform-card{background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(94,105,238,.06)}
+.vform-card label{display:block;font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:8px}
+.vform-card input[type="text"],.vform-card textarea{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:8px;font-size:15px}
+.vform-card input[type="text"]:focus,.vform-card textarea:focus{border-color:var(--main)}
+.file-attach-area{background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(94,105,238,.06)}
+.file-attach-area h3{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.file-drop-zone{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text-secondary)}
+.file-drop-zone:hover,.file-drop-zone.dragover{border-color:var(--accent);background:rgba(57,175,234,.06);box-shadow:0 0 20px rgba(57,175,234,.1)}
+.file-drop-zone .drop-icon{font-size:32px;margin-bottom:8px}
+.file-drop-zone p{font-size:13px}
+.file-list{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.file-list-item{display:flex;align-items:center;gap:8px;background:var(--main-bg);padding:8px 12px;border-radius:8px;font-size:13px}
+.file-list-item .fl-remove{color:var(--danger);cursor:pointer;margin-left:auto;font-size:16px}
+/* ── Type1 row-end file attach ── */
+.row-file-cell{min-width:80px}
+.row-file-btn{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-size:12px;cursor:pointer;white-space:nowrap}
+.row-file-btn:hover{color:var(--accent-dark)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="toast-container"></div>
+<div id="app"></div>
+<script>
+// ═══════════════════════════════════════════════════
+// People-In Hub — Smart Data Collector
+// Single-file SPA with LocalStorage backend
+// ═══════════════════════════════════════════════════
+
+const DB={
+  _g(k){try{return JSON.parse(localStorage.getItem('pih_'+k))}catch(e){return null}},
+  _s(k,v){localStorage.setItem('pih_'+k,JSON.stringify(v))},
+  getAdmin(){return this._g('admin')||{username:'admin',password:'nuri0316',loginAttempts:0,lockedUntil:null}},
+  setAdmin(a){this._s('admin',a)},
+  getProjects(){return this._g('projects')||[]},
+  setProjects(p){this._s('projects',p)},
+  getUsers(){return this._g('users')||[]},
+  setUsers(u){this._s('users',u)},
+  getRows(){return this._g('rows')||[]},
+  setRows(r){this._s('rows',r)},
+  getCells(){return this._g('cells')||[]},
+  setCells(c){this._s('cells',c)},
+  nextId(k){let c=this._g('ctr_'+k)||0;c++;this._s('ctr_'+k,c);return c}
+};
+
+function seedIfNeeded(){
+  if(DB.getProjects().length>0)return;
+  const p1={id:DB.nextId('p'),name:'차량등록 현황',slug:genSlug(),displayOrder:0,dataVersion:0,layoutType:1,
+    columns:[
+      {id:DB.nextId('c'),label:'성명',order:0},{id:DB.nextId('c'),label:'소속부서',order:1},{id:DB.nextId('c'),label:'연락처',order:2},
+      {id:DB.nextId('c'),label:'차량번호',order:3},{id:DB.nextId('c'),label:'차량명 (ex. 카니발 등)',order:4},
+      {id:DB.nextId('c'),label:'첨부파일 (차량등록증)',order:5}],createdAt:new Date().toISOString()};
+  const p2={id:DB.nextId('p'),name:'자녀 현황 파악',slug:genSlug(),displayOrder:1,dataVersion:0,layoutType:2,
+    columns:['부서명','부모성명','자녀1 이름','자녀1 생년월일','자녀1 기도제목','자녀2 이름','자녀2 생년월일','자녀2 기도제목','자녀3 이름','자녀3 생년월일','자녀3 기도제목','자녀4 이름','자녀4 생년월일','자녀4 기도제목','비고']
+      .map((l,i)=>({id:DB.nextId('c'),label:l,order:i})),createdAt:new Date().toISOString()};
+  DB.setProjects([p1,p2]);
+}
+function genSlug(){const c='abcdefghijklmnopqrstuvwxyz0123456789';let s='';for(let i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
+
+function showToast(msg,type='info'){
+  const ct=document.getElementById('toast-container');
+  const el=document.createElement('div');el.className='toast '+type;
+  const ic={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  el.innerHTML=`<span>${ic[type]||''}</span><span>${msg}</span>`;ct.appendChild(el);
+  setTimeout(()=>{el.style.animation='slideOut .3s ease';setTimeout(()=>el.remove(),300)},3000);
+}
+
+function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// ── File download helper: converts base64 data URL to download ──
+function downloadFileFromData(fileName, dataUrl){
+  if(!dataUrl)return;
+  const a=document.createElement('a');
+  a.href=dataUrl;
+  a.download=fileName||'download';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+const App={
+  state:{page:'',adminLoggedIn:false,selectedProjectId:null,userSession:null,isEditing:false,pollingInterval:null,_versions:{}},
+
+  init(){seedIfNeeded();this.route();window.addEventListener('hashchange',()=>this.route())},
+
+  route(){
+    const h=location.hash||'#/admin/login';
+    if(h==='#/admin/login'||h==='#/'||h===''){this.renderAdminLogin()}
+    else if(h==='#/admin'){if(!this.state.adminLoggedIn){location.hash='#/admin/login';return}this.renderAdmin()}
+    else if(h.startsWith('#/p/')&&!h.includes('/input')){this.renderUserLogin(h.split('/')[2])}
+    else if(h.startsWith('#/p/')&&h.includes('/input')){const sl=h.split('/')[2];if(!this.state.userSession||this.state.userSession.slug!==sl){location.hash='#/p/'+sl;return}this.renderUserInput(sl)}
+  },
+
+  // ═══ ADMIN LOGIN ═══
+  renderAdminLogin(){
+    document.getElementById('app').innerHTML=`
+      <div class="login-page"><div class="login-card">
+        <div class="logo"><h1>People-In Hub</h1><p>Smart Data Collector</p></div>
+        <div class="form-group"><label>아이디</label><input type="text" id="aid" value="admin" readonly style="background:var(--bg-page)"></div>
+        <div class="form-group"><label>비밀번호</label><input type="password" id="apw" placeholder="비밀번호를 입력하세요"></div>
+        <div id="aerr" class="login-error hidden"></div>
+        <button class="login-btn" id="abtn">로그인</button>
+      </div></div>`;
+    const pw=document.getElementById('apw'),btn=document.getElementById('abtn'),err=document.getElementById('aerr');
+    const go=()=>{
+      const admin=DB.getAdmin();
+      if(admin.lockedUntil&&new Date(admin.lockedUntil)>new Date()){
+        err.textContent=`잠금 중. ${Math.ceil((new Date(admin.lockedUntil)-new Date())/1000)}초 후 재시도`;err.classList.remove('hidden');return}
+      if(pw.value===admin.password){admin.loginAttempts=0;admin.lockedUntil=null;DB.setAdmin(admin);App.state.adminLoggedIn=true;showToast('로그인 성공','success');location.hash='#/admin'}
+      else{admin.loginAttempts=(admin.loginAttempts||0)+1;
+        if(admin.loginAttempts>=5){admin.lockedUntil=new Date(Date.now()+30000).toISOString();admin.loginAttempts=0;err.textContent='5회 실패 — 30초 잠금'}
+        else err.textContent=`비밀번호 불일치 (${admin.loginAttempts}/5)`;err.classList.remove('hidden');DB.setAdmin(admin)}
+    };
+    btn.onclick=go;pw.onkeydown=e=>{if(e.key==='Enter')go()};pw.focus();
+  },
+
+  // ═══ ADMIN MAIN ═══
+  renderAdmin(){
+    const app=document.getElementById('app');
+    // 모든 디바이스에서 접속 가능
+    app.innerHTML=`
+      <div class="admin-header">
+        <div style="display:flex;align-items:center"><button class="sb-toggle" id="sbToggle">☰</button><span class="logo">People-In Hub</span></div>
+        <div class="actions"><button id="hpw">🔑 비밀번호 변경</button><button id="hlo">🚪 로그아웃</button></div>
+      </div>
+      <div class="admin-body"><div class="sb-overlay" id="sbOv"></div><div class="sidebar" id="sb"></div><div class="main-content" id="mc"></div></div>`;
+    document.getElementById('hpw').onclick=()=>this.showPwModal();
+    document.getElementById('hlo').onclick=()=>{this.state.adminLoggedIn=false;this.stopPolling();location.hash='#/admin/login'};
+    // Mobile sidebar toggle
+    const sbToggle=document.getElementById('sbToggle'),sbEl=document.getElementById('sb'),sbOv=document.getElementById('sbOv');
+    if(sbToggle){sbToggle.onclick=()=>{sbEl.classList.toggle('sb-open');sbOv.classList.toggle('active')};sbOv.onclick=()=>{sbEl.classList.remove('sb-open');sbOv.classList.remove('active')}}
+    this.renderSB();
+    this.state.selectedProjectId?this.renderPV(this.state.selectedProjectId):this.renderDash();
+    this.startPolling();
+  },
+
+  renderSB(){
+    const sb=document.getElementById('sb');if(!sb)return;
+    const ps=DB.getProjects(),sel=this.state.selectedProjectId;
+    sb.innerHTML=`
+      <div class="sidebar-item ${sel===null?'active':''}" data-a="dash"><span>📊</span> 전체 현황</div>
+      <div class="sidebar-section">내 프로젝트</div>
+      ${ps.map(p=>`<div class="sidebar-item ${sel===p.id?'active':''}" data-p="${p.id}"><span>📋</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</span><span class="gear" data-g="${p.id}">⚙️</span></div>`).join('')}
+      <div class="sidebar-add" id="newp">＋ 새 프로젝트</div>`;
+    sb.querySelector('[data-a="dash"]').onclick=()=>{this.state.selectedProjectId=null;this.renderSB();this.renderDash()};
+    sb.querySelectorAll('[data-p]').forEach(el=>el.onclick=e=>{if(e.target.closest('[data-g]'))return;const pid=+el.dataset.p;this.state.selectedProjectId=pid;this.renderSB();this.renderPV(pid)});
+    sb.querySelectorAll('[data-g]').forEach(el=>el.onclick=e=>{e.stopPropagation();this.showGearDD(el,+el.dataset.g)});
+    document.getElementById('newp').onclick=()=>this.showCreateModal();
+  },
+
+  showGearDD(anchor,pid){
+    document.querySelectorAll('.dropdown').forEach(d=>d.remove());
+    const r=anchor.getBoundingClientRect(),dd=document.createElement('div');dd.className='dropdown';
+    dd.style.left=r.right+'px';dd.style.top=r.top+'px';
+    dd.innerHTML=`<div class="dropdown-item" data-a="set">⚙️ 프로젝트 설정</div><div class="dropdown-item danger" data-a="del">🗑️ 프로젝트 삭제</div>`;
+    document.body.appendChild(dd);
+    dd.querySelector('[data-a="set"]').onclick=()=>{dd.remove();this.showSettingsModal(pid)};
+    dd.querySelector('[data-a="del"]').onclick=()=>{dd.remove();this.showDelProjModal(pid)};
+    setTimeout(()=>{const cl=e=>{if(!dd.contains(e.target)){dd.remove();document.removeEventListener('click',cl)}};document.addEventListener('click',cl)},10);
+  },
+
+  // ── Dashboard ──
+  renderDash(){
+    const mc=document.getElementById('mc');if(!mc)return;
+    const ps=DB.getProjects(),rows=DB.getRows(),cells=DB.getCells(),users=DB.getUsers();
+    const tu=new Set(rows.filter(r=>r.userId).map(r=>r.userId)).size;
+    mc.innerHTML=`
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-icon purple">📊</div><div><div class="stat-num">${ps.length}</div><div class="stat-label">총 프로젝트</div></div></div>
+        <div class="stat-card"><div class="stat-icon blue">👥</div><div><div class="stat-num">${tu}</div><div class="stat-label">총 응답자</div></div></div>
+      </div>
+      <div class="project-cards">${ps.map(p=>{
+        const pr=rows.filter(r=>r.projectId===p.id),uc=new Set(pr.filter(r=>r.userId).map(r=>r.userId)).size;
+        const cols=p.columns.sort((a,b)=>a.order-b.order);
+        return `<div class="project-card"><div class="project-card-top"></div><div class="project-card-body">
+          <h3>📋 ${esc(p.name)}</h3>
+          <div class="project-card-cols">${cols.slice(0,5).map(c=>{const cc=cells.filter(cl=>cl.columnId===c.id&&(cl.textValue||cl.fileName)).length;return `<div class="project-card-col"><span class="col-name">${esc(c.label)}</span><span class="badge">${cc}건</span></div>`}).join('')}${cols.length>5?`<div class="project-card-col"><span class="col-name">... 외 ${cols.length-5}개</span></div>`:''}</div>
+          <div class="project-card-footer"><span class="users">👥 응답자: ${uc}명</span><span class="goto" data-go="${p.id}">바로가기 →</span></div>
+        </div></div>`}).join('')}</div>`;
+    mc.querySelectorAll('[data-go]').forEach(el=>el.onclick=()=>{const pid=+el.dataset.go;this.state.selectedProjectId=pid;this.renderSB();this.renderPV(pid)});
+  },
+
+  // ── Project View ──
+  renderPV(pid){
+    const mc=document.getElementById('mc');if(!mc)return;
+    const ps=DB.getProjects(),proj=ps.find(p=>p.id===pid);
+    if(!proj){this.renderDash();return}
+    const rows=DB.getRows().filter(r=>r.projectId===pid).sort((a,b)=>a.rowOrder-b.rowOrder);
+    const cells=DB.getCells(),users=DB.getUsers();
+    const cols=proj.columns.sort((a,b)=>a.order-b.order);
+    const uc=new Set(rows.filter(r=>r.userId).map(r=>r.userId)).size;
+    const baseUrl=location.origin+location.pathname+'#/p/'+proj.slug;
+
+    mc.innerHTML=`
+      <div class="mini-dash">
+        <div class="md-item"><span class="md-label">프로젝트:</span><span class="md-value">${esc(proj.name)}</span></div>
+        <div class="md-item"><span class="md-label">응답자:</span><span class="md-value">${uc}명</span></div>
+        <div class="md-item"><span class="md-label">항목:</span><span class="md-value">${cols.length}개</span></div>
+        <div class="md-item"><span class="md-label">데이터:</span><span class="md-value">${rows.length}건</span></div>
+        <div class="md-item"><span class="md-label">사용자 입력:</span><span class="md-value">${(proj.layoutType||1)===1?'📊 가로형(Type1)':'📝 세로형(Type2)'}</span></div>
+      </div>
+      <div class="project-info-bar">
+        <h2>📋 ${esc(proj.name)}</h2>
+        <div class="url-row"><span style="font-size:13px;color:var(--text-secondary)">배포 URL:</span><span class="url" id="durl">${baseUrl}</span><button class="btn btn-accent btn-sm" id="cpurl">📋 URL 복사</button></div>
+        <div class="tool-row">
+          <button class="btn btn-secondary btn-sm" id="etpl">📥 양식 다운로드</button>
+          <button class="btn btn-secondary btn-sm" id="eimp">📤 엑셀 일괄 업로드</button>
+          <button class="btn btn-secondary btn-sm" id="eexp">📊 엑셀 내보내기</button>
+        </div>
+      </div>
+      <div class="table-container">
+        <div class="table-toolbar"><span id="selinfo"></span><div><button class="btn btn-danger btn-xs hidden" id="delrows">🗑️ 선택 삭제</button></div></div>
+        <div class="table-scroll">
+          <table class="data-table"><thead><tr>
+            <th style="width:36px"><input type="checkbox" id="selectAll" class="row-checkbox" title="전체 선택"></th><th class="sticky-col col-no" style="left:0">No.</th>
+            ${cols.map(c=>`<th style="min-width:150px" data-cid="${c.id}">${esc(c.label)}<button class="col-del" data-dc="${c.id}">✕</button></th>`).join('')}
+            <th style="min-width:80px">첨부</th>
+            <th class="col-add-btn" id="addcol" style="cursor:pointer">＋</th>
+          </tr></thead><tbody id="tbody">
+            ${rows.map((row,idx)=>{
+              const u=row.userId?users.find(x=>x.id===row.userId):null;
+              return `<tr data-rid="${row.id}">
+                <td><input type="checkbox" class="row-checkbox" data-rc="${row.id}"></td>
+                <td class="sticky-col col-no" style="left:0">${idx+1}</td>
+                ${cols.map(c=>{
+                  const cell=cells.find(cl=>cl.rowId===row.id&&cl.columnId===c.id);
+                  const tv=cell?cell.textValue||'':'';
+                  const fn=cell?cell.fileName||'':'';
+                  const fd=cell?cell.fileData||'':'';
+                  let display=esc(tv);
+                  if(fn){
+                    display+=(tv?'<br>':'')+ `<a class="file-link" href="${esc(fd)}" download="${esc(fn)}" title="클릭하여 다운로드 / 우클릭 → 다른 이름으로 저장" data-fname="${esc(fn)}" data-fdata="${esc(fd)}">📎 ${esc(fn)}</a>`;
+                  }
+                  return `<td data-rid="${row.id}" data-cid="${c.id}" class="ecell">${display}</td>`
+                }).join('')}
+                <td>${row.rowFileName?`<a class="file-link" href="${esc(row.rowFileData||'')}" download="${esc(row.rowFileName)}" data-fname="${esc(row.rowFileName)}" data-fdata="${esc(row.rowFileData||'')}">📎 ${esc(row.rowFileName)}</a>`:''}</td>
+              </tr>`}).join('')}
+          </tbody></table>
+          <div class="add-row-btn" id="addrow">＋ 행 추가</div>
+        </div>
+      </div>`;
+
+    // Events
+    document.getElementById('cpurl').onclick=()=>navigator.clipboard.writeText(baseUrl).then(()=>showToast('URL 복사됨','success'));
+    document.getElementById('etpl').onclick=()=>this.dlTemplate(pid);
+    document.getElementById('eexp').onclick=()=>this.exportCSV(pid);
+    document.getElementById('eimp').onclick=()=>this.showImportModal(pid);
+    document.getElementById('addcol').onclick=()=>this.showAddColModal(pid);
+    document.querySelectorAll('[data-dc]').forEach(el=>el.onclick=e=>{e.stopPropagation();this.confirmDelCol(pid,+el.dataset.dc)});
+    document.getElementById('addrow').onclick=()=>this.addRow(pid);
+    document.querySelectorAll('.ecell').forEach(td=>td.ondblclick=()=>this.editCell(td,pid));
+
+    // File download click handler (for admin page)
+    document.querySelectorAll('.file-link').forEach(link=>{
+      link.onclick=e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        const fname=link.getAttribute('data-fname');
+        const fdata=link.getAttribute('data-fdata');
+        if(fdata) downloadFileFromData(fname,fdata);
+        else showToast('파일 데이터를 찾을 수 없습니다','warning');
+      };
+      // Right-click context menu support: the <a> tag with download attribute already supports "Save As"
+    });
+
+    // Row checkboxes + Select All
+    const rowCbs=document.querySelectorAll('.row-checkbox[data-rc]'),delBtn=document.getElementById('delrows'),si=document.getElementById('selinfo');
+    const selectAllCb=document.getElementById('selectAll');
+    const updateSelUI=()=>{const ck=[...document.querySelectorAll('.row-checkbox[data-rc]:checked')];ck.length?(delBtn.classList.remove('hidden'),si.textContent=ck.length+'개 선택됨'):(delBtn.classList.add('hidden'),si.textContent='');if(selectAllCb)selectAllCb.checked=rowCbs.length>0&&ck.length===rowCbs.length};
+    rowCbs.forEach(cb=>cb.onchange=updateSelUI);
+    if(selectAllCb)selectAllCb.onchange=()=>{rowCbs.forEach(cb=>{cb.checked=selectAllCb.checked});updateSelUI()};
+    delBtn.onclick=()=>{const ids=[...document.querySelectorAll('.row-checkbox[data-rc]:checked')].map(c=>+c.dataset.rc);if(!ids.length)return;this.showConfirm(`${ids.length}개 행을 삭제하시겠습니까?`,()=>{DB.setRows(DB.getRows().filter(r=>!ids.includes(r.id)));DB.setCells(DB.getCells().filter(c=>!ids.includes(c.rowId)));this.bumpV(pid);showToast('삭제됨','success');this.renderPV(pid)})};
+  },
+
+  editCell(td,pid){
+    if(td.querySelector('.cell-edit'))return;
+    this.state.isEditing=true;
+    const rid=+td.dataset.rid,cid=+td.dataset.cid;
+    const cells=DB.getCells(),cell=cells.find(c=>c.rowId===rid&&c.columnId===cid);
+    const old=cell?cell.textValue||'':'';
+    td.innerHTML=`<input type="text" class="cell-edit" value="${esc(old)}">`;
+    const inp=td.querySelector('input');inp.focus();inp.select();
+    const save=()=>{
+      const nv=inp.value;let ac=DB.getCells();
+      const ex=ac.find(c=>c.rowId===rid&&c.columnId===cid);
+      if(ex){ex.textValue=nv;ex.updatedAt=new Date().toISOString()}
+      else ac.push({id:DB.nextId('cl'),rowId:rid,columnId:cid,textValue:nv,fileName:null,fileData:null,filePath:null,fileSize:null,fileType:null,updatedAt:new Date().toISOString()});
+      DB.setCells(ac);this.bumpV(pid);this.state.isEditing=false;this.renderPV(pid);
+    };
+    inp.onblur=save;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();save()}if(e.key==='Escape'){this.state.isEditing=false;this.renderPV(pid)}};
+  },
+
+  addRow(pid){
+    const rows=DB.getRows(),pr=rows.filter(r=>r.projectId===pid);
+    rows.push({id:DB.nextId('r'),projectId:pid,userId:null,rowOrder:pr.length,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
+    DB.setRows(rows);this.bumpV(pid);showToast('행 추가됨','success');this.renderPV(pid);
+  },
+
+  showAddColModal(pid){
+    const ov=document.createElement('div');ov.className='modal-overlay';
+    ov.innerHTML=`<div class="modal" style="max-width:400px"><h2>새 항목 추가</h2><div class="form-group"><label>항목명</label><input type="text" id="ncn" placeholder="예: 이메일"></div><div class="modal-actions"><button class="btn btn-outline" id="ncc">취소</button><button class="btn btn-accent" id="ncs">추가</button></div></div>`;
+    document.body.appendChild(ov);const inp=document.getElementById('ncn');inp.focus();
+    document.getElementById('ncc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
+    const go=()=>{const n=inp.value.trim();if(!n){showToast('항목명 필수','warning');return}
+      const ps=DB.getProjects(),p=ps.find(x=>x.id===pid);p.columns.push({id:DB.nextId('c'),label:n,order:p.columns.length});DB.setProjects(ps);this.bumpV(pid);ov.remove();showToast('항목 추가됨','success');this.renderPV(pid)};
+    document.getElementById('ncs').onclick=go;inp.onkeydown=e=>{if(e.key==='Enter')go()};
+  },
+
+  confirmDelCol(pid,cid){
+    const ps=DB.getProjects(),p=ps.find(x=>x.id===pid),c=p.columns.find(x=>x.id===cid);
+    this.showConfirm(`"${c.label}" 항목과 모든 데이터를 삭제합니까?`,()=>{
+      p.columns=p.columns.filter(x=>x.id!==cid);DB.setProjects(ps);DB.setCells(DB.getCells().filter(x=>x.columnId!==cid));this.bumpV(pid);showToast('삭제됨','success');this.renderPV(pid)});
+  },
+
+  // ── Create Project ──
+  showCreateModal(){
+    const ov=document.createElement('div');ov.className='modal-overlay';
+    ov.innerHTML=`<div class="modal" style="max-width:560px"><h2>✨ 새 프로젝트 만들기</h2>
+      <div class="form-group"><label>프로젝트명 *</label><input type="text" id="npn" placeholder="예: 차량등록 현황"></div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:14px;font-weight:600;display:block;margin-bottom:10px">입력 레이아웃 타입</label>
+        <div class="layout-selector">
+          <div class="layout-option selected" data-lt="1"><div class="lo-icon">📊</div><div class="lo-title">Type 1 — 가로형</div><div class="lo-desc">표(Table) 형식으로 입력</div></div>
+          <div class="layout-option" data-lt="2"><div class="lo-icon">📝</div><div class="lo-title">Type 2 — 세로형</div><div class="lo-desc">폼(Form) 형식으로 입력</div></div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px"><label style="font-size:14px;font-weight:600;display:block;margin-bottom:12px">파악 항목 설정</label><div id="clist"></div>
+      <button class="btn btn-outline btn-sm" id="aci" style="margin-top:8px">＋ 항목 추가</button></div>
+      <p style="font-size:12px;color:var(--text-secondary)">⚠️ 항목은 최소 1개 이상</p>
+      <div style="margin-top:16px;padding:16px;border:2px dashed var(--border);border-radius:12px;background:var(--bg-page)">
+        <label style="font-size:14px;font-weight:600;display:block;margin-bottom:10px">📊 엑셀로 일괄 설정</label>
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">템플릿을 다운로드 → 항목명 작성 → 업로드하면 항목이 자동 반영됩니다.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" id="create-tpl-dl">📥 항목 템플릿 다운로드</button>
+          <label class="btn btn-main btn-sm" style="cursor:pointer">📤 엑셀 업로드<input type="file" accept=".csv,.txt" id="create-tpl-up" style="display:none"></label>
+        </div>
+      </div>
+      <div class="modal-actions"><button class="btn btn-outline" id="npc">취소</button><button class="btn btn-accent" id="nps">✨ 프로젝트 생성</button></div></div>`;
+    document.body.appendChild(ov);
+    let selectedLayoutType=1;
+    ov.querySelectorAll('.layout-option').forEach(opt=>{
+      opt.onclick=()=>{ov.querySelectorAll('.layout-option').forEach(o=>o.classList.remove('selected'));opt.classList.add('selected');selectedLayoutType=+opt.dataset.lt};
+    });
+    let cols=[{label:''}];
+    const render=()=>{
+      const list=document.getElementById('clist');
+      list.innerHTML=cols.map((c,i)=>`<div class="drag-item"><span class="drag-num">${i+1}</span><div class="drag-arrows"><button data-up="${i}" ${i===0?'disabled':''} title="위로">▲</button><button data-dn="${i}" ${i===cols.length-1?'disabled':''} title="아래로">▼</button></div><input type="text" value="${esc(c.label)}" data-i="${i}" placeholder="항목명"><span class="drag-del" data-d="${i}" ${cols.length<=1?'style="visibility:hidden"':''}>✕</span></div>`).join('');
+      list.querySelectorAll('input').forEach(inp=>inp.oninput=()=>{cols[+inp.dataset.i].label=inp.value});
+      list.querySelectorAll('[data-d]').forEach(d=>d.onclick=()=>{if(cols.length<=1)return;cols.splice(+d.dataset.d,1);render()});
+      list.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{const i=+b.dataset.up;if(i>0){[cols[i-1],cols[i]]=[cols[i],cols[i-1]];render()}});
+      list.querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>{const i=+b.dataset.dn;if(i<cols.length-1){[cols[i],cols[i+1]]=[cols[i+1],cols[i]];render()}});
+    };
+    render();document.getElementById('npn').focus();
+    document.getElementById('aci').onclick=()=>{cols.push({label:''});render();const inps=document.querySelectorAll('#clist input');inps[inps.length-1].focus()};
+
+    // 엑셀 템플릿 다운로드 (프로젝트 생성용)
+    document.getElementById('create-tpl-dl').onclick=(e)=>{
+      e.preventDefault();
+      let csv='\uFEFF항목명\n성명\n소속부서\n연락처\n';
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='프로젝트_항목_템플릿.csv';a.click();
+      showToast('템플릿이 다운로드되었습니다','success');
+    };
+
+    // 엑셀 업로드 → 항목 자동 반영
+    document.getElementById('create-tpl-up').onchange=(e)=>{
+      const file=e.target.files[0];if(!file)return;
+      const reader=new FileReader();
+      reader.onload=(ev)=>{
+        const lines=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);
+        if(lines.length<2){showToast('데이터가 없습니다','warning');return}
+        // 첫 줄은 헤더 스킵, 나머지를 항목으로 추가
+        const newCols=lines.slice(1).map(l=>{const parsed=parseCSV(l);return {label:parsed[0]||''};}).filter(c=>c.label);
+        if(newCols.length===0){showToast('유효한 항목이 없습니다','warning');return}
+        cols=newCols;
+        render();
+        showToast(`${newCols.length}개 항목이 반영되었습니다`,'success');
+      };
+      reader.readAsText(file,'UTF-8');
+    };
+
+    document.getElementById('npc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
+    document.getElementById('nps').onclick=()=>{
+      const nm=document.getElementById('npn').value.trim();if(!nm){showToast('프로젝트명 필수','warning');return}
+      const vc=cols.filter(c=>c.label.trim());if(!vc.length){showToast('항목 1개 이상 필수','warning');return}
+      const ps=DB.getProjects();
+      const np={id:DB.nextId('p'),name:nm,slug:genSlug(),displayOrder:ps.length,dataVersion:0,layoutType:selectedLayoutType,columns:vc.map((c,i)=>({id:DB.nextId('c'),label:c.label.trim(),order:i})),createdAt:new Date().toISOString()};
+      ps.push(np);DB.setProjects(ps);this.state.selectedProjectId=np.id;ov.remove();
+      showToast('프로젝트 생성됨','success');
+      navigator.clipboard.writeText(location.origin+location.pathname+'#/p/'+np.slug).then(()=>showToast('배포 URL 복사됨','info'));
+      this.renderSB();this.renderPV(np.id);
+    };
+  },
+
+  showSettingsModal(pid){
+    const ps=DB.getProjects(),p=ps.find(x=>x.id===pid);if(!p)return;
+    const ov=document.createElement('div');ov.className='modal-overlay';
+    const curLT=p.layoutType||1;
+    ov.innerHTML=`<div class="modal" style="max-width:560px"><h2>⚙️ 프로젝트 설정</h2>
+      <div class="form-group"><label>프로젝트명</label><input type="text" id="epn" value="${esc(p.name)}"></div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:14px;font-weight:600;display:block;margin-bottom:10px">입력 레이아웃 타입</label>
+        <div class="layout-selector">
+          <div class="layout-option ${curLT===1?'selected':''}" data-lt="1"><div class="lo-icon">📊</div><div class="lo-title">Type 1 — 가로형</div><div class="lo-desc">표(Table) 형식</div></div>
+          <div class="layout-option ${curLT===2?'selected':''}" data-lt="2"><div class="lo-icon">📝</div><div class="lo-title">Type 2 — 세로형</div><div class="lo-desc">폼(Form) 형식</div></div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px"><label style="font-size:14px;font-weight:600;display:block;margin-bottom:12px">항목 설정</label><div id="eclist"></div>
+      <button class="btn btn-outline btn-sm" id="eaci" style="margin-top:8px">＋ 항목 추가</button></div>
+      <div class="modal-actions"><button class="btn btn-outline" id="ecc">취소</button><button class="btn btn-accent" id="ecs">저장</button></div></div>`;
+    document.body.appendChild(ov);
+    let editLayoutType=curLT;
+    ov.querySelectorAll('.layout-option').forEach(opt=>{
+      opt.onclick=()=>{ov.querySelectorAll('.layout-option').forEach(o=>o.classList.remove('selected'));opt.classList.add('selected');editLayoutType=+opt.dataset.lt};
+    });
+    let cols=p.columns.sort((a,b)=>a.order-b.order).map(c=>({...c}));
+    const render=()=>{
+      const list=document.getElementById('eclist');
+      list.innerHTML=cols.map((c,i)=>`<div class="drag-item"><span class="drag-num">${i+1}</span><div class="drag-arrows"><button data-eup="${i}" ${i===0?'disabled':''} title="위로">▲</button><button data-edn="${i}" ${i===cols.length-1?'disabled':''} title="아래로">▼</button></div><input type="text" value="${esc(c.label)}" data-i="${i}"><span class="drag-del" data-d="${i}" ${cols.length<=1?'style="visibility:hidden"':''}>✕</span></div>`).join('');
+      list.querySelectorAll('input').forEach(inp=>inp.oninput=()=>{cols[+inp.dataset.i].label=inp.value});
+      list.querySelectorAll('[data-d]').forEach(d=>d.onclick=()=>{if(cols.length<=1)return;const rm=cols[+d.dataset.d];if(rm.id)DB.setCells(DB.getCells().filter(c=>c.columnId!==rm.id));cols.splice(+d.dataset.d,1);render()});
+      list.querySelectorAll('[data-eup]').forEach(b=>b.onclick=()=>{const i=+b.dataset.eup;if(i>0){[cols[i-1],cols[i]]=[cols[i],cols[i-1]];render()}});
+      list.querySelectorAll('[data-edn]').forEach(b=>b.onclick=()=>{const i=+b.dataset.edn;if(i<cols.length-1){[cols[i],cols[i+1]]=[cols[i+1],cols[i]];render()}});
+    };
+    render();
+    document.getElementById('eaci').onclick=()=>{cols.push({id:DB.nextId('c'),label:'',order:cols.length});render()};
+    document.getElementById('ecc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
+    document.getElementById('ecs').onclick=()=>{
+      const nm=document.getElementById('epn').value.trim();if(!nm){showToast('프로젝트명 필수','warning');return}
+      p.name=nm;p.layoutType=editLayoutType;p.columns=cols.filter(c=>c.label.trim()).map((c,i)=>({...c,label:c.label.trim(),order:i}));
+      DB.setProjects(ps);this.bumpV(pid);ov.remove();showToast('저장됨','success');this.renderSB();if(this.state.selectedProjectId===pid)this.renderPV(pid);
+    };
+  },
+
+  showDelProjModal(pid){
+    const ps=DB.getProjects(),p=ps.find(x=>x.id===pid);if(!p)return;
+    const ov=document.createElement('div');ov.className='modal-overlay';
+    ov.innerHTML=`<div class="modal" style="max-width:440px"><h2 style="color:var(--danger)">🗑️ 프로젝트 삭제</h2>
+      <p style="margin-bottom:16px;color:var(--text-secondary);font-size:14px">모든 데이터가 삭제됩니다. 프로젝트명을 입력하세요.</p>
+      <div class="form-group"><label>프로젝트명: <strong>${esc(p.name)}</strong></label><input type="text" id="cfn" placeholder="프로젝트명 입력"></div>
+      <div class="modal-actions"><button class="btn btn-outline" id="dpc">취소</button><button class="btn btn-danger" id="dpd" disabled>삭제</button></div></div>`;
+    document.body.appendChild(ov);
+    const inp=document.getElementById('cfn'),btn=document.getElementById('dpd');
+    inp.oninput=()=>{btn.disabled=inp.value!==p.name};
+    document.getElementById('dpc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
+    btn.onclick=()=>{
+      if(inp.value!==p.name)return;
+      DB.setProjects(ps.filter(x=>x.id!==pid));
+      const rids=DB.getRows().filter(r=>r.projectId===pid).map(r=>r.id);
+      DB.setRows(DB.getRows().filter(r=>r.projectId!==pid));
+      DB.setCells(DB.getCells().filter(c=>!rids.includes(c.rowId)));
+      DB.setUsers(DB.getUsers().filter(u=>u.projectId!==pid));
+      if(this.state.selectedProjectId===pid)this.state.selectedProjectId=null;
+      ov.remove();showToast('삭제됨','success');this.renderSB();this.renderDash();
+    };
+  },
+
+  showPwModal(){
+    const ov=document.createElement('div');ov.className='modal-overlay';
+    ov.innerHTML=`<div class="modal" style="max-width:400px"><h2>🔑 비밀번호 변경</h2>
+      <div class="form-group"><label>현재 비밀번호</label><input type="password" id="pc"></div>
+      <div class="form-group"><label>새 비밀번호 (4자 이상)</label><input type="password" id="pn"></div>
+      <div class="form-group"><label>새 비밀번호 확인</label><input type="password" id="pcf"></div>
+      <div id="perr" class="login-error hidden"></div>
+      <div class="modal-actions"><button class="btn btn-outline" id="pcc">취소</button><button class="btn btn-accent" id="pcs">변경</button></div></div>`;
+    document.body.appendChild(ov);
+    document.getElementById('pcc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
+    document.getElementById('pcs').onclick=()=>{
+      const a=DB.getAdmin(),c=document.getElementById('pc').value,n=document.getElementById('pn').value,cf=document.getElementById('pcf').value,err=document.getElementById('perr');
+      if(c!==a.password){err.textContent='현재 비밀번호 불일치';err.classList.remove('hidden');return}
+      if(n.length<4){err.textContent='4자 이상 필요';err.classList.remove('hidden');return}
+      if(n!==cf){err.textContent='새 비밀번호 불일치';err.classList.remove('hidden');return}
+      a.password=n;DB.setAdmin(a);ov.remove();showToast('비밀번호 변경됨','success');
+    };
+  },
+
+  showConfirm(msg,cb){
+    const ov=document.createElement('div');ov.className='modal-overlay';
+    ov.innerHTML=`<div class="modal" style="max-width:400px"><h2>확인</h2><p style="font-size:14px;color:var(--text-secondary);white-space:pre-line;margin-bottom:20px">${esc(msg)}</p><div class="modal-actions"><button class="btn btn-outline" id="cfc">취소</button><button class="btn btn-danger" id="cfo">확인</button></div></div>`;
+    document.body.appendChild(ov);document.getElementById('cfc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};document.getElementById('cfo').onclick=()=>{ov.remove();cb()};
+  },
+
+  // Polling
+  startPolling(){this.stopPolling();this.state.pollingInterval=setInterval(()=>{if(this.state.isEditing||!this.state.selectedProjectId)return;const pid=this.state.selectedProjectId,ps=DB.getProjects(),p=ps.find(x=>x.id===pid);if(!p)return;const cv=this.state._versions[pid]||0;if(p.dataVersion!==cv){this.state._versions[pid]=p.dataVersion;this.renderPV(pid)}},3000)},
+  stopPolling(){if(this.state.pollingInterval){clearInterval(this.state.pollingInterval);this.state.pollingInterval=null}},
+  bumpV(pid){const ps=DB.getProjects(),p=ps.find(x=>x.id===pid);if(p){p.dataVersion=(p.dataVersion||0)+1;DB.setProjects(ps)}},
+
+  // Excel
+  dlTemplate(pid){
+    const p=DB.getProjects().find(x=>x.id===pid);if(!p)return;
+    const cols=p.columns.sort((a,b)=>a.order-b.order);
+    let csv='\uFEFF'+'No.,'+cols.map(c=>'"'+c.label.replace(/"/g,'""')+'"').join(',')+'\n';
+    csv+='1,'+cols.map(()=>'').join(',')+'\n';
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=p.name+'_양식.csv';a.click();showToast('양식 다운로드','success');
+  },
+
+  exportCSV(pid){
+    const p=DB.getProjects().find(x=>x.id===pid);if(!p)return;
+    const cols=p.columns.sort((a,b)=>a.order-b.order),rows=DB.getRows().filter(r=>r.projectId===pid).sort((a,b)=>a.rowOrder-b.rowOrder),cells=DB.getCells(),users=DB.getUsers();
+    let csv='\uFEFF'+'No.,'+cols.map(c=>'"'+c.label.replace(/"/g,'""')+'"').join(',')+'\n';
+    rows.forEach((r,i)=>{csv+=`${i+1},${cols.map(c=>{const cl=cells.find(x=>x.rowId===r.id&&x.columnId===c.id);let v=cl?(cl.textValue||''):'';if(cl&&cl.fileName)v+=(v?' ':'')+'[파일:'+cl.fileName+']';return '"'+v.replace(/"/g,'""')+'"'}).join(',')}\n`});
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=p.name+'_데이터.csv';a.click();showToast('내보내기 완료','success');
+  },
+
+  showImportModal(pid){
+    const ov=document.createElement('div');ov.className='modal-overlay';
+    ov.innerHTML=`<div class="modal" style="max-width:600px"><h2>📤 엑셀 일괄 업로드</h2>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">CSV 파일 선택. 첫 행=헤더.</p>
+      <input type="file" accept=".csv,.txt" id="cfi" style="margin-bottom:16px">
+      <div id="cpv" style="max-height:300px;overflow:auto;margin-bottom:16px"></div>
+      <div class="modal-actions"><button class="btn btn-outline" id="icc">취소</button><button class="btn btn-accent hidden" id="icf">확정</button></div></div>`;
+    document.body.appendChild(ov);let parsed=null;
+    document.getElementById('cfi').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=ev=>{
+      const lines=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);if(lines.length<2){showToast('데이터 없음','warning');return}
+      const hdr=parseCSV(lines[0]),data=lines.slice(1).map(l=>parseCSV(l));parsed={hdr,data};
+      let h='<table class="data-table" style="font-size:12px"><thead><tr>';hdr.forEach(x=>h+=`<th style="padding:6px 8px">${esc(x)}</th>`);h+='</tr></thead><tbody>';
+      data.forEach(d=>{h+='<tr>';d.forEach(x=>h+=`<td style="padding:6px 8px">${esc(x)}</td>`);h+='</tr>'});h+='</tbody></table>';
+      document.getElementById('cpv').innerHTML=h;document.getElementById('icf').classList.remove('hidden');
+    };rd.readAsText(f,'UTF-8')};
+    document.getElementById('icc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
+    document.getElementById('icf').onclick=()=>{
+      if(!parsed)return;const p=DB.getProjects().find(x=>x.id===pid),cols=p.columns.sort((a,b)=>a.order-b.order);
+      parsed.data.forEach(dl=>{
+        const rid=DB.nextId('r'),rows=DB.getRows(),mo=rows.filter(r=>r.projectId===pid).length;
+        rows.push({id:rid,projectId:pid,userId:null,rowOrder:mo,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});DB.setRows(rows);
+        const ac=DB.getCells();cols.forEach((col,ci)=>{const v=dl[ci+1]||'';if(v)ac.push({id:DB.nextId('cl'),rowId:rid,columnId:col.id,textValue:v,fileName:null,fileData:null,updatedAt:new Date().toISOString()})});DB.setCells(ac);
+      });
+      this.bumpV(pid);ov.remove();showToast(`${parsed.data.length}건 등록됨`,'success');this.renderPV(pid);
+    };
+  },
+
+  // ═══ USER LOGIN ═══
+  renderUserLogin(slug){
+    const app=document.getElementById('app'),ps=DB.getProjects(),p=ps.find(x=>x.slug===slug);
+    if(!p){app.innerHTML=`<div class="error-page"><div class="error-card"><div class="icon">🔍</div><h2>프로젝트를 찾을 수 없습니다</h2><p>URL을 다시 확인해주세요.</p></div></div>`;return}
+    app.innerHTML=`<div class="login-page"><div class="login-card">
+      <div class="logo"><h1>People-In Hub</h1><p>📋 ${esc(p.name)}</p></div>
+      <div class="form-group"><label>이름</label><input type="text" id="un" placeholder="이름 입력"></div>
+      <div class="form-group"><label>비밀번호</label><input type="password" id="upw" placeholder="최초 비밀번호: 316"></div>
+      <div id="uerr" class="login-error hidden"></div>
+      <button class="login-btn" id="ulb">로그인</button>
+    </div></div>`;
+    const ni=document.getElementById('un'),pi=document.getElementById('upw'),err=document.getElementById('uerr');
+    const go=()=>{
+      const name=ni.value.trim(),pw=pi.value;if(!name){err.textContent='이름 필수';err.classList.remove('hidden');return}
+      let users=DB.getUsers(),u=users.find(x=>x.projectId===p.id&&x.name===name);
+      if(!u){if(pw!=='316'){err.textContent='최초 등록 시 비밀번호는 316입니다';err.classList.remove('hidden');return}
+        u={id:DB.nextId('u'),projectId:p.id,name,password:'316',loginAttempts:0,lockedUntil:null,createdAt:new Date().toISOString()};users.push(u);DB.setUsers(users);showToast(`${name}님 환영합니다!`,'success');
+      } else {
+        if(u.lockedUntil&&new Date(u.lockedUntil)>new Date()){err.textContent=`잠금 중. ${Math.ceil((new Date(u.lockedUntil)-new Date())/1000)}초 후`;err.classList.remove('hidden');return}
+        if(pw!==u.password){u.loginAttempts=(u.loginAttempts||0)+1;if(u.loginAttempts>=5){u.lockedUntil=new Date(Date.now()+30000).toISOString();u.loginAttempts=0;err.textContent='5회 실패 — 30초 잠금'}else err.textContent=`비밀번호 불일치 (${u.loginAttempts}/5)`;err.classList.remove('hidden');DB.setUsers(users);return}
+        u.loginAttempts=0;u.lockedUntil=null;DB.setUsers(users);showToast(`${name}님 반갑습니다!`,'success');
+      }
+      App.state.userSession={userId:u.id,projectId:p.id,slug:p.slug,name:u.name};location.hash=`#/p/${slug}/input`;
+    };
+    document.getElementById('ulb').onclick=go;pi.onkeydown=e=>{if(e.key==='Enter')go()};ni.onkeydown=e=>{if(e.key==='Enter')pi.focus()};ni.focus();
+  },
+
+  // ═══ USER INPUT — dispatches to Type1 or Type2 ═══
+  renderUserInput(slug){
+    const app=document.getElementById('app'),ses=this.state.userSession;if(!ses){location.hash='#/p/'+slug;return}
+    const ps=DB.getProjects(),proj=ps.find(x=>x.slug===slug);if(!proj){location.hash='#/p/'+slug;return}
+    const layoutType=proj.layoutType||1;
+    const cols=proj.columns.sort((a,b)=>a.order-b.order);
+    const allRows=DB.getRows().filter(r=>r.projectId===proj.id&&r.userId===ses.userId).sort((a,b)=>a.rowOrder-b.rowOrder);
+    const allCells=DB.getCells();
+
+    let rowsData=allRows.map(r=>{
+      const rd={rowId:r.id,cells:{},files:{}};
+      cols.forEach(c=>{const cell=allCells.find(cl=>cl.rowId===r.id&&cl.columnId===c.id);
+        rd.cells[c.id]={textValue:cell?cell.textValue||'':'',fileName:cell?cell.fileName||'':'',fileData:cell?cell.fileData||'':''};
+      });
+      // Collect row-level files (stored in a special "rowfile" key on the row)
+      rd.rowFileName=r.rowFileName||'';
+      rd.rowFileData=r.rowFileData||'';
+      return rd;
+    });
+    if(rowsData.length===0) rowsData.push({rowId:null,cells:{},rowFileName:'',rowFileData:''});
+    const lastSaved=allRows.length?allRows[allRows.length-1].updatedAt:null;
+
+    if(layoutType===1) this._renderType1(app,proj,cols,rowsData,lastSaved,slug,ses);
+    else this._renderType2(app,proj,cols,rowsData,lastSaved,slug,ses);
+  },
+
+  // ── TYPE 1: 가로형 (Table) — 파일첨부는 행 맨 우측 ──
+  _renderType1(app,proj,cols,rowsData,lastSaved,slug,ses){
+    const fileState={};
+    rowsData.forEach((rd,idx)=>{
+      if(rd.rowFileName) fileState[`row-${idx}`]={name:rd.rowFileName,data:rd.rowFileData};
+    });
+
+    app.innerHTML=`
+      <div class="user-page">
+        <div class="user-header">
+          <div class="project-name">📋 ${esc(proj.name)}</div>
+          <div class="user-info"><span>👤 ${esc(ses.name)}님</span><button id="upwb">🔑 비번변경</button><button id="ulogout">🚪 로그아웃</button></div>
+        </div>
+        <div class="user-form-container">
+          <div class="user-table-wrap">
+            <table class="user-data-table">
+              <thead><tr>
+                <th style="width:40px">No.</th>
+                ${cols.map(c=>`<th>${esc(c.label)}</th>`).join('')}
+                <th style="min-width:90px">파일첨부</th>
+                <th style="width:50px">삭제</th>
+              </tr></thead>
+              <tbody>
+                ${rowsData.map((rd,idx)=>`
+                  <tr>
+                    <td style="text-align:center;font-weight:600">${idx+1}</td>
+                    ${cols.map(c=>{
+                      const cd=rd.cells[c.id]||{textValue:''};
+                      return `<td><input type="text" data-idx="${idx}" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="입력"></td>`;
+                    }).join('')}
+                    <td class="row-file-cell">
+                      <label class="row-file-btn">📎 첨부<input type="file" style="display:none" data-rfidx="${idx}"></label>
+                      <div class="rf-area" data-rfa="${idx}">${rd.rowFileName?`<div class="file-preview-sm"><span>📎 ${esc(rd.rowFileName)}</span><span class="fremove" data-rfr="${idx}">✕</span></div>`:''}</div>
+                    </td>
+                    <td style="text-align:center"><button class="btn btn-danger btn-xs" data-delrow="${idx}" ${rowsData.length<=1?'disabled style="opacity:0.3"':''}>✕</button></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            <div class="user-add-row" id="uaddrow">＋ 행 추가</div>
+          </div>
+          <div class="user-excel-section"><h3>📊 엑셀 일괄 입력</h3><div class="user-excel-btns"><button class="btn btn-secondary btn-sm" id="utpl">📥 양식 다운로드</button><button class="btn btn-secondary btn-sm" id="uexup">📤 엑셀 업로드</button></div></div>
+          <div class="user-actions"><button class="save-btn" id="usave">💾 저장하기</button><button class="delete-my-btn" id="udel">🗑️ 내 데이터 전체 삭제</button></div>
+          ${lastSaved?`<div class="last-saved">마지막 저장: ${new Date(lastSaved).toLocaleString('ko-KR')}</div>`:''}
+        </div>
+      </div>`;
+
+    // Row-level file handlers
+    document.querySelectorAll('[data-rfidx]').forEach(inp=>{
+      inp.onchange=e=>{const idx=inp.dataset.rfidx,file=e.target.files[0];if(!file)return;
+        if(file.size>20*1024*1024){showToast('파일 20MB 초과','error');return}
+        const rd=new FileReader();rd.onload=ev=>{
+          fileState[`row-${idx}`]={name:file.name,data:ev.target.result};
+          const area=document.querySelector(`[data-rfa="${idx}"]`);
+          area.innerHTML=`<div class="file-preview-sm"><span>📎 ${esc(file.name)}</span><span class="fremove" data-rfr="${idx}">✕</span></div>`;
+          area.querySelector('.fremove').onclick=()=>{delete fileState[`row-${idx}`];area.innerHTML=''};
+        };rd.readAsDataURL(file);
+      };
+    });
+    document.querySelectorAll('[data-rfr]').forEach(btn=>{
+      btn.onclick=()=>{delete fileState[`row-${btn.dataset.rfr}`];const area=document.querySelector(`[data-rfa="${btn.dataset.rfr}"]`);if(area)area.innerHTML=''};
+    });
+
+    this._bindCommonUserEvents(proj,cols,rowsData,fileState,slug,ses,1);
+  },
+
+  // ── TYPE 2: 세로형 (Form) — 파일첨부는 맨 아래 ──
+  _renderType2(app,proj,cols,rowsData,lastSaved,slug,ses){
+    const rd=rowsData[0]; // Type2는 1사용자 1행
+    const fileState={};
+    if(rd.rowFileName) fileState['row-0']={name:rd.rowFileName,data:rd.rowFileData};
+
+    app.innerHTML=`
+      <div class="user-page">
+        <div class="user-header">
+          <div class="project-name">📋 ${esc(proj.name)}</div>
+          <div class="user-info"><span>👤 ${esc(ses.name)}님</span><button id="upwb">🔑 비번변경</button><button id="ulogout">🚪 로그아웃</button></div>
+        </div>
+        <div class="user-form-container" style="max-width:640px">
+          ${cols.map(c=>{
+            const cd=rd.cells[c.id]||{textValue:''};
+            return `<div class="vform-card">
+              <label>${esc(c.label)}</label>
+              <input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="내용을 입력하세요">
+            </div>`;
+          }).join('')}
+
+          <div class="file-attach-area">
+            <h3>📎 파일 첨부</h3>
+            <div class="file-drop-zone" id="dropZone">
+              <div class="drop-icon">📁</div>
+              <p>클릭하여 파일을 선택하세요</p>
+              <p style="font-size:11px;margin-top:4px;color:var(--text-secondary)">jpg, pdf, docx 등 (최대 20MB)</p>
+              <input type="file" style="display:none" id="vfileInput">
+            </div>
+            <div class="file-list" id="vfileList">
+              ${rd.rowFileName?`<div class="file-list-item"><span>📎 ${esc(rd.rowFileName)}</span><span class="fl-remove" id="vfileRemove">✕</span></div>`:''}
+            </div>
+          </div>
+
+          <div class="user-excel-section"><h3>📊 엑셀 일괄 입력</h3><div class="user-excel-btns"><button class="btn btn-secondary btn-sm" id="utpl">📥 양식 다운로드</button><button class="btn btn-secondary btn-sm" id="uexup">📤 엑셀 업로드</button></div></div>
+          <div class="user-actions"><button class="save-btn" id="usave">💾 저장하기</button><button class="delete-my-btn" id="udel">🗑️ 내 데이터 전체 삭제</button></div>
+          ${lastSaved?`<div class="last-saved">마지막 저장: ${new Date(lastSaved).toLocaleString('ko-KR')}</div>`:''}
+        </div>
+      </div>`;
+
+    // Drop zone click + drag & drop
+    const dropZone=document.getElementById('dropZone'),vInput=document.getElementById('vfileInput');
+    dropZone.onclick=()=>vInput.click();
+    dropZone.ondragover=e=>{e.preventDefault();dropZone.classList.add('dragover')};
+    dropZone.ondragleave=()=>dropZone.classList.remove('dragover');
+    dropZone.ondrop=e=>{e.preventDefault();dropZone.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);vInput.files=dt.files;vInput.dispatchEvent(new Event('change'))}};
+    vInput.onchange=e=>{
+      const file=e.target.files[0];if(!file)return;
+      if(file.size>20*1024*1024){showToast('파일 20MB 초과','error');return}
+      const reader=new FileReader();reader.onload=ev=>{
+        fileState['row-0']={name:file.name,data:ev.target.result};
+        document.getElementById('vfileList').innerHTML=`<div class="file-list-item"><span>📎 ${esc(file.name)} (${(file.size/1024/1024).toFixed(1)}MB)</span><span class="fl-remove" id="vfileRemove">✕</span></div>`;
+        document.getElementById('vfileRemove').onclick=()=>{delete fileState['row-0'];document.getElementById('vfileList').innerHTML=''};
+      };reader.readAsDataURL(file);
+    };
+    // Existing file remove
+    const vfr=document.getElementById('vfileRemove');
+    if(vfr) vfr.onclick=()=>{delete fileState['row-0'];document.getElementById('vfileList').innerHTML=''};
+
+    this._bindCommonUserEvents(proj,cols,rowsData,fileState,slug,ses,2);
+  },
+
+  // ── Common user event bindings ──
+  _bindCommonUserEvents(proj,cols,rowsData,fileState,slug,ses,layoutType){
+    document.getElementById('ulogout').onclick=()=>{this.state.userSession=null;location.hash='#/p/'+slug};
+    document.getElementById('upwb').onclick=()=>this.showUserPwModal(ses.userId);
+    document.getElementById('utpl').onclick=()=>this.dlTemplate(proj.id);
+    document.getElementById('uexup').onclick=()=>this.showUserExcelUpload(proj.id,ses.userId,slug,cols);
+
+    // Add row (Type1 only)
+    const addRowBtn=document.getElementById('uaddrow');
+    if(addRowBtn){
+      addRowBtn.onclick=()=>{
+        rowsData.push({rowId:null,cells:{},rowFileName:'',rowFileData:''});
+        this._saveFormState(cols,rowsData,fileState,layoutType);
+        this.renderUserInput(slug);
+      };
+    }
+
+    // Delete row (Type1)
+    document.querySelectorAll('[data-delrow]').forEach(btn=>{
+      btn.onclick=()=>{
+        if(rowsData.length<=1)return;
+        const idx=+btn.dataset.delrow;
+        delete fileState[`row-${idx}`];
+        rowsData.splice(idx,1);
+        this._saveFormState(cols,rowsData,fileState,layoutType);
+        this.renderUserInput(slug);
+      };
+    });
+
+    // Save
+    document.getElementById('usave').onclick=()=>{
+      let allR=DB.getRows(),allC=DB.getCells();
+      const oldRowIds=allR.filter(r=>r.projectId===proj.id&&r.userId===ses.userId).map(r=>r.id);
+      allR=allR.filter(r=>!oldRowIds.includes(r.id));
+      allC=allC.filter(c=>!oldRowIds.includes(c.rowId));
+
+      const baseOrder=allR.filter(r=>r.projectId===proj.id).length;
+      const saveRows=layoutType===2?[rowsData[0]]:rowsData;
+
+      saveRows.forEach((rd,idx)=>{
+        const newRowId=DB.nextId('r');
+        const rf=fileState[`row-${idx}`]||null;
+        allR.push({id:newRowId,projectId:proj.id,userId:ses.userId,rowOrder:baseOrder+idx,
+          rowFileName:rf?rf.name:'',rowFileData:rf?rf.data:'',
+          createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
+
+        cols.forEach(c=>{
+          const textInp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
+          const tv=textInp?textInp.value:'';
+          if(tv){
+            allC.push({id:DB.nextId('cl'),rowId:newRowId,columnId:c.id,textValue:tv,fileName:null,fileData:null,updatedAt:new Date().toISOString()});
+          }
+        });
+      });
+
+      DB.setRows(allR);DB.setCells(allC);this.bumpV(proj.id);
+      showToast('저장되었습니다 ✅','success');this.renderUserInput(slug);
+    };
+
+    // Delete all
+    document.getElementById('udel').onclick=()=>{
+      this.showConfirm('내 데이터 전체를 삭제하시겠습니까?',()=>{
+        const oldIds=DB.getRows().filter(r=>r.projectId===proj.id&&r.userId===ses.userId).map(r=>r.id);
+        DB.setRows(DB.getRows().filter(r=>!oldIds.includes(r.id)));
+        DB.setCells(DB.getCells().filter(c=>!oldIds.includes(c.rowId)));
+        this.bumpV(proj.id);showToast('삭제됨','success');this.renderUserInput(slug);
+      });
+    };
+  },
+
+  _saveFormState(cols,rowsData,fileState,layoutType){
+    rowsData.forEach((rd,idx)=>{
+      cols.forEach(c=>{
+        const inp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
+        if(inp){
+          if(!rd.cells[c.id])rd.cells[c.id]={textValue:'',fileName:'',fileData:''};
+          rd.cells[c.id].textValue=inp.value;
+        }
+      });
+      const rf=fileState[`row-${idx}`];
+      if(rf){rd.rowFileName=rf.name;rd.rowFileData=rf.data}
+    });
+  },
+
+  showUserPwModal(uid){
+    const ov=document.createElement('div');ov.className='modal-overlay';
+    ov.innerHTML=`<div class="modal" style="max-width:400px"><h2>🔑 비밀번호 변경</h2>
+      <div class="form-group"><label>현재 비밀번호</label><input type="password" id="upc"></div>
+      <div class="form-group"><label>새 비밀번호 (4자 이상)</label><input type="password" id="upn"></div>
+      <div class="form-group"><label>확인</label><input type="password" id="upcf"></div>
+      <div id="upe" class="login-error hidden"></div>
+      <div class="modal-actions"><button class="btn btn-outline" id="upcc">취소</button><button class="btn btn-accent" id="upcs">변경</button></div></div>`;
+    document.body.appendChild(ov);
+    document.getElementById('upcc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
+    document.getElementById('upcs').onclick=()=>{
+      let users=DB.getUsers();const u=users.find(x=>x.id===uid);if(!u)return;
+      const c=document.getElementById('upc').value,n=document.getElementById('upn').value,cf=document.getElementById('upcf').value,err=document.getElementById('upe');
+      if(c!==u.password){err.textContent='현재 비밀번호 불일치';err.classList.remove('hidden');return}
+      if(n.length<4){err.textContent='4자 이상';err.classList.remove('hidden');return}
+      if(n!==cf){err.textContent='불일치';err.classList.remove('hidden');return}
+      u.password=n;DB.setUsers(users);ov.remove();showToast('변경됨','success');
+    };
+  },
+
+  showUserExcelUpload(pid,userId,slug,projCols){
+    const ov=document.createElement('div');ov.className='modal-overlay';
+    ov.innerHTML=`<div class="modal" style="max-width:600px"><h2>📤 엑셀 업로드</h2>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">CSV 업로드 시 기존 데이터를 덮어씁니다. <strong>여러 줄 데이터도 지원됩니다.</strong></p>
+      <input type="file" accept=".csv,.txt" id="ucfi" style="margin-bottom:16px">
+      <div id="ucpv" style="max-height:250px;overflow:auto;margin-bottom:16px"></div>
+      <div class="modal-actions"><button class="btn btn-outline" id="uccc">취소</button><button class="btn btn-accent hidden" id="uccf">확정</button></div></div>`;
+    document.body.appendChild(ov);let parsed=null;
+    document.getElementById('ucfi').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=ev=>{
+      const lines=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);if(lines.length<2){showToast('데이터 없음','warning');return}
+      const hdr=parseCSV(lines[0]),data=lines.slice(1).map(l=>parseCSV(l));parsed={hdr,data};
+      let h='<table class="data-table" style="font-size:12px"><thead><tr>';hdr.forEach(x=>h+=`<th style="padding:6px 8px">${esc(x)}</th>`);h+='</tr></thead><tbody>';
+      data.forEach(d=>{h+='<tr>';d.forEach(x=>h+=`<td style="padding:6px 8px">${esc(x)}</td>`);h+='</tr>'});h+='</tbody></table>';
+      document.getElementById('ucpv').innerHTML=h;document.getElementById('uccf').classList.remove('hidden');
+    };rd.readAsText(f,'UTF-8')};
+    document.getElementById('uccc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
+    document.getElementById('uccf').onclick=()=>{
+      if(!parsed)return;
+      const p=DB.getProjects().find(x=>x.id===pid),cols=p.columns.sort((a,b)=>a.order-b.order);
+
+      // Delete existing rows for this user
+      let allR=DB.getRows(),allC=DB.getCells();
+      const oldIds=allR.filter(r=>r.projectId===pid&&r.userId===userId).map(r=>r.id);
+      allR=allR.filter(r=>!oldIds.includes(r.id));
+      allC=allC.filter(c=>!oldIds.includes(c.rowId));
+
+      // Create new rows for EACH data line
+      const baseOrder=allR.filter(r=>r.projectId===pid).length;
+      parsed.data.forEach((dl,idx)=>{
+        const rid=DB.nextId('r');
+        allR.push({id:rid,projectId:pid,userId:userId,rowOrder:baseOrder+idx,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
+        cols.forEach((col,ci)=>{
+          const v=dl[ci+1]||'';
+          if(v)allC.push({id:DB.nextId('cl'),rowId:rid,columnId:col.id,textValue:v,fileName:null,fileData:null,updatedAt:new Date().toISOString()});
+        });
+      });
+      DB.setRows(allR);DB.setCells(allC);
+      this.bumpV(pid);ov.remove();showToast(`${parsed.data.length}건 등록됨`,'success');this.renderUserInput(slug);
+    };
+  },
+};
+
+function parseCSV(line){
+  const r=[];let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){
+    if(inQ){if(line[i]==='"'&&line[i+1]==='"'){cur+='"';i++}else if(line[i]==='"')inQ=false;else cur+=line[i]}
+    else{if(line[i]==='"')inQ=true;else if(line[i]===','){r.push(cur.trim());cur=''}else cur+=line[i]}
+  }
+  r.push(cur.trim());return r;
+}
+
+App.init();
+</script>
+</body>
+</html>
