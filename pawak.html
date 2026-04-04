@@ -698,7 +698,7 @@ const App={
         </div>
       </div>
       <div class="table-container">
-        <div class="table-toolbar"><span id="selinfo"></span><div><button class="btn btn-danger btn-xs hidden" id="delrows">🗑️ 선택 삭제</button></div></div>
+        <div class="table-toolbar"><span id="selinfo"></span><div><button class="btn btn-accent btn-xs hidden" id="exportsel">📊 선택 엑셀 내보내기</button> <button class="btn btn-danger btn-xs hidden" id="delrows">🗑️ 선택 삭제</button></div></div>
         <div class="table-scroll">
           <table class="data-table"><thead><tr>
             <th style="width:36px"><input type="checkbox" id="selectAll" class="row-checkbox" title="전체 선택"></th><th class="sticky-col col-no" style="left:0">No.</th>
@@ -747,11 +747,24 @@ const App={
       };
     });
 
-    const rowCbs=document.querySelectorAll('.row-checkbox[data-rc]'),delBtn=document.getElementById('delrows'),si=document.getElementById('selinfo');
+    const rowCbs=document.querySelectorAll('.row-checkbox[data-rc]'),delBtn=document.getElementById('delrows'),exportSelBtn=document.getElementById('exportsel'),si=document.getElementById('selinfo');
     const selectAllCb=document.getElementById('selectAll');
-    const updateSelUI=()=>{const ck=[...document.querySelectorAll('.row-checkbox[data-rc]:checked')];ck.length?(delBtn.classList.remove('hidden'),si.textContent=ck.length+'개 선택됨'):(delBtn.classList.add('hidden'),si.textContent='');if(selectAllCb)selectAllCb.checked=rowCbs.length>0&&ck.length===rowCbs.length};
+    const updateSelUI=()=>{const ck=[...document.querySelectorAll('.row-checkbox[data-rc]:checked')];if(ck.length){delBtn.classList.remove('hidden');exportSelBtn.classList.remove('hidden');si.textContent=ck.length+'개 선택됨'}else{delBtn.classList.add('hidden');exportSelBtn.classList.add('hidden');si.textContent=''}if(selectAllCb)selectAllCb.checked=rowCbs.length>0&&ck.length===rowCbs.length};
     rowCbs.forEach(cb=>cb.onchange=updateSelUI);
     if(selectAllCb)selectAllCb.onchange=()=>{rowCbs.forEach(cb=>{cb.checked=selectAllCb.checked});updateSelUI()};
+
+    // 선택 엑셀 내보내기
+    exportSelBtn.onclick=async()=>{
+      const selIds=[...document.querySelectorAll('.row-checkbox[data-rc]:checked')].map(c=>+c.dataset.rc);
+      if(!selIds.length)return;
+      const selRows=rows.filter(r=>selIds.includes(r.id));
+      const selCells=selIds.length?await DB.getCells(selIds):[];
+      let csv='\uFEFF'+'No.,'+cols.map(c=>'"'+c.label.replace(/"/g,'""')+'"').join(',')+'\n';
+      selRows.forEach((r,i)=>{csv+=`${i+1},${cols.map(c=>{const cl=selCells.find(x=>x.rowId===r.id&&x.columnId===c.id);let v=cl?(cl.textValue||''):'';if(cl&&cl.fileName)v+=(v?' ':'')+'[파일:'+cl.fileName+']';return '"'+v.replace(/"/g,'""')+'"'}).join(',')}\n`});
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=proj.name+'_선택데이터.csv';a.click();
+      showToast(`${selRows.length}건 내보내기 완료`,'success');
+    };
+
     delBtn.onclick=()=>{
       const ids=[...document.querySelectorAll('.row-checkbox[data-rc]:checked')].map(c=>+c.dataset.rc);
       if(!ids.length)return;
@@ -1065,8 +1078,7 @@ const App={
     app.innerHTML=`<div class="login-page"><div class="login-card">
       <div class="logo"><h1>People-In Hub</h1><p>${esc(p.name)}</p></div>
       <div class="form-group"><label>이름</label><input type="text" id="un" placeholder="이름 입력"></div>
-      <div class="form-group"><label>비밀번호</label><input type="password" id="upw" placeholder="316"></div>
-      <p style="font-size:11px;color:var(--text-secondary);text-align:center;margin-top:-8px;margin-bottom:12px">* 최초 등록 시 비밀번호: 316</p>
+      <div class="form-group"><label>비밀번호</label><input type="password" id="upw" placeholder="최초 등록 시 비밀번호: 316"></div>
       <div id="uerr" class="login-error hidden"></div>
       <button class="login-btn" id="ulb">로그인</button>
     </div></div>`;
