@@ -1298,28 +1298,28 @@ const App={
                       }
                       return `<td><input type="text" data-idx="${idx}" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="입력"></td>`;
                     }).join('')}
-                    <td style="text-align:center"><button class="btn btn-danger btn-xs" data-delrow="${idx}" ${rowsData.length<=1?'disabled style="opacity:0.3"':''}>✕</button></td>
+                    <td style="text-align:center"><button class="btn btn-danger btn-xs" data-delrow="${idx}" ${rowsData.length<=1?'disabled style="opacity:0.35"':'style="opacity:1"'}>✕</button></td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
             <div class="user-add-row" id="uaddrow">＋ 행 추가</div>
-            <!-- 모바일 세로 카드 뷰 -->
-            <div class="mobile-card-list">
-              ${rowsData.map((rd,idx)=>`
-                <div class="mobile-card">
-                  <div class="mc-header"><span>📝 ${idx+1}번</span><button class="btn btn-danger btn-xs" data-delrow="${idx}" ${rowsData.length<=1?'disabled style="opacity:0.3"':''}>삭제</button></div>
-                  ${cols.map(c=>{
-                    const cd=rd.cells[c.id]||{textValue:'',fileName:'',fileData:''};
-                    if((c.fieldType||'text')==='file'){
-                      return `<div class="mc-field"><label>${esc(c.label)}</label><label class="row-file-btn" style="font-size:13px">📎 파일선택<input type="file" style="display:none" data-fidx="${idx}" data-fcid="${c.id}"></label><div class="fc-area" data-fca="${idx}-${c.id}">${cd.fileName?`<div class="file-preview-sm"><span>📎 ${esc(cd.fileName)}</span><span class="fremove" data-fcr="${idx}-${c.id}">✕</span></div>`:''}</div></div>`;
-                    }
-                    return `<div class="mc-field"><label>${esc(c.label)}</label><input type="text" data-idx="${idx}" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="${esc(c.label)} 입력"></div>`;
-                  }).join('')}
-                </div>
-              `).join('')}
-              <div style="text-align:center;padding:12px"><button class="btn btn-outline" id="uaddrow2">＋ 행 추가</button></div>
-            </div>
+          </div>
+          <!-- 모바일 세로 카드 뷰 (테이블 밖에 배치) -->
+          <div class="mobile-card-list">
+            ${rowsData.map((rd,idx)=>`
+              <div class="mobile-card">
+                <div class="mc-header"><span>📝 ${idx+1}번</span><button class="btn btn-danger btn-xs" data-mdelrow="${idx}" ${rowsData.length<=1?'disabled style="opacity:0.4"':''}>삭제</button></div>
+                ${cols.map(c=>{
+                  const cd=rd.cells[c.id]||{textValue:'',fileName:'',fileData:''};
+                  if((c.fieldType||'text')==='file'){
+                    return `<div class="mc-field"><label>${esc(c.label)}</label><label class="row-file-btn" style="font-size:13px">📎 파일선택<input type="file" style="display:none" data-fidx="${idx}" data-fcid="${c.id}"></label><div class="fc-area" data-fca="${idx}-${c.id}">${cd.fileName?`<div class="file-preview-sm"><span>📎 ${esc(cd.fileName)}</span><span class="fremove" data-fcr="${idx}-${c.id}">✕</span></div>`:''}</div></div>`;
+                  }
+                  return `<div class="mc-field"><label>${esc(c.label)}</label><input type="text" data-idx="${idx}" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="${esc(c.label)} 입력"></div>`;
+                }).join('')}
+              </div>
+            `).join('')}
+            <div style="text-align:center;padding:12px"><button class="btn btn-accent" id="uaddrow2" style="width:100%;padding:14px;border-radius:12px;font-size:15px">＋ 행 추가</button></div>
           </div>
           <div class="user-excel-section"><h3>📊 엑셀 일괄 입력</h3><div class="user-excel-btns"><button class="btn btn-secondary btn-sm" id="utpl">📥 양식 다운로드</button><button class="btn btn-secondary btn-sm" id="uexup">📤 엑셀 업로드</button></div></div>
           <div class="user-actions"><button class="save-btn" id="usave">💾 저장하기</button><button class="delete-my-btn" id="udel">🗑️ 내 데이터 전체 삭제</button></div>
@@ -1445,17 +1445,16 @@ const App={
     const addRowBtn2=document.getElementById('uaddrow2');
     if(addRowBtn2) addRowBtn2.onclick=addRowFn;
 
-    document.querySelectorAll('[data-delrow]').forEach(btn=>{
-      btn.onclick=()=>{
-        if(rowsData.length<=1)return;
-        const idx=+btn.dataset.delrow;
-        // 해당 행의 파일 상태 정리
-        cols.forEach(c=>{delete fileState[`${idx}-${c.id}`]});
-        rowsData.splice(idx,1);
-        this._saveFormState(cols,rowsData,fileState,layoutType);
-        this.renderUserInput(slug);
-      };
-    });
+    // 행 삭제 (PC 테이블 data-delrow + 모바일 카드 data-mdelrow)
+    const delRowFn=(idx)=>{
+      if(rowsData.length<=1){showToast('최소 1개 행은 유지됩니다','warning');return}
+      cols.forEach(c=>{delete fileState[`${idx}-${c.id}`]});
+      rowsData.splice(idx,1);
+      this._saveFormState(cols,rowsData,fileState,layoutType);
+      this.renderUserInput(slug);
+    };
+    document.querySelectorAll('[data-delrow]').forEach(btn=>{btn.onclick=()=>delRowFn(+btn.dataset.delrow)});
+    document.querySelectorAll('[data-mdelrow]').forEach(btn=>{btn.onclick=()=>delRowFn(+btn.dataset.mdelrow)});
 
     // Save (중복 방지: 버튼 비활성화 + delete→insert 원자적 처리)
     let isSaving=false;
