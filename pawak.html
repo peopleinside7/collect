@@ -885,35 +885,32 @@ const App={
     render();document.getElementById('npn').focus();
     document.getElementById('aci').onclick=()=>{cols.push({label:''});render();const inps=document.querySelectorAll('#clist input');inps[inps.length-1].focus()};
 
-    // 가로형 양식 다운로드: 항목명1, 항목명2, 항목명3 ... (가로 한 줄)
+    // ★ 가로형 양식: 성명,소속부서,연락처... 가로 한 줄에 나열
     document.getElementById('create-tpl-dl-h').onclick=(e)=>{
       e.preventDefault();
-      const existingCols=cols.filter(c=>c.label.trim());
-      let csv;
-      if(existingCols.length>0){
-        csv='\uFEFF'+existingCols.map(c=>'"'+c.label.trim().replace(/"/g,'""')+'"').join(',')+'\n';
-        csv+=existingCols.map(()=>'').join(',')+'\n';
-      } else {
-        csv='\uFEFF항목명1,항목명2,항목명3,항목명4,항목명5\n,,,,\n';
-      }
+      const ec=cols.filter(c=>c.label.trim());
+      const labels=ec.length>0?ec.map(c=>c.label.trim()):['성명','소속부서','연락처','차량번호','차량명'];
+      // 1행: 항목명들이 가로로 나열 / 2행: 빈 데이터 행
+      let csv='\uFEFF'+labels.map(l=>'"'+l.replace(/"/g,'""')+'"').join(',')+'\n';
+      csv+=labels.map(()=>'').join(',')+'\n';
       const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='가로형_항목_템플릿.csv';a.click();
-      showToast('가로형 양식이 다운로드되었습니다','success');
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='가로형_양식.csv';a.click();
+      showToast('가로형 양식 다운로드 완료','success');
     };
 
-    // 세로형 양식 다운로드: 항목명이 세로로 한 줄씩
+    // ★ 세로형 양식: 항목명이 줄마다 하나씩 세로로 나열
     document.getElementById('create-tpl-dl-v').onclick=(e)=>{
       e.preventDefault();
-      const existingCols=cols.filter(c=>c.label.trim());
+      const ec=cols.filter(c=>c.label.trim());
       let csv;
-      if(existingCols.length>0){
-        csv='\uFEFF항목명,유형\n'+existingCols.map(c=>'"'+c.label.trim().replace(/"/g,'""')+'","'+(c.fieldType==='file'?'파일':'텍스트')+'"').join('\n')+'\n';
+      if(ec.length>0){
+        csv='\uFEFF항목명,유형\n'+ec.map(c=>'"'+c.label.trim().replace(/"/g,'""')+'","'+(c.fieldType==='file'?'파일':'텍스트')+'"').join('\n')+'\n';
       } else {
-        csv='\uFEFF항목명,유형\n항목명1,텍스트\n항목명2,텍스트\n항목명3,텍스트\n항목명4,파일\n';
+        csv='\uFEFF항목명,유형\n성명,텍스트\n소속부서,텍스트\n연락처,텍스트\n첨부파일,파일\n';
       }
       const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='세로형_항목_템플릿.csv';a.click();
-      showToast('세로형 양식이 다운로드되었습니다','success');
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='세로형_양식.csv';a.click();
+      showToast('세로형 양식 다운로드 완료','success');
     };
 
     document.getElementById('create-tpl-up').onchange=(e)=>{
