@@ -234,17 +234,21 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .notice-box .notice-title{font-size:17px;font-weight:700;color:#d63384;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .notice-box .notice-content{font-size:14px;color:var(--text-primary);line-height:1.8;white-space:pre-wrap}
 /* ── Group sections (Type2 vertical form) ── */
-.group-section{background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(94,105,238,.06);border-left:4px solid var(--main)}
-.group-section .group-header{font-size:16px;font-weight:700;color:var(--main);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--main-bg);display:flex;align-items:center;gap:8px}
-.group-section .group-header .group-icon{font-size:20px}
-.group-section .group-field{margin-bottom:12px}
-.group-section .group-field:last-child{margin-bottom:0}
-.group-section .group-field label{display:block;font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:5px}
-.group-section .group-field input[type="text"]{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px}
+.group-section{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(94,105,238,.06);border-left:4px solid var(--main)}
+.group-section .group-header{font-size:15px;font-weight:700;color:var(--main);margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--main-bg);display:flex;align-items:center;gap:6px}
+.group-section .group-header .group-icon{font-size:18px}
+.group-section .group-fields-grid{display:grid;grid-template-columns:1fr;gap:8px}
+@media(min-width:640px){.group-section .group-fields-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:960px){.group-section .group-fields-grid{grid-template-columns:1fr 1fr 1fr}}
+.group-section .group-field{margin-bottom:0}
+.group-section .group-field label{display:block;font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:3px}
+.group-section .group-field input[type="text"]{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:13px}
 .group-section .group-field input[type="text"]:focus{border-color:var(--main)}
-.ungrouped-field{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 6px rgba(94,105,238,.04)}
-.ungrouped-field label{display:block;font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:5px}
-.ungrouped-field input[type="text"]{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px}
+.ungrouped-fields-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px}
+@media(min-width:640px){.ungrouped-fields-grid{grid-template-columns:1fr 1fr}}
+.ungrouped-field{background:#fff;border-radius:10px;padding:12px 14px;box-shadow:0 1px 6px rgba(94,105,238,.04)}
+.ungrouped-field label{display:block;font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:3px}
+.ungrouped-field input[type="text"]{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:13px}
 .ungrouped-field input[type="text"]:focus{border-color:var(--main)}
 .field-type-toggle{display:flex;gap:4px;margin-left:auto}
 .field-type-toggle button{padding:3px 8px;border-radius:4px;font-size:11px;border:1.5px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer}
@@ -304,11 +308,16 @@ const DB={
   },
 
   // ── Projects (with columns) ──
+  _getFieldTypes(){try{return JSON.parse(localStorage.getItem('pih_fieldTypes'))||{}}catch(e){return{}}},
+  _saveFieldType(colId,ft){const m=this._getFieldTypes();m[colId]=ft;localStorage.setItem('pih_fieldTypes',JSON.stringify(m))},
+  _saveFieldTypes(cols){const m=this._getFieldTypes();cols.forEach(c=>{if(c.id)m[c.id]=c.fieldType||'text'});localStorage.setItem('pih_fieldTypes',JSON.stringify(m))},
+
   async getProjects(){
     const ps=await this._fetch('projects?select=*,project_columns(*)&order=display_order');
+    const ftCache=this._getFieldTypes();
     return (ps||[]).map(p=>({
       id:p.id,name:p.name,slug:p.slug,layoutType:p.layout_type,displayOrder:p.display_order,dataVersion:p.data_version,description:p.description||'',createdAt:p.created_at,
-      columns:(p.project_columns||[]).map(c=>({id:c.id,label:c.label,order:c.col_order,fieldType:c.field_type||'text'})).sort((a,b)=>a.order-b.order)
+      columns:(p.project_columns||[]).map(c=>({id:c.id,label:c.label,order:c.col_order,fieldType:c.field_type||ftCache[c.id]||'text'})).sort((a,b)=>a.order-b.order)
     }));
   },
   async createProject(p){
@@ -317,15 +326,16 @@ const DB={
     const ins=await this._fetch('projects',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(body)});
     const proj=ins[0];
     if(p.columns&&p.columns.length){
-      // field_type 컬럼이 있으면 포함, 없으면 제외하여 INSERT
       try{
         const colRows=p.columns.map((c,i)=>({project_id:proj.id,label:c.label,col_order:i,field_type:c.fieldType||'text'}));
-        await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
+        const inserted=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
+        if(inserted)this._saveFieldTypes(inserted.map((r,i)=>({id:r.id,fieldType:p.columns[i].fieldType||'text'})));
       }catch(e){
-        // field_type 컬럼 미존재 시 fallback: field_type 제외하고 재시도
-        console.warn('field_type 포함 실패, fallback 시도:',e.message);
+        console.warn('field_type fallback:',e.message);
         const colRows=p.columns.map((c,i)=>({project_id:proj.id,label:c.label,col_order:i}));
-        await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
+        const inserted=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
+        // DB에 field_type 없어도 localStorage에 저장
+        if(inserted)this._saveFieldTypes(inserted.map((r,i)=>({id:r.id,fieldType:p.columns[i].fieldType||'text'})));
       }
     }
     return proj.id;
@@ -355,19 +365,20 @@ const DB={
     await this._fetch('projects?id=eq.'+pid,{method:'DELETE',headers:HEADERS});
   },
   async setProjectColumns(pid,cols){
-    // delete old columns first, then insert fresh (no ID reuse to avoid PK conflicts)
     await this._fetch('project_columns?project_id=eq.'+pid,{method:'DELETE',headers:HEADERS});
     if(cols.length){
+      let inserted;
       try{
         const colRows=cols.map((c,i)=>({project_id:pid,label:c.label,col_order:c.order!==undefined?c.order:i,field_type:c.fieldType||'text'}));
-        const inserted=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
-        return inserted;
+        inserted=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
       }catch(e){
         console.warn('field_type fallback:',e.message);
         const colRows=cols.map((c,i)=>({project_id:pid,label:c.label,col_order:c.order!==undefined?c.order:i}));
-        const inserted=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
-        return inserted;
+        inserted=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
       }
+      // localStorage에 fieldType 캐시 (DB 컬럼 유무와 무관하게 유지)
+      if(inserted)this._saveFieldTypes(inserted.map((r,i)=>({id:r.id,fieldType:cols[i].fieldType||'text'})));
+      return inserted;
     }
     return [];
   },
@@ -1322,34 +1333,36 @@ const App={
           <div class="project-name">📋 ${esc(proj.name)}</div>
           <div class="user-info"><span>👤 ${esc(ses.name)}님</span><button id="upwb">🔑 비번변경</button><button id="ulogout">🚪 로그아웃</button></div>
         </div>
-        <div class="user-form-container" style="max-width:640px">
+        <div class="user-form-container" style="max-width:960px">
           ${proj.description?`<div class="notice-box"><div class="notice-title">📢 안내사항</div><div class="notice-content">${esc(proj.description)}</div></div>`:''}
           ${(()=>{
             const {groups,ungrouped}=groupColumns(cols);
             let html='';
             // Render grouped sections first
             groups.forEach(g=>{
-              html+=`<div class="group-section"><div class="group-header"><span class="group-icon">${g.icon}</span>${esc(g.title)}</div>`;
+              html+=`<div class="group-section"><div class="group-header"><span class="group-icon">${g.icon}</span>${esc(g.title)}</div><div class="group-fields-grid">`;
               g.cols.forEach(c=>{
                 const cd=rd.cells[c.id]||{textValue:'',fileName:'',fileData:''};
                 const shortLabel=c.label.replace(/자녀\s*\d+\s*/,'').trim()||c.label;
                 if((c.fieldType||'text')==='file'){
-                  html+=`<div class="group-field"><label>${esc(shortLabel)}</label><div class="user-file-field" data-ufdrop="${c.id}"><div class="uf-icon">📁</div><div class="uf-text">클릭하여 파일 선택</div><input type="file" style="display:none" data-vfcid="${c.id}"><div class="uf-prev" data-vfpa="${c.id}">${cd.fileName?`<div class="uf-preview"><span>📎 ${esc(cd.fileName)}</span><span class="uf-remove" data-vfr="${c.id}">✕</span></div>`:''}</div></div></div>`;
+                  html+=`<div class="group-field"><label>${esc(shortLabel)}</label><div class="user-file-field" data-ufdrop="${c.id}"><div class="uf-icon">📁</div><div class="uf-text">파일 선택</div><input type="file" style="display:none" data-vfcid="${c.id}"><div class="uf-prev" data-vfpa="${c.id}">${cd.fileName?`<div class="uf-preview"><span>📎 ${esc(cd.fileName)}</span><span class="uf-remove" data-vfr="${c.id}">✕</span></div>`:''}</div></div></div>`;
                 } else {
-                  html+=`<div class="group-field"><label>${esc(shortLabel)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="내용을 입력하세요"></div>`;
+                  html+=`<div class="group-field"><label>${esc(shortLabel)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="입력"></div>`;
                 }
               });
-              html+=`</div>`;
+              html+=`</div></div>`;
             });
-            // Render ungrouped fields (비고 등) after groups
+            // Render ungrouped fields (비고 등) — 그리드 래퍼
+            html+=`<div class="ungrouped-fields-grid">`;
             ungrouped.forEach(c=>{
               const cd=rd.cells[c.id]||{textValue:'',fileName:'',fileData:''};
               if((c.fieldType||'text')==='file'){
-                html+=`<div class="ungrouped-field"><label>${esc(c.label)}</label><div class="user-file-field" data-ufdrop="${c.id}"><div class="uf-icon">📁</div><div class="uf-text">클릭하여 파일 선택</div><input type="file" style="display:none" data-vfcid="${c.id}"><div class="uf-prev" data-vfpa="${c.id}">${cd.fileName?`<div class="uf-preview"><span>📎 ${esc(cd.fileName)}</span><span class="uf-remove" data-vfr="${c.id}">✕</span></div>`:''}</div></div></div>`;
+                html+=`<div class="ungrouped-field"><label>${esc(c.label)}</label><div class="user-file-field" data-ufdrop="${c.id}"><div class="uf-icon">📁</div><div class="uf-text">파일 선택</div><input type="file" style="display:none" data-vfcid="${c.id}"><div class="uf-prev" data-vfpa="${c.id}">${cd.fileName?`<div class="uf-preview"><span>📎 ${esc(cd.fileName)}</span><span class="uf-remove" data-vfr="${c.id}">✕</span></div>`:''}</div></div></div>`;
               } else {
-                html+=`<div class="ungrouped-field"><label>${esc(c.label)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="내용을 입력하세요"></div>`;
+                html+=`<div class="ungrouped-field"><label>${esc(c.label)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="입력"></div>`;
               }
             });
+            html+=`</div>`;
             return html;
           })()}
 
