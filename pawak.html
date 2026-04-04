@@ -857,10 +857,14 @@ const App={
   },
 
   async confirmDelCol(pid,cid){
-    const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid),c=p.columns.find(x=>x.id===cid);
+    const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid);
+    const c=p?p.columns.find(x=>x.id===cid):null;
+    if(!c){showToast('항목을 찾을 수 없습니다','warning');return}
     this.showConfirm(`"${c.label}" 항목과 모든 데이터를 삭제합니까?`,async()=>{
-      await DB.deleteColumn(cid);
-      await DB.bumpVersion(pid);showToast('삭제됨','success');await this.renderPV(pid);
+      try{
+        await DB.deleteColumn(cid);
+        await DB.bumpVersion(pid);showToast('삭제됨','success');await this.renderPV(pid);
+      }catch(e){console.error(e);showToast('삭제 오류','error')}
     });
   },
 
@@ -1025,12 +1029,14 @@ const App={
     document.getElementById('ecc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
     document.getElementById('ecs').onclick=async()=>{
       const nm=document.getElementById('epn').value.trim();if(!nm){showToast('프로젝트명 필수','warning');return}
-      p.name=nm;p.layoutType=editLayoutType;p.description=document.getElementById('epdesc').value||'';
-      await DB.updateProject(pid,{name:nm,layoutType:editLayoutType,description:p.description})
-      const validCols=cols.filter(c=>c.label.trim()).map((c,i)=>({id:c.id||undefined,label:c.label.trim(),order:i,fieldType:c.fieldType||'text'}));
-      await DB.setProjectColumns(pid,validCols);
-      await DB.bumpVersion(pid);ov.remove();showToast('저장됨','success');
-      await this.renderSB();if(this.state.selectedProjectId===pid)await this.renderPV(pid);
+      try{
+        p.name=nm;p.layoutType=editLayoutType;p.description=document.getElementById('epdesc').value||'';
+        await DB.updateProject(pid,{name:nm,layoutType:editLayoutType,description:p.description});
+        const validCols=cols.filter(c=>c.label.trim()).map((c,i)=>({id:c.id||undefined,label:c.label.trim(),order:i,fieldType:c.fieldType||'text'}));
+        await DB.setProjectColumns(pid,validCols);
+        await DB.bumpVersion(pid);ov.remove();showToast('저장됨 ✅','success');
+        await this.renderSB();if(this.state.selectedProjectId===pid)await this.renderPV(pid);
+      }catch(e){console.error('설정 저장 오류:',e);showToast('저장 중 오류가 발생했습니다','error')}
     };
   },
 
@@ -1047,9 +1053,11 @@ const App={
     document.getElementById('dpc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
     btn.onclick=async()=>{
       if(inp.value!==p.name)return;
-      await DB.deleteProject(pid);
-      if(this.state.selectedProjectId===pid)this.state.selectedProjectId=null;
-      ov.remove();showToast('삭제됨','success');await this.renderSB();await this.renderDash();
+      try{
+        await DB.deleteProject(pid);
+        if(this.state.selectedProjectId===pid)this.state.selectedProjectId=null;
+        ov.remove();showToast('삭제됨','success');await this.renderSB();await this.renderDash();
+      }catch(e){console.error('삭제 오류:',e);showToast('삭제 중 오류가 발생했습니다','error')}
     };
   },
 
