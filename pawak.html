@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff2" rel="stylesheet" as="font" type="font/woff2" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff" rel="preload" as="font" type="font/woff" crossorigin>
 <style>
 @font-face { font-family: 'GmarketSans'; font-weight: 300; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansLight.woff') format('woff'); }
 @font-face { font-family: 'GmarketSans'; font-weight: 500; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff'); }
@@ -55,18 +55,14 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .login-page{min-height:100vh;background:url('https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1920&q=80') center/cover no-repeat fixed;display:flex;align-items:center;justify-content:center;padding:20px;position:relative}
 .login-page::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.08)}
 .login-card{background:rgba(255,255,255,0.88);backdrop-filter:blur(10px);border-radius:20px;padding:32px 28px;max-width:280px;width:100%;box-shadow:0 16px 48px rgba(0,0,0,.12);position:relative;z-index:1}
-.login-card .logo{text-align:center;margin-bottom:32px}
 .login-card .logo{text-align:center;margin-bottom:20px}
 .login-card .logo h1{font-size:11px;font-weight:500;color:var(--text-secondary);letter-spacing:1px}
 .login-card .logo p{color:var(--text-primary);font-size:18px;font-weight:700;margin-top:6px;line-height:1.3}
 .form-group{margin-bottom:14px}
-.form-group input{padding:10px 14px;font-size:14px}
-.login-btn{padding:12px;font-size:14px}
-.form-group{margin-bottom:20px}
-.form-group label{display:block;font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:6px}
-.form-group input{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:8px;font-size:15px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:5px}
+.form-group input{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:8px;font-size:14px}
 .form-group input:focus{border-color:var(--main)}
-.login-btn{width:100%;padding:14px;border-radius:12px;background:var(--accent);color:#fff;font-size:16px;font-weight:700}
+.login-btn{width:100%;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-size:14px;font-weight:700}
 .login-btn:hover{background:var(--accent-light);box-shadow:0 0 20px rgba(57,175,234,.3)}
 .login-error{color:var(--danger);font-size:13px;margin-top:8px;text-align:center}
 .admin-header{height:64px;background:var(--main-gradient);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100}
@@ -1378,7 +1374,9 @@ const App={
     document.getElementById('upcc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
     document.getElementById('upcs').onclick=async()=>{
       // fetch user from supabase
-      const users=await DB.getUsers();const u=users.find(x=>x.id===uid);if(!u)return;
+      // 특정 사용자만 조회 (전체 사용자 로드 방지)
+      const rows=await DB._fetch('users?id=eq.'+uid+'&select=*&limit=1');
+      const u=rows&&rows.length?{id:rows[0].id,password:rows[0].password}:null;if(!u)return;
       const c=document.getElementById('upc').value,n=document.getElementById('upn').value,cf=document.getElementById('upcf').value,err=document.getElementById('upe');
       if(c!==u.password){err.textContent='현재 비밀번호 불일치';err.classList.remove('hidden');return}
       if(n.length<4){err.textContent='4자 이상';err.classList.remove('hidden');return}
