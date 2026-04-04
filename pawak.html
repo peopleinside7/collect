@@ -1069,7 +1069,7 @@ const App={
     app.innerHTML=`<div class="login-page"><div class="login-card">
       <div class="logo"><h1>People-In Hub</h1><p>${esc(p.name)}</p></div>
       <div class="form-group"><label>이름</label><input type="text" id="un" placeholder="이름 입력"></div>
-      <div class="form-group"><label>비밀번호</label><input type="password" id="upw" placeholder="비밀번호 입력"></div>
+      <div class="form-group"><label>비밀번호</label><input type="password" id="upw" placeholder="316"></div>
       <p style="font-size:11px;color:var(--text-secondary);text-align:center;margin-top:-8px;margin-bottom:12px">* 최초 등록 시 비밀번호: 316</p>
       <div id="uerr" class="login-error hidden"></div>
       <button class="login-btn" id="ulb">로그인</button>
@@ -1301,10 +1301,15 @@ const App={
       };
     });
 
-    // Save
+    // Save (중복 방지: 버튼 비활성화 + delete→insert 원자적 처리)
+    let isSaving=false;
     document.getElementById('usave').onclick=async()=>{
+      if(isSaving)return; // 다중 클릭 방지
+      isSaving=true;
+      const saveBtn=document.getElementById('usave');
+      saveBtn.disabled=true;saveBtn.textContent='⏳ 저장 중...';saveBtn.style.opacity='0.6';
       try{
-        // Delete old rows for this user in this project
+        // 기존 행 삭제 (해당 사용자의 데이터만)
         await DB.deleteRowsByUser(proj.id,ses.userId);
 
         const allProjectRows=await DB.getRows(proj.id);
@@ -1332,7 +1337,10 @@ const App={
 
         await DB.bumpVersion(proj.id);
         showToast('저장되었습니다 ✅','success');await this.renderUserInput(slug);
-      }catch(e){showToast('저장 오류','error');console.error(e)}
+      }catch(e){
+        showToast('저장 오류','error');console.error(e);
+        saveBtn.disabled=false;saveBtn.textContent='💾 저장하기';saveBtn.style.opacity='1';isSaving=false;
+      }
     };
 
     // Delete all
