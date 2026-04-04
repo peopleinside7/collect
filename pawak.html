@@ -861,7 +861,8 @@ const App={
         <p style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">• <strong>Type 2 (세로형)</strong>: 1열에 항목명을 세로로 나열</p>
         <p style="font-size:11px;color:var(--text-secondary);margin-bottom:12px">템플릿 다운로드 → 내용 작성 → 업로드하면 항목+데이터가 자동 반영됩니다.</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-secondary btn-sm" id="create-tpl-dl">📥 항목 템플릿 다운로드</button>
+          <button class="btn btn-secondary btn-sm" id="create-tpl-dl-h">📥 가로형 양식</button>
+          <button class="btn btn-secondary btn-sm" id="create-tpl-dl-v">📥 세로형 양식</button>
           <label class="btn btn-main btn-sm" style="cursor:pointer">📤 엑셀 업로드<input type="file" accept=".csv,.txt" id="create-tpl-up" style="display:none"></label>
         </div>
       </div>
@@ -884,27 +885,35 @@ const App={
     render();document.getElementById('npn').focus();
     document.getElementById('aci').onclick=()=>{cols.push({label:''});render();const inps=document.querySelectorAll('#clist input');inps[inps.length-1].focus()};
 
-    document.getElementById('create-tpl-dl').onclick=(e)=>{
+    // 가로형 양식 다운로드: 항목명1, 항목명2, 항목명3 ... (가로 한 줄)
+    document.getElementById('create-tpl-dl-h').onclick=(e)=>{
       e.preventDefault();
+      const existingCols=cols.filter(c=>c.label.trim());
       let csv;
-      if(selectedLayoutType===1){
-        // Type1 가로형: 항목명이 가로 한 줄, 아래에 데이터 입력
-        const existingCols=cols.filter(c=>c.label.trim());
-        if(existingCols.length>0){
-          csv='\uFEFF'+existingCols.map(c=>'"'+c.label.trim().replace(/"/g,'""')+'"').join(',')+'\n';
-          csv+=existingCols.map(()=>'').join(',')+'\n';
-        } else {
-          csv='\uFEFF항목1,항목2,항목3,항목4,항목5\n,,,,\n';
-        }
+      if(existingCols.length>0){
+        csv='\uFEFF'+existingCols.map(c=>'"'+c.label.trim().replace(/"/g,'""')+'"').join(',')+'\n';
+        csv+=existingCols.map(()=>'').join(',')+'\n';
       } else {
-        // Type2 세로형: 항목명이 세로로 나열
-        csv='\uFEFF항목명,유형\n성명,텍스트\n소속부서,텍스트\n연락처,텍스트\n첨부파일,파일\n';
+        csv='\uFEFF항목명1,항목명2,항목명3,항목명4,항목명5\n,,,,\n';
       }
       const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-      const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-      a.download=selectedLayoutType===1?'가로형_항목_템플릿.csv':'세로형_항목_템플릿.csv';
-      a.click();
-      showToast('템플릿이 다운로드되었습니다','success');
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='가로형_항목_템플릿.csv';a.click();
+      showToast('가로형 양식이 다운로드되었습니다','success');
+    };
+
+    // 세로형 양식 다운로드: 항목명이 세로로 한 줄씩
+    document.getElementById('create-tpl-dl-v').onclick=(e)=>{
+      e.preventDefault();
+      const existingCols=cols.filter(c=>c.label.trim());
+      let csv;
+      if(existingCols.length>0){
+        csv='\uFEFF항목명,유형\n'+existingCols.map(c=>'"'+c.label.trim().replace(/"/g,'""')+'","'+(c.fieldType==='file'?'파일':'텍스트')+'"').join('\n')+'\n';
+      } else {
+        csv='\uFEFF항목명,유형\n항목명1,텍스트\n항목명2,텍스트\n항목명3,텍스트\n항목명4,파일\n';
+      }
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='세로형_항목_템플릿.csv';a.click();
+      showToast('세로형 양식이 다운로드되었습니다','success');
     };
 
     document.getElementById('create-tpl-up').onchange=(e)=>{
