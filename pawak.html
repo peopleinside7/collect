@@ -122,8 +122,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .data-table .cell-edit{width:100%;border:2px solid var(--border-focus);border-radius:4px;padding:6px 8px;font-size:13px;background:#fff}
 .data-table .sticky-col{position:sticky;z-index:5}
 .data-table .col-no{width:50px;min-width:50px;left:0}
-.data-table .col-writer{width:90px;min-width:90px;left:50px}
-.data-table td.col-no,.data-table td.col-writer{background:var(--bg-page)!important;font-weight:500}
+.data-table td.col-no{background:var(--bg-page)!important;font-weight:500}
 .data-table .col-add-btn{width:40px;background:var(--main-dark)!important;text-align:center;cursor:pointer}
 .data-table .col-add-btn:hover{background:var(--main-light)!important}
 .add-row-btn{width:100%;padding:10px;text-align:center;color:var(--text-secondary);font-size:13px;cursor:pointer;border-top:1px solid var(--border)}
@@ -228,8 +227,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .file-list-item{display:flex;align-items:center;gap:8px;background:var(--main-bg);padding:8px 12px;border-radius:8px;font-size:13px}
 .file-list-item .fl-remove{color:var(--danger);cursor:pointer;margin-left:auto;font-size:16px}
 .row-file-cell{white-space:nowrap}
-.row-file-btn{font-size:11px}
-.row-file-btn{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-size:12px;cursor:pointer;white-space:nowrap}
+.row-file-btn{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-size:11px;cursor:pointer;white-space:nowrap}
 .row-file-btn:hover{color:var(--accent-dark)}
 .notice-box{background:linear-gradient(135deg,rgba(255,255,255,0.92),rgba(255,240,245,0.9));backdrop-filter:blur(10px);border-radius:16px;padding:20px 24px;margin-bottom:20px;border:1px solid rgba(255,182,193,0.5);box-shadow:0 4px 24px rgba(255,182,193,0.2)}
 .notice-box .notice-title{font-size:17px;font-weight:700;color:#d63384;margin-bottom:10px;display:flex;align-items:center;gap:6px}
@@ -278,7 +276,6 @@ const SUPABASE_URL='https://qhulwtunogbpzlbhtvcp.supabase.co';
 const SUPABASE_KEY='sb_publishable_OliwNHYmloBjvSfZTTPg3A_rsRQ8Z9k';
 const HEADERS={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
 const HEADERS_RETURN={...HEADERS,'Prefer':'return=representation'};
-// HEADERS_UPSERT 미사용 — 제거됨
 
 const DB={
   async _fetch(path,opts={}){
@@ -560,7 +557,6 @@ function downloadFileFromData(fileName, dataUrl){
   const a=document.createElement('a');a.href=dataUrl;a.download=fileName||'download';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
-// showLoading/hideLoading — 미사용 제거됨
 
 // ── Column grouping engine for Type2 ──
 function groupColumns(cols){
