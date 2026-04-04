@@ -141,12 +141,29 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .user-header .user-info button:hover{background:rgba(255,255,255,.25)}
 .user-form-container{max-width:960px;margin:0 auto;padding:24px 16px}
 .user-table-wrap{overflow-x:auto;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(94,105,238,.06);margin-bottom:16px;-webkit-overflow-scrolling:touch}
-.user-data-table{width:100%;border-collapse:collapse;table-layout:fixed}
-.user-data-table th{background:var(--main);color:#fff;font-weight:600;font-size:11px;padding:5px 4px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-data-table td{padding:3px 3px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:top}
+.user-data-table{width:100%;border-collapse:collapse}
+.user-data-table th{background:var(--main);color:#fff;font-weight:600;font-size:12px;padding:8px 8px;text-align:center;white-space:nowrap}
+.user-data-table td{padding:5px 6px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:top}
 .user-data-table tr:nth-child(even) td{background:var(--bg-white)}
 .user-data-table tr:nth-child(odd) td{background:var(--main-bg)}
-.user-data-table input[type="text"]{width:100%;min-width:0;padding:5px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;box-sizing:border-box}
+.user-data-table input[type="text"]{width:100%;min-width:0;padding:7px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;box-sizing:border-box}
+/* PC: 8개까지 한 화면, 9개+ 가로 스크롤 */
+@media(min-width:768px){.user-data-table{table-layout:fixed}.user-data-table th,.user-data-table td{max-width:calc(100vw / 9)}}
+/* 모바일: 세로 카드형 변환 */
+.mobile-card-list{display:none}
+@media(max-width:767px){
+  .user-table-wrap{overflow:visible}
+  .user-data-table{display:none}
+  .mobile-card-list{display:block}
+  .mobile-card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(94,105,238,.08);border-left:4px solid var(--main)}
+  .mobile-card .mc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .mobile-card .mc-header span{font-size:14px;font-weight:700;color:var(--main)}
+  .mobile-card .mc-field{margin-bottom:10px}
+  .mobile-card .mc-field:last-child{margin-bottom:0}
+  .mobile-card .mc-field label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+  .mobile-card .mc-field input[type="text"]{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;box-sizing:border-box}
+  .mobile-card .mc-field input[type="text"]:focus{border-color:var(--main)}
+}
 .user-data-table input[type="text"]:focus{border-color:var(--main)}
 .user-data-table .file-cell{display:flex;flex-direction:column;gap:4px}
 .user-data-table .file-cell .file-attach-label{color:var(--accent);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:2px}
@@ -1287,6 +1304,22 @@ const App={
               </tbody>
             </table>
             <div class="user-add-row" id="uaddrow">＋ 행 추가</div>
+            <!-- 모바일 세로 카드 뷰 -->
+            <div class="mobile-card-list">
+              ${rowsData.map((rd,idx)=>`
+                <div class="mobile-card">
+                  <div class="mc-header"><span>📝 ${idx+1}번</span><button class="btn btn-danger btn-xs" data-delrow="${idx}" ${rowsData.length<=1?'disabled style="opacity:0.3"':''}>삭제</button></div>
+                  ${cols.map(c=>{
+                    const cd=rd.cells[c.id]||{textValue:'',fileName:'',fileData:''};
+                    if((c.fieldType||'text')==='file'){
+                      return `<div class="mc-field"><label>${esc(c.label)}</label><label class="row-file-btn" style="font-size:13px">📎 파일선택<input type="file" style="display:none" data-fidx="${idx}" data-fcid="${c.id}"></label><div class="fc-area" data-fca="${idx}-${c.id}">${cd.fileName?`<div class="file-preview-sm"><span>📎 ${esc(cd.fileName)}</span><span class="fremove" data-fcr="${idx}-${c.id}">✕</span></div>`:''}</div></div>`;
+                    }
+                    return `<div class="mc-field"><label>${esc(c.label)}</label><input type="text" data-idx="${idx}" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="${esc(c.label)} 입력"></div>`;
+                  }).join('')}
+                </div>
+              `).join('')}
+              <div style="text-align:center;padding:12px"><button class="btn btn-outline" id="uaddrow2">＋ 행 추가</button></div>
+            </div>
           </div>
           <div class="user-excel-section"><h3>📊 엑셀 일괄 입력</h3><div class="user-excel-btns"><button class="btn btn-secondary btn-sm" id="utpl">📥 양식 다운로드</button><button class="btn btn-secondary btn-sm" id="uexup">📤 엑셀 업로드</button></div></div>
           <div class="user-actions"><button class="save-btn" id="usave">💾 저장하기</button><button class="delete-my-btn" id="udel">🗑️ 내 데이터 전체 삭제</button></div>
@@ -1401,14 +1434,16 @@ const App={
     document.getElementById('utpl').onclick=()=>this.dlTemplate(proj.id);
     document.getElementById('uexup').onclick=()=>this.showUserExcelUpload(proj.id,ses.userId,slug,cols);
 
+    // 행 추가 (PC 테이블 + 모바일 카드 둘 다)
+    const addRowFn=()=>{
+      rowsData.push({rowId:null,cells:{},rowFileName:'',rowFileData:''});
+      this._saveFormState(cols,rowsData,fileState,layoutType);
+      this.renderUserInput(slug);
+    };
     const addRowBtn=document.getElementById('uaddrow');
-    if(addRowBtn){
-      addRowBtn.onclick=()=>{
-        rowsData.push({rowId:null,cells:{},rowFileName:'',rowFileData:''});
-        this._saveFormState(cols,rowsData,fileState,layoutType);
-        this.renderUserInput(slug);
-      };
-    }
+    if(addRowBtn) addRowBtn.onclick=addRowFn;
+    const addRowBtn2=document.getElementById('uaddrow2');
+    if(addRowBtn2) addRowBtn2.onclick=addRowFn;
 
     document.querySelectorAll('[data-delrow]').forEach(btn=>{
       btn.onclick=()=>{
