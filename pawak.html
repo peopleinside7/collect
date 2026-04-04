@@ -856,8 +856,10 @@ const App={
       <button class="btn btn-outline btn-sm" id="aci" style="margin-top:8px">＋ 항목 추가</button></div>
       <p style="font-size:12px;color:var(--text-secondary)">⚠️ 항목은 최소 1개 이상</p>
       <div style="margin-top:16px;padding:16px;border:2px dashed var(--border);border-radius:12px;background:var(--bg-page)">
-        <label style="font-size:14px;font-weight:600;display:block;margin-bottom:10px">📊 엑셀로 일괄 설정</label>
-        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">템플릿을 다운로드 → 항목명 작성 → 업로드하면 항목이 자동 반영됩니다.</p>
+        <label style="font-size:14px;font-weight:600;display:block;margin-bottom:10px">📊 엑셀로 일괄 등록</label>
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">• <strong>Type 1 (가로형)</strong>: 1행에 항목명, 2행부터 데이터 입력</p>
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">• <strong>Type 2 (세로형)</strong>: 1열에 항목명을 세로로 나열</p>
+        <p style="font-size:11px;color:var(--text-secondary);margin-bottom:12px">템플릿 다운로드 → 내용 작성 → 업로드하면 항목+데이터가 자동 반영됩니다.</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn btn-secondary btn-sm" id="create-tpl-dl">📥 항목 템플릿 다운로드</button>
           <label class="btn btn-main btn-sm" style="cursor:pointer">📤 엑셀 업로드<input type="file" accept=".csv,.txt" id="create-tpl-up" style="display:none"></label>
@@ -884,9 +886,24 @@ const App={
 
     document.getElementById('create-tpl-dl').onclick=(e)=>{
       e.preventDefault();
-      let csv='\uFEFF항목명\n성명\n소속부서\n연락처\n';
+      let csv;
+      if(selectedLayoutType===1){
+        // Type1 가로형: 항목명이 가로 한 줄, 아래에 데이터 입력
+        const existingCols=cols.filter(c=>c.label.trim());
+        if(existingCols.length>0){
+          csv='\uFEFF'+existingCols.map(c=>'"'+c.label.trim().replace(/"/g,'""')+'"').join(',')+'\n';
+          csv+=existingCols.map(()=>'').join(',')+'\n';
+        } else {
+          csv='\uFEFF항목1,항목2,항목3,항목4,항목5\n,,,,\n';
+        }
+      } else {
+        // Type2 세로형: 항목명이 세로로 나열
+        csv='\uFEFF항목명,유형\n성명,텍스트\n소속부서,텍스트\n연락처,텍스트\n첨부파일,파일\n';
+      }
       const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='프로젝트_항목_템플릿.csv';a.click();
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+      a.download=selectedLayoutType===1?'가로형_항목_템플릿.csv':'세로형_항목_템플릿.csv';
+      a.click();
       showToast('템플릿이 다운로드되었습니다','success');
     };
 
@@ -895,11 +912,28 @@ const App={
       const reader=new FileReader();
       reader.onload=(ev)=>{
         const lines=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);
-        if(lines.length<2){showToast('데이터가 없습니다','warning');return}
-        const newCols=lines.slice(1).map(l=>{const parsed=parseCSV(l);return {label:parsed[0]||''};}).filter(c=>c.label);
-        if(newCols.length===0){showToast('유효한 항목이 없습니다','warning');return}
-        cols=newCols;render();
-        showToast(`${newCols.length}개 항목이 반영되었습니다`,'success');
+        if(lines.length<1){showToast('데이터가 없습니다','warning');return}
+
+        if(selectedLayoutType===1){
+          // Type1 가로형: 1행의 각 셀이 항목명
+          const headers=parseCSV(lines[0]);
+          const newCols=headers.filter(h=>h.trim()).map(h=>({label:h.trim(),fieldType:'text'}));
+          if(newCols.length===0){showToast('유효한 항목이 없습니다','warning');return}
+          cols=newCols;render();
+          showToast(`${newCols.length}개 항목이 반영되었습니다 (가로형)`,'success');
+        } else {
+          // Type2 세로형: 각 행의 1열이 항목명, 2열이 유형(선택)
+          if(lines.length<2){showToast('데이터가 없습니다','warning');return}
+          const newCols=lines.slice(1).map(l=>{
+            const parsed=parseCSV(l);
+            const label=parsed[0]||'';
+            const ft=(parsed[1]||'').trim().toLowerCase();
+            return {label:label,fieldType:ft==='파일'||ft==='file'?'file':'text'};
+          }).filter(c=>c.label);
+          if(newCols.length===0){showToast('유효한 항목이 없습니다','warning');return}
+          cols=newCols;render();
+          showToast(`${newCols.length}개 항목이 반영되었습니다 (세로형)`,'success');
+        }
       };
       reader.readAsText(file,'UTF-8');
     };
