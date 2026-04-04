@@ -142,12 +142,12 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .user-header .user-info button:hover{background:rgba(255,255,255,.25)}
 .user-form-container{max-width:960px;margin:0 auto;padding:24px 16px}
 .user-table-wrap{overflow-x:auto;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(94,105,238,.06);margin-bottom:16px;-webkit-overflow-scrolling:touch}
-.user-data-table{width:max-content;min-width:100%;border-collapse:collapse}
-.user-data-table th{background:var(--main);color:#fff;font-weight:600;font-size:12px;padding:8px 10px;text-align:left;white-space:nowrap}
-.user-data-table td{padding:6px 8px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:top;white-space:nowrap}
+.user-data-table{width:100%;border-collapse:collapse;table-layout:auto}
+.user-data-table th{background:var(--main);color:#fff;font-weight:600;font-size:11px;padding:6px 6px;text-align:left;white-space:nowrap}
+.user-data-table td{padding:4px 4px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:top}
 .user-data-table tr:nth-child(even) td{background:var(--bg-white)}
 .user-data-table tr:nth-child(odd) td{background:var(--main-bg)}
-.user-data-table input[type="text"]{width:100%;min-width:100px;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:13px}
+.user-data-table input[type="text"]{width:100%;min-width:60px;padding:6px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px}
 .user-data-table input[type="text"]:focus{border-color:var(--main)}
 .user-data-table .file-cell{display:flex;flex-direction:column;gap:4px}
 .user-data-table .file-cell .file-attach-label{color:var(--accent);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:2px}
@@ -227,7 +227,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .file-list{margin-top:12px;display:flex;flex-direction:column;gap:6px}
 .file-list-item{display:flex;align-items:center;gap:8px;background:var(--main-bg);padding:8px 12px;border-radius:8px;font-size:13px}
 .file-list-item .fl-remove{color:var(--danger);cursor:pointer;margin-left:auto;font-size:16px}
-.row-file-cell{min-width:100px;white-space:nowrap}
+.row-file-cell{min-width:70px;white-space:nowrap}
 .row-file-btn{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-size:12px;cursor:pointer;white-space:nowrap}
 .row-file-btn:hover{color:var(--accent-dark)}
 .notice-box{background:linear-gradient(135deg,rgba(255,255,255,0.92),rgba(255,240,245,0.9));backdrop-filter:blur(10px);border-radius:16px;padding:20px 24px;margin-bottom:20px;border:1px solid rgba(255,182,193,0.5);box-shadow:0 4px 24px rgba(255,182,193,0.2)}
@@ -1271,7 +1271,7 @@ const App={
               <thead><tr>
                 <th style="width:40px">No.</th>
                 ${cols.map(c=>`<th>${esc(c.label)}</th>`).join('')}
-                <th style="min-width:50px">삭제</th>
+                <th style="width:36px">삭제</th>
               </tr></thead>
               <tbody>
                 ${rowsData.map((rd,idx)=>`
