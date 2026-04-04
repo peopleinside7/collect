@@ -273,7 +273,7 @@ const SUPABASE_URL='https://qhulwtunogbpzlbhtvcp.supabase.co';
 const SUPABASE_KEY='sb_publishable_OliwNHYmloBjvSfZTTPg3A_rsRQ8Z9k';
 const HEADERS={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
 const HEADERS_RETURN={...HEADERS,'Prefer':'return=representation'};
-const HEADERS_UPSERT={...HEADERS,'Prefer':'resolution=merge-duplicates,return=representation'};
+// HEADERS_UPSERT 미사용 — 제거됨
 
 const DB={
   async _fetch(path,opts={}){
@@ -410,7 +410,10 @@ const DB={
     const rows=await this._fetch('data_rows?project_id=eq.'+pid+'&select=id');
     if(rows&&rows.length){
       const ids=rows.map(r=>r.id);
-      await this._fetch('data_cells?row_id=in.('+ids.join(',')+')',{method:'DELETE',headers:HEADERS});
+      for(let i=0;i<ids.length;i+=50){
+        const chunk=ids.slice(i,i+50);
+        await this._fetch('data_cells?row_id=in.('+chunk.join(',')+')',{method:'DELETE',headers:HEADERS});
+      }
     }
     await this._fetch('data_rows?project_id=eq.'+pid,{method:'DELETE',headers:HEADERS});
   },
@@ -525,11 +528,7 @@ function downloadFileFromData(fileName, dataUrl){
   const a=document.createElement('a');a.href=dataUrl;a.download=fileName||'download';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
-function showLoading(){
-  let ov=document.getElementById('loading-ov');
-  if(!ov){ov=document.createElement('div');ov.id='loading-ov';ov.className='loading-overlay';ov.textContent='불러오는 중...';document.body.appendChild(ov)}
-}
-function hideLoading(){const ov=document.getElementById('loading-ov');if(ov)ov.remove()}
+// showLoading/hideLoading — 미사용 제거됨
 
 // ── Column grouping engine for Type2 ──
 function groupColumns(cols){
@@ -790,10 +789,13 @@ const App={
     };
   },
 
-  editCell(td,pid){
+  async editCell(td,pid){
     if(td.querySelector('.cell-edit'))return;
-    this.state.isEditing=true;
     const rid=+td.dataset.rid,cid=+td.dataset.cid;
+    // 파일 유형 컬럼은 텍스트 편집 차단
+    const ps=await DB.getProjects(),proj=ps.find(p=>p.id===pid);
+    if(proj){const col=proj.columns.find(c=>c.id===cid);if(col&&col.fieldType==='file'){showToast('파일 항목은 사용자 페이지에서 업로드해주세요','info');return}}
+    this.state.isEditing=true;
     // Read current text from the cell display
     const oldText=td.textContent.replace(/📎.*$/,'').trim();
     td.innerHTML=`<input type="text" class="cell-edit" value="${esc(oldText)}">`;
@@ -819,13 +821,16 @@ const App={
 
   async showAddColModal(pid){
     const ov=document.createElement('div');ov.className='modal-overlay';
-    ov.innerHTML=`<div class="modal" style="max-width:400px"><h2>새 항목 추가</h2><div class="form-group"><label>항목명</label><input type="text" id="ncn" placeholder="예: 이메일"></div><div class="modal-actions"><button class="btn btn-outline" id="ncc">취소</button><button class="btn btn-accent" id="ncs">추가</button></div></div>`;
+    ov.innerHTML=`<div class="modal" style="max-width:400px"><h2>새 항목 추가</h2><div class="form-group"><label>항목명</label><input type="text" id="ncn" placeholder="예: 이메일"></div><div class="form-group"><label>유형</label><div class="field-type-toggle" style="justify-content:flex-start"><button id="nft-text" class="active" style="padding:6px 16px">텍스트</button><button id="nft-file" style="padding:6px 16px">파일</button></div></div><div class="modal-actions"><button class="btn btn-outline" id="ncc">취소</button><button class="btn btn-accent" id="ncs">추가</button></div></div>`;
     document.body.appendChild(ov);const inp=document.getElementById('ncn');inp.focus();
+    let newFT='text';
+    document.getElementById('nft-text').onclick=()=>{newFT='text';document.getElementById('nft-text').classList.add('active');document.getElementById('nft-file').classList.remove('active')};
+    document.getElementById('nft-file').onclick=()=>{newFT='file';document.getElementById('nft-file').classList.add('active');document.getElementById('nft-text').classList.remove('active')};
     document.getElementById('ncc').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};
     const go=async()=>{
       const n=inp.value.trim();if(!n){showToast('항목명 필수','warning');return}
       const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid);
-      await DB.addColumn(pid,n,p.columns.length);
+      await DB.addColumn(pid,n,p.columns.length,newFT);
       await DB.bumpVersion(pid);ov.remove();showToast('항목 추가됨','success');await this.renderPV(pid);
     };
     document.getElementById('ncs').onclick=go;inp.onkeydown=e=>{if(e.key==='Enter')go()};
@@ -1367,7 +1372,8 @@ const App={
       btn.onclick=()=>{
         if(rowsData.length<=1)return;
         const idx=+btn.dataset.delrow;
-        delete fileState[`row-${idx}`];
+        // 해당 행의 파일 상태 정리
+        cols.forEach(c=>{delete fileState[`${idx}-${c.id}`]});
         rowsData.splice(idx,1);
         this._saveFormState(cols,rowsData,fileState,layoutType);
         this.renderUserInput(slug);
@@ -1391,10 +1397,9 @@ const App={
 
         for(let idx=0;idx<saveRows.length;idx++){
           const rd=saveRows[idx];
-          const rf=fileState[`row-${idx}`]||null;
           const newRowId=await DB.createRow({
             projectId:proj.id,userId:ses.userId,rowOrder:baseOrder+idx,
-            rowFileName:rf?rf.name:'',rowFileData:rf?rf.data:''
+            rowFileName:'',rowFileData:''
           });
 
           const cellsToInsert=[];
@@ -1442,8 +1447,7 @@ const App={
           rd.cells[c.id].textValue=inp.value;
         }
       });
-      const rf=fileState[`row-${idx}`];
-      if(rf){rd.rowFileName=rf.name;rd.rowFileData=rf.data}
+      // 파일 상태는 이제 컬럼별로 관리됨 (${idx}-${c.id})
     });
   },
 
