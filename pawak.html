@@ -246,6 +246,16 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .ungrouped-field label{display:block;font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:5px}
 .ungrouped-field input[type="text"]{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px}
 .ungrouped-field input[type="text"]:focus{border-color:var(--main)}
+.field-type-toggle{display:flex;gap:4px;margin-left:auto}
+.field-type-toggle button{padding:3px 8px;border-radius:4px;font-size:11px;border:1.5px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer}
+.field-type-toggle button.active{background:var(--main);color:#fff;border-color:var(--main)}
+.field-type-toggle button:hover{border-color:var(--main)}
+.user-file-field{background:var(--bg-page);border:2px dashed var(--border);border-radius:8px;padding:12px;text-align:center;cursor:pointer;transition:all .2s}
+.user-file-field:hover{border-color:var(--accent);background:rgba(57,175,234,.03)}
+.user-file-field .uf-icon{font-size:20px;margin-bottom:4px}
+.user-file-field .uf-text{font-size:12px;color:var(--text-secondary)}
+.user-file-field .uf-preview{font-size:12px;color:var(--accent);margin-top:4px;display:flex;align-items:center;gap:4px;justify-content:center}
+.user-file-field .uf-preview .uf-remove{color:var(--danger);cursor:pointer;margin-left:4px}
 .hidden{display:none!important}
 .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.7);z-index:9999;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:var(--main)}
 </style>
@@ -298,7 +308,7 @@ const DB={
     const ps=await this._fetch('projects?select=*,project_columns(*)&order=display_order');
     return (ps||[]).map(p=>({
       id:p.id,name:p.name,slug:p.slug,layoutType:p.layout_type,displayOrder:p.display_order,dataVersion:p.data_version,description:p.description||'',createdAt:p.created_at,
-      columns:(p.project_columns||[]).map(c=>({id:c.id,label:c.label,order:c.col_order})).sort((a,b)=>a.order-b.order)
+      columns:(p.project_columns||[]).map(c=>({id:c.id,label:c.label,order:c.col_order,fieldType:c.field_type||'text'})).sort((a,b)=>a.order-b.order)
     }));
   },
   async createProject(p){
@@ -307,7 +317,7 @@ const DB={
     const ins=await this._fetch('projects',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(body)});
     const proj=ins[0];
     if(p.columns&&p.columns.length){
-      const colRows=p.columns.map((c,i)=>({project_id:proj.id,label:c.label,col_order:i}));
+      const colRows=p.columns.map((c,i)=>({project_id:proj.id,label:c.label,col_order:i,field_type:c.fieldType||'text'}));
       await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
     }
     return proj.id;
@@ -340,14 +350,14 @@ const DB={
     // delete old columns first, then insert fresh (no ID reuse to avoid PK conflicts)
     await this._fetch('project_columns?project_id=eq.'+pid,{method:'DELETE',headers:HEADERS});
     if(cols.length){
-      const colRows=cols.map((c,i)=>({project_id:pid,label:c.label,col_order:c.order!==undefined?c.order:i}));
+      const colRows=cols.map((c,i)=>({project_id:pid,label:c.label,col_order:c.order!==undefined?c.order:i,field_type:c.fieldType||'text'}));
       const inserted=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify(colRows)});
       return inserted;
     }
     return [];
   },
-  async addColumn(pid,label,order){
-    const ins=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({project_id:pid,label:label,col_order:order})});
+  async addColumn(pid,label,order,fieldType){
+    const ins=await this._fetch('project_columns',{method:'POST',headers:HEADERS_RETURN,body:JSON.stringify({project_id:pid,label:label,col_order:order,field_type:fieldType||'text'})});
     return ins[0];
   },
   async deleteColumn(cid){
@@ -703,7 +713,6 @@ const App={
           <table class="data-table"><thead><tr>
             <th style="width:36px"><input type="checkbox" id="selectAll" class="row-checkbox" title="전체 선택"></th><th class="sticky-col col-no" style="left:0">No.</th>
             ${cols.map(c=>`<th style="min-width:150px" data-cid="${c.id}">${esc(c.label)}<button class="col-del" data-dc="${c.id}">✕</button></th>`).join('')}
-            <th style="min-width:80px">첨부</th>
             <th class="col-add-btn" id="addcol" style="cursor:pointer">＋</th>
           </tr></thead><tbody id="tbody">
             ${rows.map((row,idx)=>{
@@ -721,7 +730,6 @@ const App={
                   }
                   return `<td data-rid="${row.id}" data-cid="${c.id}" class="ecell">${display}</td>`
                 }).join('')}
-                <td>${row.rowFileName?`<a class="file-link" data-fname="${esc(row.rowFileName)}" data-fdata="${esc(row.rowFileData||'')}">📎 ${esc(row.rowFileName)}</a>`:''}</td>
               </tr>`}).join('')}
           </tbody></table>
           <div class="add-row-btn" id="addrow">＋ 행 추가</div>
@@ -858,9 +866,10 @@ const App={
     let cols=[{label:''}];
     const render=()=>{
       const list=document.getElementById('clist');
-      list.innerHTML=cols.map((c,i)=>`<div class="drag-item"><span class="drag-num">${i+1}</span><div class="drag-arrows"><button data-up="${i}" ${i===0?'disabled':''} title="위로">▲</button><button data-dn="${i}" ${i===cols.length-1?'disabled':''} title="아래로">▼</button></div><input type="text" value="${esc(c.label)}" data-i="${i}" placeholder="항목명"><span class="drag-del" data-d="${i}" ${cols.length<=1?'style="visibility:hidden"':''}>✕</span></div>`).join('');
+      list.innerHTML=cols.map((c,i)=>`<div class="drag-item"><span class="drag-num">${i+1}</span><div class="drag-arrows"><button data-up="${i}" ${i===0?'disabled':''} title="위로">▲</button><button data-dn="${i}" ${i===cols.length-1?'disabled':''} title="아래로">▼</button></div><input type="text" value="${esc(c.label)}" data-i="${i}" placeholder="항목명"><div class="field-type-toggle"><button data-ft="${i}" data-type="text" class="${(c.fieldType||'text')==='text'?'active':''}">텍스트</button><button data-ft="${i}" data-type="file" class="${(c.fieldType||'text')==='file'?'active':''}">파일</button></div><span class="drag-del" data-d="${i}" ${cols.length<=1?'style="visibility:hidden"':''}>✕</span></div>`).join('');
       list.querySelectorAll('input').forEach(inp=>inp.oninput=()=>{cols[+inp.dataset.i].label=inp.value});
       list.querySelectorAll('[data-d]').forEach(d=>d.onclick=()=>{if(cols.length<=1)return;cols.splice(+d.dataset.d,1);render()});
+      list.querySelectorAll('[data-ft]').forEach(b=>b.onclick=()=>{const i=+b.dataset.ft;cols[i].fieldType=b.dataset.type;render()});
       list.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{const i=+b.dataset.up;if(i>0){[cols[i-1],cols[i]]=[cols[i],cols[i-1]];render()}});
       list.querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>{const i=+b.dataset.dn;if(i<cols.length-1){[cols[i],cols[i+1]]=[cols[i+1],cols[i]];render()}});
     };
@@ -894,7 +903,7 @@ const App={
       const nm=document.getElementById('npn').value.trim();if(!nm){showToast('프로젝트명 필수','warning');return}
       const vc=cols.filter(c=>c.label.trim());if(!vc.length){showToast('항목 1개 이상 필수','warning');return}
       const ps=await DB.getProjects();
-      const npId=await DB.createProject({name:nm,slug:genSlug(),displayOrder:ps.length,layoutType:selectedLayoutType,description:(document.getElementById('npdesc')?document.getElementById('npdesc').value:''),columns:vc.map(c=>({label:c.label.trim()}))});
+      const npId=await DB.createProject({name:nm,slug:genSlug(),displayOrder:ps.length,layoutType:selectedLayoutType,description:(document.getElementById('npdesc')?document.getElementById('npdesc').value:''),columns:vc.map(c=>({label:c.label.trim(),fieldType:c.fieldType||'text'}))});
       this.state.selectedProjectId=npId;ov.remove();
       showToast('프로젝트 생성됨','success');
       // get slug for clipboard
@@ -929,9 +938,10 @@ const App={
     let cols=p.columns.map(c=>({...c}));
     const render=()=>{
       const list=document.getElementById('eclist');
-      list.innerHTML=cols.map((c,i)=>`<div class="drag-item"><span class="drag-num">${i+1}</span><div class="drag-arrows"><button data-eup="${i}" ${i===0?'disabled':''} title="위로">▲</button><button data-edn="${i}" ${i===cols.length-1?'disabled':''} title="아래로">▼</button></div><input type="text" value="${esc(c.label)}" data-i="${i}"><span class="drag-del" data-d="${i}" ${cols.length<=1?'style="visibility:hidden"':''}>✕</span></div>`).join('');
+      list.innerHTML=cols.map((c,i)=>`<div class="drag-item"><span class="drag-num">${i+1}</span><div class="drag-arrows"><button data-eup="${i}" ${i===0?'disabled':''} title="위로">▲</button><button data-edn="${i}" ${i===cols.length-1?'disabled':''} title="아래로">▼</button></div><input type="text" value="${esc(c.label)}" data-i="${i}"><div class="field-type-toggle"><button data-eft="${i}" data-type="text" class="${(c.fieldType||'text')==='text'?'active':''}">텍스트</button><button data-eft="${i}" data-type="file" class="${(c.fieldType||'text')==='file'?'active':''}">파일</button></div><span class="drag-del" data-d="${i}" ${cols.length<=1?'style="visibility:hidden"':''}>✕</span></div>`).join('');
       list.querySelectorAll('input').forEach(inp=>inp.oninput=()=>{cols[+inp.dataset.i].label=inp.value});
       list.querySelectorAll('[data-d]').forEach(d=>d.onclick=async()=>{if(cols.length<=1)return;const rm=cols[+d.dataset.d];if(rm.id)await DB.deleteCellsByColumn(rm.id);cols.splice(+d.dataset.d,1);render()});
+      list.querySelectorAll('[data-eft]').forEach(b=>b.onclick=()=>{const i=+b.dataset.eft;cols[i].fieldType=b.dataset.type;render()});
       list.querySelectorAll('[data-eup]').forEach(b=>b.onclick=()=>{const i=+b.dataset.eup;if(i>0){[cols[i-1],cols[i]]=[cols[i],cols[i-1]];render()}});
       list.querySelectorAll('[data-edn]').forEach(b=>b.onclick=()=>{const i=+b.dataset.edn;if(i<cols.length-1){[cols[i],cols[i+1]]=[cols[i+1],cols[i]];render()}});
     };
@@ -942,7 +952,7 @@ const App={
       const nm=document.getElementById('epn').value.trim();if(!nm){showToast('프로젝트명 필수','warning');return}
       p.name=nm;p.layoutType=editLayoutType;p.description=document.getElementById('epdesc').value||'';
       await DB.updateProject(pid,{name:nm,layoutType:editLayoutType,description:p.description})
-      const validCols=cols.filter(c=>c.label.trim()).map((c,i)=>({id:c.id||undefined,label:c.label.trim(),order:i}));
+      const validCols=cols.filter(c=>c.label.trim()).map((c,i)=>({id:c.id||undefined,label:c.label.trim(),order:i,fieldType:c.fieldType||'text'}));
       await DB.setProjectColumns(pid,validCols);
       await DB.bumpVersion(pid);ov.remove();showToast('저장됨','success');
       await this.renderSB();if(this.state.selectedProjectId===pid)await this.renderPV(pid);
@@ -1146,7 +1156,12 @@ const App={
   _renderType1(app,proj,cols,rowsData,lastSaved,slug,ses){
     const fileState={};
     rowsData.forEach((rd,idx)=>{
-      if(rd.rowFileName) fileState[`row-${idx}`]={name:rd.rowFileName,data:rd.rowFileData};
+      cols.forEach(c=>{
+        if((c.fieldType||'text')==='file'){
+          const cd=rd.cells[c.id]||{};
+          if(cd.fileName) fileState[`${idx}-${c.id}`]={name:cd.fileName,data:cd.fileData||''};
+        }
+      });
     });
 
     app.innerHTML=`
@@ -1162,7 +1177,6 @@ const App={
               <thead><tr>
                 <th style="width:40px">No.</th>
                 ${cols.map(c=>`<th>${esc(c.label)}</th>`).join('')}
-                <th style="min-width:90px">파일첨부</th>
                 <th style="min-width:50px">삭제</th>
               </tr></thead>
               <tbody>
@@ -1170,13 +1184,12 @@ const App={
                   <tr>
                     <td style="text-align:center;font-weight:600">${idx+1}</td>
                     ${cols.map(c=>{
-                      const cd=rd.cells[c.id]||{textValue:''};
+                      const cd=rd.cells[c.id]||{textValue:'',fileName:'',fileData:''};
+                      if((c.fieldType||'text')==='file'){
+                        return `<td class="row-file-cell"><label class="row-file-btn">📎 파일선택<input type="file" style="display:none" data-fidx="${idx}" data-fcid="${c.id}"></label><div class="fc-area" data-fca="${idx}-${c.id}">${cd.fileName?`<div class="file-preview-sm"><span>📎 ${esc(cd.fileName)}</span><span class="fremove" data-fcr="${idx}-${c.id}">✕</span></div>`:''}</div></td>`;
+                      }
                       return `<td><input type="text" data-idx="${idx}" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="입력"></td>`;
                     }).join('')}
-                    <td class="row-file-cell">
-                      <label class="row-file-btn">📎 첨부<input type="file" style="display:none" data-rfidx="${idx}"></label>
-                      <div class="rf-area" data-rfa="${idx}">${rd.rowFileName?`<div class="file-preview-sm"><span>📎 ${esc(rd.rowFileName)}</span><span class="fremove" data-rfr="${idx}">✕</span></div>`:''}</div>
-                    </td>
                     <td style="text-align:center"><button class="btn btn-danger btn-xs" data-delrow="${idx}" ${rowsData.length<=1?'disabled style="opacity:0.3"':''}>✕</button></td>
                   </tr>
                 `).join('')}
@@ -1190,19 +1203,20 @@ const App={
         </div>
       </div>`;
 
-    document.querySelectorAll('[data-rfidx]').forEach(inp=>{
-      inp.onchange=e=>{const idx=inp.dataset.rfidx,file=e.target.files[0];if(!file)return;
+    // File field handlers (per-column file fields)
+    document.querySelectorAll('[data-fcid]').forEach(inp=>{
+      inp.onchange=e=>{const idx=inp.dataset.fidx,cid=inp.dataset.fcid,file=e.target.files[0];if(!file)return;
         if(file.size>20*1024*1024){showToast('파일 20MB 초과','error');return}
         const rd=new FileReader();rd.onload=ev=>{
-          fileState[`row-${idx}`]={name:file.name,data:ev.target.result};
-          const area=document.querySelector(`[data-rfa="${idx}"]`);
-          area.innerHTML=`<div class="file-preview-sm"><span>📎 ${esc(file.name)}</span><span class="fremove" data-rfr="${idx}">✕</span></div>`;
-          area.querySelector('.fremove').onclick=()=>{delete fileState[`row-${idx}`];area.innerHTML=''};
+          const key=`${idx}-${cid}`;fileState[key]={name:file.name,data:ev.target.result};
+          const area=document.querySelector(`[data-fca="${key}"]`);
+          area.innerHTML=`<div class="file-preview-sm"><span>📎 ${esc(file.name)}</span><span class="fremove" data-fcr="${key}">✕</span></div>`;
+          area.querySelector('.fremove').onclick=()=>{delete fileState[key];area.innerHTML=''};
         };rd.readAsDataURL(file);
       };
     });
-    document.querySelectorAll('[data-rfr]').forEach(btn=>{
-      btn.onclick=()=>{delete fileState[`row-${btn.dataset.rfr}`];const area=document.querySelector(`[data-rfa="${btn.dataset.rfr}"]`);if(area)area.innerHTML=''};
+    document.querySelectorAll('[data-fcr]').forEach(btn=>{
+      btn.onclick=()=>{const key=btn.dataset.fcr;delete fileState[key];const area=document.querySelector(`[data-fca="${key}"]`);if(area)area.innerHTML=''};
     });
 
     this._bindCommonUserEvents(proj,cols,rowsData,fileState,slug,ses,1);
@@ -1212,7 +1226,12 @@ const App={
   _renderType2(app,proj,cols,rowsData,lastSaved,slug,ses){
     const rd=rowsData[0];
     const fileState={};
-    if(rd.rowFileName) fileState['row-0']={name:rd.rowFileName,data:rd.rowFileData};
+    cols.forEach(c=>{
+      if((c.fieldType||'text')==='file'){
+        const cd=rd.cells[c.id]||{};
+        if(cd.fileName) fileState[`0-${c.id}`]={name:cd.fileName,data:cd.fileData||''};
+      }
+    });
 
     app.innerHTML=`
       <div class="user-page">
@@ -1229,32 +1248,28 @@ const App={
             groups.forEach(g=>{
               html+=`<div class="group-section"><div class="group-header"><span class="group-icon">${g.icon}</span>${esc(g.title)}</div>`;
               g.cols.forEach(c=>{
-                const cd=rd.cells[c.id]||{textValue:''};
+                const cd=rd.cells[c.id]||{textValue:'',fileName:'',fileData:''};
                 const shortLabel=c.label.replace(/자녀\s*\d+\s*/,'').trim()||c.label;
-                html+=`<div class="group-field"><label>${esc(shortLabel)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="내용을 입력하세요"></div>`;
+                if((c.fieldType||'text')==='file'){
+                  html+=`<div class="group-field"><label>${esc(shortLabel)}</label><div class="user-file-field" data-ufdrop="${c.id}"><div class="uf-icon">📁</div><div class="uf-text">클릭하여 파일 선택</div><input type="file" style="display:none" data-vfcid="${c.id}"><div class="uf-prev" data-vfpa="${c.id}">${cd.fileName?`<div class="uf-preview"><span>📎 ${esc(cd.fileName)}</span><span class="uf-remove" data-vfr="${c.id}">✕</span></div>`:''}</div></div></div>`;
+                } else {
+                  html+=`<div class="group-field"><label>${esc(shortLabel)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="내용을 입력하세요"></div>`;
+                }
               });
               html+=`</div>`;
             });
-            // Render ungrouped fields (비고 등) after groups, before file attach
+            // Render ungrouped fields (비고 등) after groups
             ungrouped.forEach(c=>{
-              const cd=rd.cells[c.id]||{textValue:''};
-              html+=`<div class="ungrouped-field"><label>${esc(c.label)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="내용을 입력하세요"></div>`;
+              const cd=rd.cells[c.id]||{textValue:'',fileName:'',fileData:''};
+              if((c.fieldType||'text')==='file'){
+                html+=`<div class="ungrouped-field"><label>${esc(c.label)}</label><div class="user-file-field" data-ufdrop="${c.id}"><div class="uf-icon">📁</div><div class="uf-text">클릭하여 파일 선택</div><input type="file" style="display:none" data-vfcid="${c.id}"><div class="uf-prev" data-vfpa="${c.id}">${cd.fileName?`<div class="uf-preview"><span>📎 ${esc(cd.fileName)}</span><span class="uf-remove" data-vfr="${c.id}">✕</span></div>`:''}</div></div></div>`;
+              } else {
+                html+=`<div class="ungrouped-field"><label>${esc(c.label)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="내용을 입력하세요"></div>`;
+              }
             });
             return html;
           })()}
 
-          <div class="file-attach-area">
-            <h3>📎 파일 첨부</h3>
-            <div class="file-drop-zone" id="dropZone">
-              <div class="drop-icon">📁</div>
-              <p>클릭하여 파일을 선택하세요</p>
-              <p style="font-size:11px;margin-top:4px;color:var(--text-secondary)">jpg, pdf, docx 등 (최대 20MB)</p>
-              <input type="file" style="display:none" id="vfileInput">
-            </div>
-            <div class="file-list" id="vfileList">
-              ${rd.rowFileName?`<div class="file-list-item"><span>📎 ${esc(rd.rowFileName)}</span><span class="fl-remove" id="vfileRemove">✕</span></div>`:''}
-            </div>
-          </div>
 
           <div class="user-excel-section"><h3>📊 엑셀 일괄 입력</h3><div class="user-excel-btns"><button class="btn btn-secondary btn-sm" id="utpl">📥 양식 다운로드</button><button class="btn btn-secondary btn-sm" id="uexup">📤 엑셀 업로드</button></div></div>
           <div class="user-actions"><button class="save-btn" id="usave">💾 저장하기</button><button class="delete-my-btn" id="udel">🗑️ 내 데이터 전체 삭제</button></div>
@@ -1262,22 +1277,26 @@ const App={
         </div>
       </div>`;
 
-    const dropZone=document.getElementById('dropZone'),vInput=document.getElementById('vfileInput');
-    dropZone.onclick=()=>vInput.click();
-    dropZone.ondragover=e=>{e.preventDefault();dropZone.classList.add('dragover')};
-    dropZone.ondragleave=()=>dropZone.classList.remove('dragover');
-    dropZone.ondrop=e=>{e.preventDefault();dropZone.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);vInput.files=dt.files;vInput.dispatchEvent(new Event('change'))}};
-    vInput.onchange=e=>{
-      const file=e.target.files[0];if(!file)return;
-      if(file.size>20*1024*1024){showToast('파일 20MB 초과','error');return}
-      const reader=new FileReader();reader.onload=ev=>{
-        fileState['row-0']={name:file.name,data:ev.target.result};
-        document.getElementById('vfileList').innerHTML=`<div class="file-list-item"><span>📎 ${esc(file.name)} (${(file.size/1024/1024).toFixed(1)}MB)</span><span class="fl-remove" id="vfileRemove">✕</span></div>`;
-        document.getElementById('vfileRemove').onclick=()=>{delete fileState['row-0'];document.getElementById('vfileList').innerHTML=''};
-      };reader.readAsDataURL(file);
-    };
-    const vfr=document.getElementById('vfileRemove');
-    if(vfr) vfr.onclick=()=>{delete fileState['row-0'];document.getElementById('vfileList').innerHTML=''};
+    // File field handlers for Type2
+    document.querySelectorAll('[data-ufdrop]').forEach(zone=>{
+      const cid=zone.dataset.ufdrop;
+      const inp=zone.querySelector('[data-vfcid]');
+      zone.onclick=(e)=>{if(e.target.closest('.uf-remove'))return;inp.click()};
+      inp.onclick=e=>e.stopPropagation();
+      inp.onchange=e=>{
+        const file=e.target.files[0];if(!file)return;
+        if(file.size>20*1024*1024){showToast('파일 20MB 초과','error');return}
+        const reader=new FileReader();reader.onload=ev=>{
+          fileState[`0-${cid}`]={name:file.name,data:ev.target.result};
+          const area=document.querySelector(`[data-vfpa="${cid}"]`);
+          area.innerHTML=`<div class="uf-preview"><span>📎 ${esc(file.name)}</span><span class="uf-remove" data-vfr="${cid}">✕</span></div>`;
+          area.querySelector('.uf-remove').onclick=(e2)=>{e2.stopPropagation();delete fileState[`0-${cid}`];area.innerHTML=''};
+        };reader.readAsDataURL(file);
+      };
+    });
+    document.querySelectorAll('[data-vfr]').forEach(btn=>{
+      btn.onclick=(e)=>{e.stopPropagation();const cid=btn.dataset.vfr;delete fileState[`0-${cid}`];const area=document.querySelector(`[data-vfpa="${cid}"]`);if(area)area.innerHTML=''};
+    });
 
     this._bindCommonUserEvents(proj,cols,rowsData,fileState,slug,ses,2);
   },
@@ -1334,10 +1353,18 @@ const App={
 
           const cellsToInsert=[];
           cols.forEach(c=>{
-            const textInp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
-            const tv=textInp?textInp.value:'';
-            if(tv){
-              cellsToInsert.push({rowId:newRowId,columnId:c.id,textValue:tv,fileName:null,fileData:null});
+            if((c.fieldType||'text')==='file'){
+              const fk=`${idx}-${c.id}`;
+              const file=fileState[fk]||null;
+              if(file){
+                cellsToInsert.push({rowId:newRowId,columnId:c.id,textValue:'',fileName:file.name,fileData:file.data});
+              }
+            } else {
+              const textInp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
+              const tv=textInp?textInp.value:'';
+              if(tv){
+                cellsToInsert.push({rowId:newRowId,columnId:c.id,textValue:tv,fileName:null,fileData:null});
+              }
             }
           });
           if(cellsToInsert.length)await DB.createCells(cellsToInsert);
