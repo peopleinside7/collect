@@ -1434,24 +1434,27 @@ const App={
     document.getElementById('utpl').onclick=()=>this.dlTemplate(proj.id);
     document.getElementById('uexup').onclick=()=>this.showUserExcelUpload(proj.id,ses.userId,slug,cols);
 
-    // 행 추가 (PC 테이블 + 모바일 카드 둘 다)
+    // 행 추가/삭제 — DB 재조회 없이 로컬 상태로 즉시 리렌더링
+    const reRenderLocal=()=>{
+      this._saveFormState(cols,rowsData,fileState,layoutType);
+      if(layoutType===1) this._renderType1(document.getElementById('app'),proj,cols,rowsData,null,slug,ses);
+      else this._renderType2(document.getElementById('app'),proj,cols,rowsData,null,slug,ses);
+    };
+
     const addRowFn=()=>{
       rowsData.push({rowId:null,cells:{},rowFileName:'',rowFileData:''});
-      this._saveFormState(cols,rowsData,fileState,layoutType);
-      this.renderUserInput(slug);
+      reRenderLocal();
     };
     const addRowBtn=document.getElementById('uaddrow');
     if(addRowBtn) addRowBtn.onclick=addRowFn;
     const addRowBtn2=document.getElementById('uaddrow2');
     if(addRowBtn2) addRowBtn2.onclick=addRowFn;
 
-    // 행 삭제 (PC 테이블 data-delrow + 모바일 카드 data-mdelrow)
     const delRowFn=(idx)=>{
       if(rowsData.length<=1){showToast('최소 1개 행은 유지됩니다','warning');return}
       cols.forEach(c=>{delete fileState[`${idx}-${c.id}`]});
       rowsData.splice(idx,1);
-      this._saveFormState(cols,rowsData,fileState,layoutType);
-      this.renderUserInput(slug);
+      reRenderLocal();
     };
     document.querySelectorAll('[data-delrow]').forEach(btn=>{btn.onclick=()=>delRowFn(+btn.dataset.delrow)});
     document.querySelectorAll('[data-mdelrow]').forEach(btn=>{btn.onclick=()=>delRowFn(+btn.dataset.mdelrow)});
