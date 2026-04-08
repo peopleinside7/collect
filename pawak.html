@@ -1536,12 +1536,14 @@ const App={
                 cellsToInsert.push({rowId:newRowId,columnId:c.id,textValue:'',fileName:file.name,fileData:file.data});
               }
             } else {
-              // PC 테이블 input (data-idx/data-cid) + 모바일 카드 input (data-midx/data-mcid) 모두 탐색
+              // 모바일 카드 input 우선 → PC 테이블 fallback
               let tv='';
-              const pcInp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
-              if(pcInp&&pcInp.value)tv=pcInp.value;
               const mInp=document.querySelector(`input[data-midx="${idx}"][data-mcid="${c.id}"]`);
-              if(mInp&&mInp.value)tv=mInp.value;
+              const pcInp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
+              if(mInp&&mInp.offsetParent!==null&&mInp.value) tv=mInp.value;
+              else if(pcInp&&pcInp.offsetParent!==null&&pcInp.value) tv=pcInp.value;
+              else if(mInp&&mInp.value) tv=mInp.value;
+              else if(pcInp&&pcInp.value) tv=pcInp.value;
               if(tv){
                 cellsToInsert.push({rowId:newRowId,columnId:c.id,textValue:tv,fileName:null,fileData:null});
               }
@@ -1571,12 +1573,13 @@ const App={
     rowsData.forEach((rd,idx)=>{
       cols.forEach(c=>{
         if(!rd.cells[c.id])rd.cells[c.id]={textValue:'',fileName:'',fileData:''};
-        // PC input
-        const inp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
-        if(inp&&inp.value)rd.cells[c.id].textValue=inp.value;
-        // 모바일 input
+        // visible한 input에서 값 읽기 (모바일 우선)
         const minp=document.querySelector(`input[data-midx="${idx}"][data-mcid="${c.id}"]`);
-        if(minp&&minp.value)rd.cells[c.id].textValue=minp.value;
+        const pinp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
+        if(minp&&minp.offsetParent!==null&&minp.value) rd.cells[c.id].textValue=minp.value;
+        else if(pinp&&pinp.offsetParent!==null&&pinp.value) rd.cells[c.id].textValue=pinp.value;
+        else if(minp&&minp.value) rd.cells[c.id].textValue=minp.value;
+        else if(pinp&&pinp.value) rd.cells[c.id].textValue=pinp.value;
       });
     });
   },
