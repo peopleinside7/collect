@@ -1325,9 +1325,9 @@ const App={
                 ${cols.map(c=>{
                   const cd=rd.cells[c.id]||{textValue:'',fileName:'',fileData:''};
                   if((c.fieldType||'text')==='file'){
-                    return `<div class="mc-field"><label>${esc(c.label)}</label><label class="row-file-btn" style="font-size:13px">📎 파일선택<input type="file" style="display:none" data-fidx="${idx}" data-fcid="${c.id}"></label><div class="fc-area" data-fca="${idx}-${c.id}">${cd.fileName?`<div class="file-preview-sm"><span>📎 ${esc(cd.fileName)}</span><span class="fremove" data-fcr="${idx}-${c.id}">✕</span></div>`:''}</div></div>`;
+                    return `<div class="mc-field"><label>${esc(c.label)}</label><label class="row-file-btn" style="font-size:13px;display:block;padding:10px;background:var(--bg-page);border:2px dashed var(--border);border-radius:8px;text-align:center">📎 파일선택<input type="file" style="display:none" data-mfidx="${idx}" data-mfcid="${c.id}"></label><div class="mfc-area" data-mfca="${idx}-${c.id}">${cd.fileName?`<div class="file-preview-sm" style="margin-top:6px"><span>📎 ${esc(cd.fileName)}</span><span class="fremove" data-mfcr="${idx}-${c.id}">✕</span></div>`:''}</div></div>`;
                   }
-                  return `<div class="mc-field"><label>${esc(c.label)}</label><input type="text" data-idx="${idx}" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="${esc(c.label)} 입력"></div>`;
+                  return `<div class="mc-field"><label>${esc(c.label)}</label><input type="text" data-midx="${idx}" data-mcid="${c.id}" value="${esc(cd.textValue)}" placeholder="${esc(c.label)} 입력"></div>`;
                 }).join('')}
               </div>
             `).join('')}
@@ -1339,20 +1339,34 @@ const App={
         </div>
       </div>`;
 
-    // File field handlers (per-column file fields)
+    // PC 테이블 파일 핸들러
     document.querySelectorAll('[data-fcid]').forEach(inp=>{
       inp.onchange=e=>{const idx=inp.dataset.fidx,cid=inp.dataset.fcid,file=e.target.files[0];if(!file)return;
         if(file.size>20*1024*1024){showToast('파일 20MB 초과','error');return}
         const rd=new FileReader();rd.onload=ev=>{
           const key=`${idx}-${cid}`;fileState[key]={name:file.name,data:ev.target.result};
           const area=document.querySelector(`[data-fca="${key}"]`);
-          area.innerHTML=`<div class="file-preview-sm"><span>📎 ${esc(file.name)}</span><span class="fremove" data-fcr="${key}">✕</span></div>`;
-          area.querySelector('.fremove').onclick=()=>{delete fileState[key];area.innerHTML=''};
+          if(area){area.innerHTML=`<div class="file-preview-sm"><span>📎 ${esc(file.name)}</span><span class="fremove" data-fcr="${key}">✕</span></div>`;area.querySelector('.fremove').onclick=()=>{delete fileState[key];area.innerHTML=''}}
         };rd.readAsDataURL(file);
       };
     });
     document.querySelectorAll('[data-fcr]').forEach(btn=>{
       btn.onclick=()=>{const key=btn.dataset.fcr;delete fileState[key];const area=document.querySelector(`[data-fca="${key}"]`);if(area)area.innerHTML=''};
+    });
+    // 모바일 카드 파일 핸들러 (별도 속성: data-mfcid)
+    document.querySelectorAll('[data-mfcid]').forEach(inp=>{
+      inp.onchange=e=>{const idx=inp.dataset.mfidx,cid=inp.dataset.mfcid,file=e.target.files[0];if(!file)return;
+        if(file.size>20*1024*1024){showToast('파일 20MB 초과','error');return}
+        const rd=new FileReader();rd.onload=ev=>{
+          const key=`${idx}-${cid}`;fileState[key]={name:file.name,data:ev.target.result};
+          const area=document.querySelector(`[data-mfca="${key}"]`);
+          if(area){area.innerHTML=`<div class="file-preview-sm" style="margin-top:6px"><span>📎 ${esc(file.name)}</span><span class="fremove" data-mfcr="${key}">✕</span></div>`;area.querySelector('.fremove').onclick=()=>{delete fileState[key];area.innerHTML=''}}
+          showToast('파일 첨부됨','success');
+        };rd.readAsDataURL(file);
+      };
+    });
+    document.querySelectorAll('[data-mfcr]').forEach(btn=>{
+      btn.onclick=()=>{const key=btn.dataset.mfcr;delete fileState[key];const area=document.querySelector(`[data-mfca="${key}"]`);if(area)area.innerHTML=''};
     });
 
     this._bindCommonUserEvents(proj,cols,rowsData,fileState,slug,ses,1);
@@ -1522,8 +1536,12 @@ const App={
                 cellsToInsert.push({rowId:newRowId,columnId:c.id,textValue:'',fileName:file.name,fileData:file.data});
               }
             } else {
-              const textInp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
-              const tv=textInp?textInp.value:'';
+              // PC 테이블 input (data-idx/data-cid) + 모바일 카드 input (data-midx/data-mcid) 모두 탐색
+              let tv='';
+              const pcInp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
+              if(pcInp&&pcInp.value)tv=pcInp.value;
+              const mInp=document.querySelector(`input[data-midx="${idx}"][data-mcid="${c.id}"]`);
+              if(mInp&&mInp.value)tv=mInp.value;
               if(tv){
                 cellsToInsert.push({rowId:newRowId,columnId:c.id,textValue:tv,fileName:null,fileData:null});
               }
@@ -1552,13 +1570,14 @@ const App={
   _saveFormState(cols,rowsData,fileState,layoutType){
     rowsData.forEach((rd,idx)=>{
       cols.forEach(c=>{
+        if(!rd.cells[c.id])rd.cells[c.id]={textValue:'',fileName:'',fileData:''};
+        // PC input
         const inp=document.querySelector(`input[data-idx="${idx}"][data-cid="${c.id}"]`);
-        if(inp){
-          if(!rd.cells[c.id])rd.cells[c.id]={textValue:'',fileName:'',fileData:''};
-          rd.cells[c.id].textValue=inp.value;
-        }
+        if(inp&&inp.value)rd.cells[c.id].textValue=inp.value;
+        // 모바일 input
+        const minp=document.querySelector(`input[data-midx="${idx}"][data-mcid="${c.id}"]`);
+        if(minp&&minp.value)rd.cells[c.id].textValue=minp.value;
       });
-      // 파일 상태는 이제 컬럼별로 관리됨 (${idx}-${c.id})
     });
   },
 
