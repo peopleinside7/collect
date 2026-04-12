@@ -476,18 +476,19 @@ const DB={
   },
 
   // ── Cells ──
-  async getCells(rowIds){
+  // light=true: file_data 제외 (관리자 목록용, 타임아웃 방지)
+  // light=false: file_data 포함 (사용자 입력 pre-fill용)
+  async getCells(rowIds,light=false){
     if(rowIds&&rowIds.length){
-      // batch in chunks of 50
+      const selectCols=light?'id,row_id,column_id,text_value,file_name,updated_at':'*';
       let all=[];
       for(let i=0;i<rowIds.length;i+=50){
         const chunk=rowIds.slice(i,i+50);
-        const rows=await this._fetch('data_cells?row_id=in.('+chunk.join(',')+')'+'&select=*');
+        const rows=await this._fetch('data_cells?row_id=in.('+chunk.join(',')+')'+'&select='+selectCols);
         all=all.concat(rows||[]);
       }
-      return all.map(c=>({id:c.id,rowId:c.row_id,columnId:c.column_id,textValue:c.text_value||'',fileName:c.file_name||'',fileData:c.file_data||'',updatedAt:c.updated_at}));
+      return all.map(c=>({id:c.id,rowId:c.row_id,columnId:c.column_id,textValue:c.text_value||'',fileName:c.file_name||'',fileData:light?'':c.file_data||'',updatedAt:c.updated_at}));
     }
-    // rowIds가 없으면 빈 배열 반환 (전체 셀 조회 방지 — 데이터 누수 차단)
     return [];
   },
   async createCell(c){
@@ -703,7 +704,7 @@ const App={
     const ps=await DB.getProjects();
     const allRows=await DB.getRows();
     const rowIds=allRows.map(r=>r.id);
-    const cells=rowIds.length?await DB.getCells(rowIds):[];
+    const cells=rowIds.length?await DB.getCells(rowIds,true):[];
     const tu=new Set(allRows.filter(r=>r.userId).map(r=>r.userId)).size;
     mc.innerHTML=`
       <div class="stats-bar">
@@ -728,7 +729,7 @@ const App={
     if(!proj){await this.renderDash();return}
     const rows=await DB.getRows(pid);
     const rowIds=rows.map(r=>r.id);
-    const cells=rowIds.length?await DB.getCells(rowIds):[];
+    const cells=rowIds.length?await DB.getCells(rowIds,true):[];
     const users=await DB.getUsers(pid);
     const cols=proj.columns;
     const uc=new Set(rows.filter(r=>r.userId).map(r=>r.userId)).size;
@@ -811,7 +812,7 @@ const App={
       const selIds=[...document.querySelectorAll('.row-checkbox[data-rc]:checked')].map(c=>+c.dataset.rc);
       if(!selIds.length)return;
       const selRows=rows.filter(r=>selIds.includes(r.id));
-      const selCells=selIds.length?await DB.getCells(selIds):[];
+      const selCells=selIds.length?await DB.getCells(selIds,true):[];
       let csv='\uFEFF'+'No.,'+cols.map(c=>'"'+c.label.replace(/"/g,'""')+'"').join(',')+'\n';
       selRows.forEach((r,i)=>{csv+=`${i+1},${cols.map(c=>{const cl=selCells.find(x=>x.rowId===r.id&&x.columnId===c.id);let v=cl?(cl.textValue||''):'';if(cl&&cl.fileName)v+=(v?' ':'')+'[파일:'+cl.fileName+']';return '"'+v.replace(/"/g,'""')+'"'}).join(',')}\n`});
       const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=proj.name+'_선택데이터.csv';a.click();
@@ -1145,7 +1146,7 @@ const App={
     const ps=await DB.getProjects(),p=ps.find(x=>x.id===pid);if(!p)return;
     const cols=p.columns,rows=await DB.getRows(pid);
     const rowIds=rows.map(r=>r.id);
-    const cells=rowIds.length?await DB.getCells(rowIds):[];
+    const cells=rowIds.length?await DB.getCells(rowIds,true):[];
     let csv='\uFEFF'+'No.,'+cols.map(c=>'"'+c.label.replace(/"/g,'""')+'"').join(',')+'\n';
     rows.forEach((r,i)=>{csv+=`${i+1},${cols.map(c=>{const cl=cells.find(x=>x.rowId===r.id&&x.columnId===c.id);let v=cl?(cl.textValue||''):'';if(cl&&cl.fileName)v+=(v?' ':'')+'[파일:'+cl.fileName+']';return '"'+v.replace(/"/g,'""')+'"'}).join(',')}\n`});
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=p.name+'_데이터.csv';a.click();showToast('내보내기 완료','success');
