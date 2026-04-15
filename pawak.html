@@ -768,10 +768,9 @@ const App={
                   const cell=cells.find(cl=>cl.rowId===row.id&&cl.columnId===c.id);
                   const tv=cell?cell.textValue||'':'';
                   const fn=cell?cell.fileName||'':'';
-                  const fd=cell?cell.fileData||'':'';
                   let display=esc(tv);
-                  if(fn){
-                    display+=(tv?'<br>':'')+ `<a class="file-link" data-fname="${esc(fn)}" data-fdata="${esc(fd)}">📎 ${esc(fn)}</a>`;
+                  if(fn&&cell){
+                    display+=(tv?'<br>':'')+ `<a class="file-link" data-fname="${esc(fn)}" data-cellid="${cell.id}">📎 ${esc(fn)}</a>`;
                   }
                   return `<td data-rid="${row.id}" data-cid="${c.id}" class="ecell">${display}</td>`
                 }).join('')}
@@ -792,12 +791,27 @@ const App={
     document.querySelectorAll('.ecell').forEach(td=>td.ondblclick=()=>this.editCell(td,pid));
 
     document.querySelectorAll('.file-link').forEach(link=>{
-      link.onclick=e=>{
+      link.onclick=async(e)=>{
         e.preventDefault();e.stopPropagation();
         const fname=link.getAttribute('data-fname');
-        const fdata=link.getAttribute('data-fdata');
-        if(fdata) downloadFileFromData(fname,fdata);
-        else showToast('파일 데이터를 찾을 수 없습니다','warning');
+        const cellId=link.getAttribute('data-cellid');
+        if(!cellId){showToast('파일 ID 없음','warning');return}
+        try{
+          link.textContent='⏳ 다운로드 중...';
+          // 클릭 시에만 file_data 조회 (타임아웃 방지)
+          const rows=await DB._fetch('data_cells?id=eq.'+cellId+'&select=file_data,file_name&limit=1');
+          if(rows&&rows.length&&rows[0].file_data){
+            downloadFileFromData(rows[0].file_name||fname,rows[0].file_data);
+            link.innerHTML=`📎 ${esc(fname)}`;
+          } else {
+            showToast('파일 데이터를 찾을 수 없습니다','warning');
+            link.innerHTML=`📎 ${esc(fname)}`;
+          }
+        }catch(err){
+          console.error(err);
+          showToast('파일 다운로드 실패','error');
+          link.innerHTML=`📎 ${esc(fname)}`;
+        }
       };
     });
 
