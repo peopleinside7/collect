@@ -249,6 +249,10 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--main);outline-of
 .notice-box{background:linear-gradient(135deg,rgba(255,255,255,0.92),rgba(255,240,245,0.9));backdrop-filter:blur(10px);border-radius:16px;padding:20px 24px;margin-bottom:20px;border:1px solid rgba(255,182,193,0.5);box-shadow:0 4px 24px rgba(255,182,193,0.2)}
 .notice-box .notice-title{font-size:17px;font-weight:700;color:#d63384;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .notice-box .notice-content{font-size:14px;color:var(--text-primary);line-height:1.8;white-space:pre-wrap}
+/* ── 주제 설명 박스 (Topic description before questions) ── */
+.topic-box{background:linear-gradient(135deg,#f8f9ff,#eef0ff);border:1px solid var(--main-bg);border-left:5px solid var(--main);border-radius:12px;padding:16px 20px;margin:20px 0 12px;box-shadow:0 2px 12px rgba(94,105,238,.08)}
+.topic-box .topic-title{font-size:16px;font-weight:700;color:var(--main);margin-bottom:8px;line-height:1.4}
+.topic-box .topic-desc{font-size:14px;color:var(--text-primary);line-height:1.7;white-space:pre-wrap}
 /* ── Group sections (Type2 vertical form) ── */
 .group-section{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(94,105,238,.06);border-left:4px solid var(--main)}
 .group-section .group-header{font-size:15px;font-weight:700;color:var(--main);margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--main-bg);display:flex;align-items:center;gap:6px}
@@ -575,6 +579,18 @@ function downloadFileFromData(fileName, dataUrl){
   const a=document.createElement('a');a.href=dataUrl;a.download=fileName||'download';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
+
+// ── 주제 라벨 파싱 (🏵/🌼 주제 N. ... N-Y. 질문) ──
+function parseTopicLabel(label){
+  // "🏵 주제 N." 또는 "🌼 주제 N." 으로 시작하고, 중간에 "N-Y." 패턴이 나오면 분리
+  const m=label.match(/^([🏵🌼✨🌸🌺🌻🌹🎯📌🔸🔹]\s*주제\s*\d+\.[\s\S]*?)(?=\s+\d+-\d+\.)/);
+  if(m){
+    const topic=m[1].trim();
+    const rest=label.slice(m[0].length).trim();
+    return {topic,label:rest};
+  }
+  return {topic:null,label:label};
+}
 
 // ── Column grouping engine for Type2 ──
 function groupColumns(cols){
@@ -1423,17 +1439,28 @@ const App={
               });
               html+=`</div></div>`;
             });
-            // Render ungrouped fields (비고 등) — 그리드 래퍼
-            html+=`<div class="ungrouped-fields-grid">`;
+            // Render ungrouped fields — 주제 박스 + 질문 그리드
+            let gridOpen=false;
             ungrouped.forEach(c=>{
               const cd=rd.cells[c.id]||{textValue:'',fileName:'',fileData:''};
+              const parsed=parseTopicLabel(c.label);
+              // 주제 설명이 있으면: 그리드 닫고 주제 박스 표시 후 새 그리드 열기
+              if(parsed.topic){
+                if(gridOpen){html+=`</div>`;gridOpen=false}
+                const tm=parsed.topic.match(/^([🏵🌼✨🌸🌺🌻🌹🎯📌🔸🔹]\s*주제\s*\d+\.\s*[^\n]+)/);
+                const title=tm?tm[1]:parsed.topic.split(/\n/)[0];
+                const desc=parsed.topic.slice(title.length).trim();
+                html+=`<div class="topic-box"><div class="topic-title">${esc(title)}</div>${desc?`<div class="topic-desc">${esc(desc)}</div>`:''}</div>`;
+              }
+              if(!gridOpen){html+=`<div class="ungrouped-fields-grid">`;gridOpen=true}
+              const displayLabel=parsed.label||c.label;
               if((c.fieldType||'text')==='file'){
-                html+=`<div class="ungrouped-field"><label>${esc(c.label)}</label><div class="user-file-field" data-ufdrop="${c.id}"><div class="uf-icon">📁</div><div class="uf-text">파일 선택</div><input type="file" style="display:none" data-vfcid="${c.id}"><div class="uf-prev" data-vfpa="${c.id}">${cd.fileName?`<div class="uf-preview"><span>📎 ${esc(cd.fileName)}</span><span class="uf-remove" data-vfr="${c.id}">✕</span></div>`:''}</div></div></div>`;
+                html+=`<div class="ungrouped-field"><label>${esc(displayLabel)}</label><div class="user-file-field" data-ufdrop="${c.id}"><div class="uf-icon">📁</div><div class="uf-text">파일 선택</div><input type="file" style="display:none" data-vfcid="${c.id}"><div class="uf-prev" data-vfpa="${c.id}">${cd.fileName?`<div class="uf-preview"><span>📎 ${esc(cd.fileName)}</span><span class="uf-remove" data-vfr="${c.id}">✕</span></div>`:''}</div></div></div>`;
               } else {
-                html+=`<div class="ungrouped-field"><label>${esc(c.label)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="입력"></div>`;
+                html+=`<div class="ungrouped-field"><label>${esc(displayLabel)}</label><input type="text" data-idx="0" data-cid="${c.id}" value="${esc(cd.textValue)}" placeholder="입력"></div>`;
               }
             });
-            html+=`</div>`;
+            if(gridOpen)html+=`</div>`;
             return html;
           })()}
 
