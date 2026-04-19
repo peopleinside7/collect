@@ -593,6 +593,9 @@ function parseTopicLabel(label){
 }
 
 // ── Column grouping engine for Type2 ──
+// 부모 정보 그룹에 포함될 정확한 매칭 라벨 목록
+const PARENT_INFO_LABELS=['작성자','소속부서','자녀나이','부모성명','부모 성명','부모'];
+
 function groupColumns(cols){
   const groups=[];
   const ungrouped=[];
@@ -600,22 +603,22 @@ function groupColumns(cols){
 
   cols.forEach(c=>{
     const label=c.label;
-    // 1순위: "자녀N" 패턴 매칭 (자녀1, 자녀2, 자녀 3 등)
+    const trimmed=label.trim();
+    // 1순위: "자녀N" (자녀1, 자녀2 등 숫자 포함) — 자녀N 정보 그룹
     const childMatch=label.match(/자녀\s*(\d+)/);
-    // 2순위: "부모" 키워드만 (부서는 제외 — 자녀 소속부서와 혼동 방지)
-    const parentMatch=/부모/.test(label);
+    // 2순위: 부모 정보 정확 매칭 (작성자/소속부서/자녀나이/부모...)
+    const isParentInfo=PARENT_INFO_LABELS.some(p=>trimmed===p||trimmed.startsWith(p))||/부모/.test(label);
 
     if(childMatch){
       const num=childMatch[1];
       const key='child-'+num;
       if(!groupMap[key]){groupMap[key]={title:'자녀 '+num+' 정보',icon:'👶',cols:[],order:10+parseInt(num)};groups.push(groupMap[key])}
       groupMap[key].cols.push(c);
-    } else if(parentMatch){
+    } else if(isParentInfo){
       const key='parent';
       if(!groupMap[key]){groupMap[key]={title:'부모 정보',icon:'👨‍👩‍👧',cols:[],order:1};groups.push(groupMap[key])}
       groupMap[key].cols.push(c);
     } else {
-      // ungrouped: 파일첨부 직전(맨 아래)에 배치됨
       ungrouped.push(c);
     }
   });
