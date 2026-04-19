@@ -769,6 +769,8 @@ const App={
     const cols=proj.columns;
     const uc=new Set(rows.filter(r=>r.userId).map(r=>r.userId)).size;
     const baseUrl=location.origin+location.pathname+'#/p/'+proj.slug;
+    // SNS 공유용 URL (OG 메타태그 포함 정적 HTML)
+    const shareUrl=location.origin+location.pathname.replace(/pawak\.html$/,'')+'p/'+proj.slug+'.html';
 
     mc.innerHTML=`
       <div class="mini-dash">
@@ -780,7 +782,7 @@ const App={
       </div>
       <div class="project-info-bar">
         <h2>📋 ${esc(proj.name)}</h2>
-        <div class="url-row"><span style="font-size:13px;color:var(--text-secondary)">배포 URL:</span><span class="url" id="durl">${baseUrl}</span><button class="btn btn-accent btn-sm" id="cpurl">📋 URL 복사</button></div>
+        <div class="url-row"><span style="font-size:13px;color:var(--text-secondary)">배포 URL:</span><span class="url" id="durl">${baseUrl}</span><button class="btn btn-accent btn-sm" id="cpurl">📋 URL 복사</button><button class="btn btn-main btn-sm" id="cpshare" title="SNS 공유 시 프로젝트명이 표시되는 URL">📱 SNS 공유용</button></div>
         <div class="tool-row">
           <button class="btn btn-secondary btn-sm" id="etpl">📥 양식 다운로드</button>
           <button class="btn btn-secondary btn-sm" id="eimp">📤 엑셀 일괄 업로드</button>
@@ -817,6 +819,7 @@ const App={
       </div>`;
 
     document.getElementById('cpurl').onclick=()=>navigator.clipboard.writeText(baseUrl).then(()=>showToast('URL 복사됨','success'));
+    document.getElementById('cpshare').onclick=()=>navigator.clipboard.writeText(shareUrl).then(()=>showToast('SNS 공유용 URL 복사됨 (프로젝트명 표시)','success'));
     document.getElementById('etpl').onclick=()=>this.dlTemplate(pid);
     document.getElementById('eexp').onclick=()=>this.exportCSV(pid);
     document.getElementById('eimp').onclick=()=>this.showImportModal(pid);
