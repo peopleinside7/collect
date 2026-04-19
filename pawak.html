@@ -580,19 +580,27 @@ function downloadFileFromData(fileName, dataUrl){
 }
 
 
-// ── 주제 라벨 파싱 (주제 N. 설명 ... N-Y. 질문) ──
-// 이모지를 정규식 문자 클래스로 쓰면 surrogate pair 때문에 실패 → 단순 문자열 감지로 처리
+// ── 프로젝트별 주제 섹션 헤더 매핑 (slug 기준) ──
+const PROJECT_TOPIC_HEADERS={
+  'rvkqav16':{
+    '1':{title:'🏵 주제 1. 나는 어떤 경계를 넘고 있었을까?',desc:'"내가 괜찮다고 상대도 괜찮은 건 아닙니다."\n부모라는 이름으로 자녀의 사생활이나 심리적 선을 침범했던 경험을 나누어 봅시다.'},
+    '2':{title:'🌼 주제 2. 우리 가정의 경계는 지금 어떤 상태인가요?',desc:'* 깨어진 경계 / 경직된 경계 / 유연한 경계\n현재 우리 가정의 모습을 진단하고, 관계 회복을 위해 내가 먼저 내려놓아야 할 것을 찾아봅시다.'},
+    '3':{title:'🌼 주제 3. 더 발전적인 관계를 위해 내가 할 수 있는 실천은?',desc:'"부모의 작은 변화가 자녀와 형제의 마음을 여는 열쇠가 됩니다."\n건강하고 유연한 경계를 만들기 위해 오늘부터 시작할 구체적인 약속을 나누어 봅시다.'}
+  }
+};
+// label에서 "N-Y." 패턴에서 N(주제 번호) 추출
+function getTopicNumber(label){
+  const m=label&&label.match(/^\s*(\d+)-\d+\./);
+  return m?m[1]:null;
+}
+// 주제 설명 분리 (기존 긴 label 대응)
 function parseTopicLabel(label){
   if(!label||!/주제\s*\d+\./.test(label))return {topic:null,label:label};
-  // label에서 "N-Y." 첫 등장 위치 찾기 (주제 설명과 문항 경계)
   const qMatch=label.match(/\s+(\d+-\d+\.[\s\S]*)$/);
   if(qMatch){
     const topicPart=label.slice(0,qMatch.index).trim();
     const questionPart=qMatch[1].trim();
-    // topicPart가 "주제 N." 을 포함하는지 확인
-    if(/주제\s*\d+\./.test(topicPart)){
-      return {topic:topicPart,label:questionPart};
-    }
+    if(/주제\s*\d+\./.test(topicPart))return {topic:topicPart,label:questionPart};
   }
   return {topic:null,label:label};
 }
@@ -1449,20 +1457,27 @@ const App={
             });
             // Render ungrouped fields — 주제 박스 + 질문 그리드
             let gridOpen=false;
+            let currentTopicNum=null;
+            const slugHeaders=PROJECT_TOPIC_HEADERS[proj.slug]||{};
             ungrouped.forEach(c=>{
               const cd=rd.cells[c.id]||{textValue:'',fileName:'',fileData:''};
               const parsed=parseTopicLabel(c.label);
-              // 주제 설명이 있으면: 그리드 닫고 주제 박스 표시 후 새 그리드 열기
-              if(parsed.topic){
+              // 1) 프로젝트별 주제 매핑이 있으면: N-Y. 패턴에서 N이 바뀔 때마다 섹션 헤더 삽입
+              const topicNum=getTopicNumber(c.label);
+              if(topicNum&&topicNum!==currentTopicNum&&slugHeaders[topicNum]){
                 if(gridOpen){html+=`</div>`;gridOpen=false}
-                // 주제 부분에서 첫 "?" 또는 첫 문장까지를 title, 나머지를 desc로 분리
+                const th=slugHeaders[topicNum];
+                html+=`<div class="topic-box"><div class="topic-title">${esc(th.title)}</div>${th.desc?`<div class="topic-desc">${esc(th.desc)}</div>`:''}</div>`;
+                currentTopicNum=topicNum;
+              }
+              // 2) label 안에 주제 설명이 포함된 경우(legacy): parseTopicLabel로 분리
+              else if(parsed.topic){
+                if(gridOpen){html+=`</div>`;gridOpen=false}
                 const topicText=parsed.topic;
                 const qIdx=topicText.indexOf('?');
                 let title,desc;
-                if(qIdx>-1&&qIdx<80){
-                  title=topicText.slice(0,qIdx+1).trim();
-                  desc=topicText.slice(qIdx+1).trim();
-                } else {
+                if(qIdx>-1&&qIdx<80){title=topicText.slice(0,qIdx+1).trim();desc=topicText.slice(qIdx+1).trim()}
+                else {
                   const periodMatch=topicText.match(/^(.+?주제\s*\d+\.\s*[^.?!]+[.?!])/);
                   if(periodMatch){title=periodMatch[1].trim();desc=topicText.slice(periodMatch[1].length).trim()}
                   else {title=topicText;desc=''}
