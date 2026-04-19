@@ -580,14 +580,19 @@ function downloadFileFromData(fileName, dataUrl){
 }
 
 
-// ── 주제 라벨 파싱 (🏵/🌼 주제 N. ... N-Y. 질문) ──
+// ── 주제 라벨 파싱 (주제 N. 설명 ... N-Y. 질문) ──
+// 이모지를 정규식 문자 클래스로 쓰면 surrogate pair 때문에 실패 → 단순 문자열 감지로 처리
 function parseTopicLabel(label){
-  // "🏵 주제 N." 또는 "🌼 주제 N." 으로 시작하고, 중간에 "N-Y." 패턴이 나오면 분리
-  const m=label.match(/^([🏵🌼✨🌸🌺🌻🌹🎯📌🔸🔹]\s*주제\s*\d+\.[\s\S]*?)(?=\s+\d+-\d+\.)/);
-  if(m){
-    const topic=m[1].trim();
-    const rest=label.slice(m[0].length).trim();
-    return {topic,label:rest};
+  if(!label||!/주제\s*\d+\./.test(label))return {topic:null,label:label};
+  // label에서 "N-Y." 첫 등장 위치 찾기 (주제 설명과 문항 경계)
+  const qMatch=label.match(/\s+(\d+-\d+\.[\s\S]*)$/);
+  if(qMatch){
+    const topicPart=label.slice(0,qMatch.index).trim();
+    const questionPart=qMatch[1].trim();
+    // topicPart가 "주제 N." 을 포함하는지 확인
+    if(/주제\s*\d+\./.test(topicPart)){
+      return {topic:topicPart,label:questionPart};
+    }
   }
   return {topic:null,label:label};
 }
@@ -1450,9 +1455,18 @@ const App={
               // 주제 설명이 있으면: 그리드 닫고 주제 박스 표시 후 새 그리드 열기
               if(parsed.topic){
                 if(gridOpen){html+=`</div>`;gridOpen=false}
-                const tm=parsed.topic.match(/^([🏵🌼✨🌸🌺🌻🌹🎯📌🔸🔹]\s*주제\s*\d+\.\s*[^\n]+)/);
-                const title=tm?tm[1]:parsed.topic.split(/\n/)[0];
-                const desc=parsed.topic.slice(title.length).trim();
+                // 주제 부분에서 첫 "?" 또는 첫 문장까지를 title, 나머지를 desc로 분리
+                const topicText=parsed.topic;
+                const qIdx=topicText.indexOf('?');
+                let title,desc;
+                if(qIdx>-1&&qIdx<80){
+                  title=topicText.slice(0,qIdx+1).trim();
+                  desc=topicText.slice(qIdx+1).trim();
+                } else {
+                  const periodMatch=topicText.match(/^(.+?주제\s*\d+\.\s*[^.?!]+[.?!])/);
+                  if(periodMatch){title=periodMatch[1].trim();desc=topicText.slice(periodMatch[1].length).trim()}
+                  else {title=topicText;desc=''}
+                }
                 html+=`<div class="topic-box"><div class="topic-title">${esc(title)}</div>${desc?`<div class="topic-desc">${esc(desc)}</div>`:''}</div>`;
               }
               if(!gridOpen){html+=`<div class="ungrouped-fields-grid">`;gridOpen=true}
