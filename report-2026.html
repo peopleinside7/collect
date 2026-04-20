@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2025년 NVT 평가보고서 · 2026년 임금조정안</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Malgun Gothic', 'Segoe UI', sans-serif;
+    background: #eef1f6;
+    color: #1e2a3a;
+    line-height: 1.6;
+  }
+
+  /* ===== 상단 헤더 ===== */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #fff;
+    border-bottom: 1px solid #d7dce5;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .topbar-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a3a6b;
+    letter-spacing: -0.3px;
+  }
+  .brand small {
+    display: block;
+    font-size: 11px;
+    color: #6a7789;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .tab-switcher {
+    display: flex;
+    gap: 6px;
+    background: #f0f3f8;
+    padding: 4px;
+    border-radius: 8px;
+  }
+  .tab-btn {
+    padding: 10px 22px;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    color: #6a7789;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: #1a3a6b;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(26,58,107,0.3);
+  }
+  .tab-btn:hover:not(.active) { color: #1a3a6b; }
+  .print-btn {
+    padding: 10px 16px;
+    background: #fff;
+    border: 1px solid #d7dce5;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #33495e;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .print-btn:hover { background: #f0f3f8; border-color: #1a3a6b; color: #1a3a6b; }
+
+  /* ===== 메인 헤더 ===== */
+  .hero {
+    background: linear-gradient(135deg, #1a3a6b 0%, #2c5aa0 100%);
+    color: #fff;
+    padding: 36px 24px;
+  }
+  .hero-inner { max-width: 1400px; margin: 0 auto; }
+  .hero h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+  .hero p { font-size: 14px; opacity: 0.92; margin-top: 6px; }
+  .hero .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  /* ===== 레이아웃 ===== */
+  .layout {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+  }
+
+  /* ===== 사이드 TOC ===== */
+  .toc {
+    position: sticky;
+    top: 90px;
+    align-self: start;
+    background: #fff;
+    border-radius: 8px;
+    padding: 18px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+  }
+  .toc h3 {
+    font-size: 12px;
+    color: #8492a6;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eef1f6;
+  }
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    counter-reset: toc-counter;
+  }
+  .toc li {
+    counter-increment: toc-counter;
+    margin-bottom: 4px;
+  }
+  .toc a {
+    display: block;
+    padding: 8px 10px 8px 32px;
+    font-size: 13px;
+    color: #3a4a5e;
+    text-decoration: none;
+    border-radius: 4px;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    position: relative;
+    line-height: 1.4;
+  }
+  .toc a::before {
+    content: counter(toc-counter);
+    position: absolute;
+    left: 10px;
+    top: 8px;
+    width: 18px;
+    height: 18px;
+    background: #f0f3f8;
+    color: #6a7789;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+  }
+  .toc a:hover {
+    background: #f7fafe;
+    color: #1a3a6b;
+  }
+  .toc a.active {
+    background: #e8f0fa;
+    color: #1a3a6b;
+    border-left-color: #2c5aa0;
+    font-weight: 700;
+  }
+  .toc a.active::before {
+    background: #2c5aa0;
+    color: #fff;
+  }
+
+  /* ===== 메인 컨텐츠 ===== */
+  .main-content { min-width: 0; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fade 0.3s; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 26px 30px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    scroll-margin-top: 90px;
+  }
+  .section h2 {
+    font-size: 19px;
+    color: #1a3a6b;
+    margin-bottom: 14px;
+    padding-left: 12px;
+    border-left: 4px solid #2c5aa0;
+  }
+  .section h3 {
+    font-size: 15px;
+    color: #33495e;
+    margin: 18px 0 10px;
+    font-weight: 600;
+  }
+  .section p { font-size: 14px; margin-bottom: 8px; color: #3a4a5e; }
+
+  /* ===== FLOW 도식 ===== */
+  .flow-master {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .flow-step-title {
+    background: #e8f0fa;
+    border: 1px solid #b8cce8;
+    border-radius: 6px;
+    padding: 16px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a3a6b;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flow-step-body {
+    background: #f7fafe;
+    border: 1px solid #d7e3f2;
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #3a4a5e;
+  }
+  .flow-step-body ul, .flow-step-body ol { padding-left: 20px; }
+  .flow-step-body li { margin-bottom: 4px; }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .flow-step {
+    flex: 1;
+    min-width: 150px;
+    background: #e8f0fa;
+    border: 1px solid #b8cce8;
+    border-radius: 6px;
+    padding: 14px 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a3a6b;
+  }
+  .flow-arrow { color: #2c5aa0; font-size: 20px; font-weight: bold; }
+
+  /* ===== 표 ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 10px 0;
+  }
+  th, td {
+    border: 1px solid #d7dce5;
+    padding: 9px 10px;
+    text-align: center;
+  }
+  th {
+    background: #f0f3f8;
+    color: #1a3a6b;
+    font-weight: 700;
+  }
+  td.left { text-align: left; }
+  td.right { text-align: right; }
+  tr:nth-child(even) td { background: #fafbfd; }
+
+  .highlight { color: #c0392b; font-weight: 700; }
+  .positive { color: #1a7f3c; font-weight: 700; }
+
+  .callout {
+    background: #fff8e1;
+    border-left: 4px solid #f39c12;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 13px;
+    border-radius: 4px;
+  }
+  .callout.info { background: #e8f4fd; border-left-color: #2c5aa0; }
+  .callout strong { color: #1a3a6b; }
+
+  /* ===== 가로형 비교표 (예산 책정안) ===== */
+  .budget-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 14px 0;
+    table-layout: fixed;
+  }
+  .budget-table th, .budget-table td {
+    border: 1px solid #d7dce5;
+    padding: 12px 10px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  .budget-table thead th {
+    background: #1a3a6b;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .budget-table thead th.recommended-col { background: #c0392b; }
+  .budget-table thead th.recommended-col::after {
+    content: "★ 추천";
+    display: block;
+    font-size: 11px;
+    margin-top: 2px;
+    opacity: 0.95;
+  }
+  .budget-table .row-label {
+    background: #f0f3f8;
+    color: #1a3a6b;
+    font-weight: 700;
+    text-align: left;
+    padding-left: 14px;
+    width: 18%;
+  }
+  .budget-table .rate-cell {
+    font-size: 24px;
+    font-weight: 800;
+    color: #2c5aa0;
+  }
+  .budget-table .rate-cell.recommended { color: #c0392b; }
+  .budget-table .budget-cell {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a3a6b;
+  }
+  .budget-table tr.highlight-row td { background: #fff5f5; }
+  .budget-table tr.highlight-row td.row-label { background: #fde8e8; }
+
+  /* ===== KV 박스 ===== */
+  .kv-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .kv-box {
+    background: #f7f9fc;
+    border: 1px solid #dde4ef;
+    border-radius: 6px;
+    padding: 14px;
+    text-align: center;
+  }
+  .kv-box h4 { font-size: 13px; color: #1a3a6b; margin-bottom: 6px; }
+  .kv-box .v { font-size: 24px; font-weight: 800; color: #2c5aa0; }
+  .kv-box .s { font-size: 12px; color: #6a7789; margin-top: 4px; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 12px 0;
+  }
+  .two-col .kv-box { text-align: left; }
+
+  /* ===== MERIX 표 ===== */
+  .merix-table th {
+    background: #1a3a6b;
+    color: #fff;
+    font-size: 12px;
+  }
+  .merix-table .axis-label {
+    background: #2c5aa0;
+    color: #fff;
+    font-weight: 700;
+  }
+  .merix-table td.score {
+    font-weight: 700;
+    font-size: 14px;
+    color: #2c5aa0;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: #8492a6;
+    padding: 24px 0;
+    margin-top: 12px;
+    border-top: 1px solid #dde4ef;
+  }
+
+  /* ===== 반응형 ===== */
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    .toc { position: static; max-height: none; }
+    .topbar-inner { gap: 10px; }
+    .brand { font-size: 14px; }
+    .tab-btn { padding: 8px 14px; font-size: 13px; }
+  }
+  @media (max-width: 600px) {
+    .flow-master { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 20px; }
+    table { font-size: 11px; }
+    th, td { padding: 6px 4px; }
+    .budget-table .rate-cell { font-size: 18px; }
+  }
+
+  /* ===== 인쇄 ===== */
+  @media print {
+    body { background: #fff; }
+    .topbar, .toc, .print-btn { display: none !important; }
+    .layout { grid-template-columns: 1fr; padding: 0; }
+    .panel { display: block !important; page-break-after: always; }
+    .section { box-shadow: none; border: 1px solid #d7dce5; page-break-inside: avoid; }
+    .hero { background: #1a3a6b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 상단 고정 네비 ===== -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      누리플렉스 인사기획팀
+      <small>2025년 NVT 평가 · 2026년 임금조정 통합보고서</small>
+    </div>
+    <div class="tab-switcher">
+      <button class="tab-btn active" onclick="showTab('nvt', this)">📊 2025 NVT 평가보고서</button>
+      <button class="tab-btn" onclick="showTab('pay', this)">💰 2026 임금조정안</button>
+    </div>
+    <button class="print-btn" onclick="window.print()">🖨 인쇄 / PDF 저장</button>
+  </div>
+</div>
+
+<!-- ===== 메인 헤더 ===== -->
+<div class="hero">
+  <div class="hero-inner">
+    <span class="badge">CONFIDENTIAL · 인사기획팀 보고</span>
+    <h1>2025년 NVT 평가보고서 · 2026년 임금조정안</h1>
+    <p>보고일자 2026-04-20 | 작성 인사기획팀 | 배포 경영진 보고용</p>
+  </div>
+</div>
+
+<!-- ===== 레이아웃 ===== -->
+<div class="layout">
+
+  <!-- ====== 사이드 목차 ====== -->
+  <aside class="toc">
+    <!-- NVT 목차 -->
+    <div id="toc-nvt" class="toc-list">
+      <h3>2025 NVT 평가</h3>
+      <ol>
+        <li><a href="#nvt-1" class="toc-link">2025년 NVT 평가 FLOW</a></li>
+        <li><a href="#nvt-2" class="toc-link">특이사항</a></li>
+        <li><a href="#nvt-3" class="toc-link">매출 프로젝트 평가 결과</a></li>
+        <li><a href="#nvt-4" class="toc-link">비매출 프로젝트 평가 결과</a></li>
+        <li><a href="#nvt-5" class="toc-link">공통 프로젝트 평가 결과</a></li>
+        <li><a href="#nvt-6" class="toc-link">NVT 운영위원회 결정사항</a></li>
+      </ol>
+    </div>
+    <!-- 임금조정 목차 -->
+    <div id="toc-pay" class="toc-list" style="display:none;">
+      <h3>2026 임금조정</h3>
+      <ol>
+        <li><a href="#pay-1" class="toc-link">외부 환경 분석</a></li>
+        <li><a href="#pay-2" class="toc-link">2026 타사 연봉인상률 참조</a></li>
+        <li><a href="#pay-3" class="toc-link">직전 3개년 영업이익 및 인상률</a></li>
+        <li><a href="#pay-4" class="toc-link">2026 연봉조정 예산 책정(안)</a></li>
+        <li><a href="#pay-5" class="toc-link">개인평가 기준(안)</a></li>
+        <li><a href="#pay-6" class="toc-link">종합 제언</a></li>
+      </ol>
+    </div>
+  </aside>
+
+  <!-- ====== 메인 컨텐츠 ====== -->
+  <main class="main-content">
+
+    <!-- =========================== -->
+    <!-- 2025 NVT 평가보고서 -->
+    <!-- =========================== -->
+    <div id="nvt" class="panel active">
+
+      <!-- 1. NVT 평가 FLOW -->
+      <div class="section" id="nvt-1">
+        <h2>1. 2025년 NVT 평가 FLOW</h2>
+        <p>NVT 평가는 등록 → 평가 → 가치산정 → 결과활용의 4단계로 운영합니다.</p>
+
+        <h3>① NVT PROJECT 등록 ('25년 1월)</h3>
+        <div class="flow-master">
+          <div class="flow-step-title">프로젝트 목표 및<br>정량적 평가방법 등록</div>
+          <div class="flow-step-body">
+            각 그룹사 및 공통 부문에서 수행할 프로젝트의 목표와 정량 평가지표를 사전에 등록합니다.
+          </div>
+        </div>
+
+        <h3>② PROJECT 평가 ('26년 2월)</h3>
+        <div class="flow-master">
+          <div class="flow-step-title">평가 항목 구성</div>
+          <div class="flow-step-body">
+            <ol style="padding-left:20px;">
+              <li><strong>기 매출 정량지표 60%</strong> (매출 : 매출이익 : 영업이익 = 10% : 20% : 70%)</li>
+              <li style="margin-top:6px;"><strong>발전성 / 직무가치 / 경영전략 : 40%</strong>
+                <ul style="padding-left:20px; margin-top:4px;">
+                  <li>전년 대비 및 사업계획 대비 신장율을 METRIX에 의한 평가지수로 반영합니다.</li>
+                  <li>직무가치 — 프로젝트 수행인력에 대한 직무가치의 합계를 반영합니다.</li>
+                  <li>경영전략 반영 — 회사의 방향성 및 경영진 판단을 포함합니다.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <h3>&lt;발전성 적용 MERIX&gt;</h3>
+        <table class="merix-table">
+          <thead>
+            <tr>
+              <th rowspan="2" colspan="2" class="axis-label">전년 대비 신장율 ＼ 사업계획 대비 달성</th>
+              <th>S</th><th>A</th><th>B</th><th>C</th><th>D</th>
+            </tr>
+            <tr>
+              <th>100%</th>
+              <th>50% / 100%</th>
+              <th>20% / 50%</th>
+              <th>0% / 20%</th>
+              <th>-% / 0%</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th class="axis-label" colspan="2">120%</th><td class="score">25</td><td class="score">20</td><td class="score">17</td><td class="score">15</td><td class="score">12</td></tr>
+            <tr><th class="axis-label" colspan="2">100% ~ 120%</th><td class="score">20</td><td class="score">15</td><td class="score">12</td><td class="score">10</td><td class="score">7</td></tr>
+            <tr><th class="axis-label" colspan="2">80% ~ 100%</th><td class="score">17</td><td class="score">12</td><td class="score">9</td><td class="score">7</td><td class="score">4</td></tr>
+            <tr><th class="axis-label" colspan="2">60% ~ 80%</th><td class="score">15</td><td class="score">10</td><td class="score">7</td><td class="score">5</td><td class="score">2</td></tr>
+            <tr><th class="axis-label" colspan="2">60%</th><td class="score">12</td><td class="score">7</td><td class="score">4</td><td class="score">2</td><td class="score">0</td></tr>
+          </tbody>
+        </table>
+
+        <h3>③ NVT 가치산정 ('26년 3월)</h3>
+        <div class="flow-master">
+          <div class="flow-step-title">가치 산정 방식</div>
+          <div class="flow-step-body">
+            <ul>
+              <li>프로젝트별 손익 분배(회계팀) → 공통비 배부(NVT 운영)</li>
+              <li>NVT 예산 산정 — 영업이익 10% 금액 / 프로젝트별 NVT 총합 = 1개당 NVT 가치</li>
+            </ul>
+            <p style="margin-top:8px;"><strong>'25년 영업이익 현황</strong> → FLEX : <span class="highlight">-93억(손실)</span>, VOICE : <span class="positive">29.9억</span>, VISTA : <span class="highlight">-11.1억(손실)</span>, BILL : <span class="positive">8억</span></p>
+          </div>
+        </div>
+
+        <div class="kv-card">
+          <div class="kv-box"><h4>FLEX</h4><div class="v highlight">-93억</div><div class="s">영업손실</div></div>
+          <div class="kv-box"><h4>VOICE</h4><div class="v positive">29.9억</div><div class="s">영업이익</div></div>
+          <div class="kv-box"><h4>VISTA</h4><div class="v highlight">-11.1억</div><div class="s">영업손실</div></div>
+          <div class="kv-box"><h4>BILL</h4><div class="v positive">8억</div><div class="s">영업이익</div></div>
+        </div>
+
+        <h3>④ NVT 결과활용 ('25년 4월)</h3>
+        <div class="flow-master">
+          <div class="flow-step-title">활용 방안</div>
+          <div class="flow-step-body">
+            <ul>
+              <li>개인별 획득 NVT를 '26년 임금조정에 반영합니다 (반영비율 추후 결정).</li>
+              <li>NVT 인센티브를 지급합니다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 특이사항 -->
+      <div class="section" id="nvt-2">
+        <h2>2. 특이사항</h2>
+        <ul style="font-size:13px; padding-left:22px; color:#3a4a5e;">
+          <li>누리플렉스, 누리비스타는 영업손실로 인해 NVT 인센티브 예산이 없습니다.</li>
+          <li>매출 PJT 가치산정 시 마이너스 영업이익은 "0"원으로 입력합니다.</li>
+          <li>매출 PJT 최초지분율(%) × PM 평가점수 ▶ 사업부 및 R&amp;D에 지분 할당 ▶ 최종 평가점수에 따른 NVT를 획득합니다.</li>
+          <li>비매출 PJT 평가는 NVT 평가 TF가 PJT별 정량적 평가지표에 따라 실시합니다.</li>
+          <li>R&amp;D 그룹은 각 PJT에서 획득한 NVT 총합을 개인별 지분율로 나누어 배분합니다.</li>
+        </ul>
+      </div>
+
+      <!-- 3. 매출 프로젝트 -->
+      <div class="section" id="nvt-3">
+        <h2>3. 매출 프로젝트 평가 결과</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>그룹사</th><th>프로젝트명</th><th>매출(억)</th><th>매출이익(억)</th><th>영업이익(억)</th>
+              <th>실적(60%)</th><th>발전성&amp;직무가치(40%)</th><th>총 NVT</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Flex</td><td class="left">자동인식사업</td><td class="right">56.0</td><td class="right">15.1</td><td class="right">5.9</td><td class="right">1,156,487</td><td class="right">877,052</td><td class="right">2,033,539</td></tr>
+            <tr><td>Flex</td><td class="left">분산에너지사업 (스마트그리드통합)</td><td class="right">179.6</td><td class="right">28.7</td><td class="right">8.5</td><td class="right">2,104,953</td><td class="right">1,412,203</td><td class="right">3,517,157</td></tr>
+            <tr><td>Flex</td><td class="left">해외사업</td><td class="right">101.1</td><td class="right">56.6</td><td class="right">-</td><td class="right">1,436,130</td><td class="right">1,048,862</td><td class="right">2,484,992</td></tr>
+            <tr><td>Flex</td><td class="left">전력사업</td><td class="right">102.2</td><td class="right">32.3</td><td class="right">-</td><td class="right">951,510</td><td class="right">1,471,046</td><td class="right">2,422,556</td></tr>
+            <tr><td>Voice</td><td class="left">VoIP사업</td><td class="right">290.7</td><td class="right">57.9</td><td class="right">31.3</td><td class="right">5,678,437</td><td class="right">1,104,509</td><td class="right">6,782,946</td></tr>
+            <tr><td>Voice</td><td class="left">SI사업</td><td class="right">51.1</td><td class="right">21.9</td><td class="right">8.9</td><td class="right">1,633,443</td><td class="right">529,443</td><td class="right">2,162,887</td></tr>
+            <tr><td>Vista</td><td class="left">MLCC용 paste 개발 및 제조</td><td class="right">53.1</td><td class="right">3.5</td><td class="right">-</td><td class="right">229,900</td><td class="right">533,246</td><td class="right">763,146</td></tr>
+            <tr><td>Bill</td><td class="left">전자고지 및 도로조명</td><td class="right">25.9</td><td class="right">25.9</td><td class="right">8.0</td><td class="right">1,533,240</td><td class="right">447,105</td><td class="right">1,980,345</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 4. 비매출 프로젝트 -->
+      <div class="section" id="nvt-4">
+        <h2>4. 비매출 프로젝트 평가 결과</h2>
+        <table>
+          <thead>
+            <tr><th>그룹사</th><th>프로젝트명</th><th>실적(60%)</th><th>발전성&amp;직무가치(40%)</th><th>총 NVT</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Flex</td><td class="left">제로에너지사업</td><td class="right">378,213</td><td class="right">1,282,037</td><td class="right">1,660,249</td></tr>
+            <tr><td>Flex</td><td class="left">R&amp;D그룹통합</td><td class="right">1,579,099</td><td class="right">2,026,619</td><td class="right">6,556,007</td></tr>
+            <tr><td>Flex</td><td class="left">그린에너지사업</td><td class="right">558,312</td><td class="right">571,915</td><td class="right">1,130,228</td></tr>
+            <tr><td>Voice</td><td class="left">SWS 사업</td><td class="right">1,016,066</td><td class="right">262,672</td><td class="right">1,278,738</td></tr>
+            <tr><td>Voice</td><td class="left">SoiP디바이스개발</td><td class="right">5,564,543</td><td class="right">1,046,572</td><td class="right">6,611,114</td></tr>
+            <tr><td>Vista</td><td class="left">원천소재/면상발열</td><td class="right">263,350</td><td class="right">897,262</td><td class="right">1,160,612</td></tr>
+            <tr><td>Vista</td><td class="left">실리콘 제품 개발</td><td class="right">51,728</td><td class="right">187,131</td><td class="right">238,858</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 5. 공통 프로젝트 -->
+      <div class="section" id="nvt-5">
+        <h2>5. 공통 프로젝트 평가 결과</h2>
+        <table>
+          <thead>
+            <tr><th>그룹사</th><th>프로젝트명</th><th>실적(60%)</th><th>발전성&amp;직무가치(40%)</th><th>총 NVT</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>공통</td><td class="left">경영관리</td><td class="right">1,568,802</td><td class="right">985,482</td><td class="right">2,554,283</td></tr>
+            <tr><td>공통</td><td class="left">통합구매자재</td><td class="right">306,738</td><td class="right">247,387</td><td class="right">554,125</td></tr>
+            <tr><td>공통</td><td class="left">통합제조관리</td><td class="right">920,213</td><td class="right">686,312</td><td class="right">1,606,525</td></tr>
+            <tr><td>공통</td><td class="left">통합품질경영</td><td class="right">1,065,913</td><td class="right">860,996</td><td class="right">1,926,910</td></tr>
+            <tr><td>공통</td><td class="left">NVT운영</td><td class="right">362,031</td><td class="right">35,620</td><td class="right">397,651</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 6. 운영위원회 결정사항 -->
+      <div class="section" id="nvt-6">
+        <h2>6. NVT 운영위원회 결정사항</h2>
+        <div class="callout info">
+          <strong>① NVT 규정 개정</strong> — '25년 11월 안건 보고 → 12월 각사 인사담당자 검토를 완료하였습니다.<br>
+          (NVT 운영위원회 구성 및 역할, 누적 적자 발생 시 유보 NVT 소각 근거 조항을 신설합니다.)<br><br>
+          <strong>② 2025년 확정 NVT 및 유보분 NVT 소각 여부</strong> — 누리플렉스, 누리비스타를 대상으로 검토합니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================== -->
+    <!-- 2026 임금조정안 -->
+    <!-- =========================== -->
+    <div id="pay" class="panel">
+
+      <!-- 1. 외부 환경 분석 -->
+      <div class="section" id="pay-1">
+        <h2>1. 외부 환경 분석</h2>
+        <div class="two-col">
+          <div>
+            <h3>물가상승률 (통계청·한국은행)</h3>
+            <table>
+              <thead><tr><th>구분</th><th>2024년(결정)</th><th>2025년(결정)</th><th>2025년(예상)</th></tr></thead>
+              <tbody><tr><td>물가인상률</td><td>2.3%</td><td>2.1%</td><td class="highlight">2.2%</td></tr></tbody>
+            </table>
+          </div>
+          <div>
+            <h3>업종별 임금 결정 현황 (2025년)</h3>
+            <table>
+              <thead><tr><th>업종</th><th>임금총액</th><th>통상임금</th></tr></thead>
+              <tbody>
+                <tr><td>정보통신업</td><td>6.8%</td><td>3.8%</td></tr>
+                <tr><td>제조업</td><td>4.5%</td><td>3.4%</td></tr>
+                <tr><td class="positive">평균</td><td class="positive">5.3%</td><td class="positive">3.5%</td></tr>
+              </tbody>
+            </table>
+            <p style="font-size:11px; color:#8492a6; margin-top:4px;">출처 : 통계청, 고용노동부</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 타사 참조 -->
+      <div class="section" id="pay-2">
+        <h2>2. 2026년 타사 연봉인상률 참조</h2>
+        <h3>가. 2026년 예상 연봉인상률</h3>
+        <table>
+          <thead><tr><th>구분</th><th>예상 인상률</th><th>근거</th></tr></thead>
+          <tbody>
+            <tr><td>제조업</td><td><strong>4.2% ~ 4.8%</strong></td><td class="left">원자재값 상승으로 비용 압박이 크나, 숙련공 확보 위해 4%대를 유지합니다.</td></tr>
+            <tr><td>IT기업</td><td><strong>6.5% ~ 7.5%</strong></td><td class="left">AI 전문가 등 핵심 인재 유치 경쟁이 지속되며, 전년 대비 소폭 하향 안정화됩니다.</td></tr>
+            <tr><td>중소기업</td><td><strong>2.5% ~ 3.5%</strong></td><td class="left">지불 능력 한계로 인해 물가 상승률 수준의 보수적 인상을 적용합니다.</td></tr>
+            <tr><td>중견기업</td><td><strong>4.0% ~ 5.2%</strong></td><td class="left">대기업 인상률을 추종하며 인재 이탈 방지에 집중합니다.</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:11px; color:#8492a6;">출처 : 잡플래닛, trading economics, 업종별 설문조사, 한국산업인력공단</p>
+
+        <h3>나. 삼성디스플레이 2026 임금협상 사례</h3>
+        <div class="callout info"><strong>총 6.2%</strong> (기본인상률 4.1% + 성과인상률 2.1%)</div>
+      </div>
+
+      <!-- 3. 직전 3개년 영업이익 -->
+      <div class="section" id="pay-3">
+        <h2>3. 직전 3개년 영업이익 및 연봉인상률</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>2023년 ('24년 인상율)</th>
+              <th>2024년 ('25년 인상율)</th>
+              <th>2025년 ('26년 인상율)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>임금인상율(연간)</td><td>4.9% (기준 4.6%)</td><td>3.8%</td><td>3.8%</td></tr>
+            <tr><td>영업이익(원)</td><td class="positive">2,650,908,644</td><td class="highlight">-8,431,681,552</td><td class="highlight">-9,304,438,577</td></tr>
+            <tr><td>급여총액</td><td class="right">4,800,403,680</td><td class="right">5,101,649,340</td><td class="right">4,591,650,190</td></tr>
+            <tr><td>대상인원(명)</td><td>88</td><td>89</td><td>80</td></tr>
+            <tr><td>1인당 급여</td><td class="right">54,550,042</td><td class="right">57,321,903</td><td class="right">57,395,627</td></tr>
+            <tr><td>1인당 영업이익</td><td class="right positive">30,123,962</td><td class="right highlight">-94,737,995</td><td class="right highlight">-116,305,482</td></tr>
+            <tr><td>인센티브 예산(영업이익 10%)</td><td class="right">265,090,864</td><td class="right highlight">-843,168,155</td><td class="right highlight">-930,443,858</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px; color:#6a7789; margin-top:6px;">* 2024~2025년 연속 영업손실로 인센티브 예산 확보가 어려운 상황입니다.</p>
+      </div>
+
+      <!-- 4. 예산 책정안 -->
+      <div class="section" id="pay-4">
+        <h2>4. 2026년 연봉조정 예산 책정(안)</h2>
+        <p>대상자 80명 기준(사내이사 제외)으로 산출하였으며, 개별 조정은 대표이사 결정 후 반영합니다.</p>
+
+        <table class="budget-table">
+          <thead>
+            <tr>
+              <th style="width:18%;">구분</th>
+              <th class="recommended-col">1안</th>
+              <th>2안</th>
+              <th>3안</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td class="row-label">연봉인상률</td>
+              <td class="rate-cell recommended">4.0%</td>
+              <td class="rate-cell">3.5%</td>
+              <td class="rate-cell">2.2%</td>
+            </tr>
+            <tr>
+              <td class="row-label">세부 적용률</td>
+              <td>기본인상(물가) <strong>2.3%</strong><br>+ 성과인상 <strong>1.7%</strong></td>
+              <td>선별적 인상<br>그룹장/팀장 <strong>2.3%</strong><br>팀원 <strong>4%</strong></td>
+              <td>기본인상(물가) <strong>2.2%</strong></td>
+            </tr>
+            <tr>
+              <td class="row-label">인상 사유</td>
+              <td class="left">제조업 평균 인상율을 고려합니다.</td>
+              <td class="left">내실 경영 및 핵심 인재 집중 보상을 도모합니다.</td>
+              <td class="left">실질임금 유지 측면에 집중합니다.</td>
+            </tr>
+            <tr class="highlight-row">
+              <td class="row-label">연봉예산액</td>
+              <td class="budget-cell">183,666,008원</td>
+              <td class="budget-cell">159,146,104원</td>
+              <td class="budget-cell">101,016,304원</td>
+            </tr>
+            <tr>
+              <td class="row-label">기대 효과</td>
+              <td class="left">조직사기 진작과 인재유출 방지에 기여합니다.</td>
+              <td class="left">실무 핵심 인재 동기부여에 효과적입니다.</td>
+              <td class="left">예산 집행을 최소화합니다.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>보고 의견</strong> — 영업이익 감소로 임금예산 산정에 어려움이 있으나, 조직사기 진작과 인재유출 방지, '26년 제조업 평균 4.2~4.8% 인상을 고려하여 <strong>1안(기본 2.3% + 성과 1.7% = 최종 4% 인상)</strong>을 보고드립니다.
+        </div>
+        <p style="font-size:12px; color:#6a7789;">* 2025년말 임금총액(대상자 80명) : 4,591,650,190원</p>
+      </div>
+
+      <!-- 5. 개인평가 기준 -->
+      <div class="section" id="pay-5">
+        <h2>5. 2026년 연봉인상 개인평가 기준(안)</h2>
+
+        <h3>가. 인센티브 vs 연봉인상율 — 성과 &amp; 역량 Mix</h3>
+        <table>
+          <thead>
+            <tr><th>구분</th><th>인센티브 (전년도 2025년, 과거)</th><th>연봉인상율 (금년도 2026년, 미래)</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>정의</strong></td>
+              <td class="left">구성원의 성과 창출을 촉진하기 위해 업무 목표 달성에 부응하여 제공하는 유인책을 의미합니다.</td>
+              <td class="left">연봉(年俸)은 1년 동안 받는 임금(급여)의 총합입니다.</td>
+            </tr>
+            <tr>
+              <td><strong>반영 요소</strong></td>
+              <td class="left">
+                ① NVT 실적평가 <strong>80%</strong><br>
+                ② 역량평가 <strong>20%</strong> (직무가치 × 본인 역량평가 점수)
+              </td>
+              <td class="left">
+                ① NVT 실적평가 <strong>20%</strong><br>
+                ② 역량평가 <strong>80%</strong> (직무가치 × 본인 역량평가 점수)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>나. 연봉인상 산정 프로세스</h3>
+        <div class="flow">
+          <div class="flow-step">성과 : NVT <strong>20%</strong><br><small>기대실적 + 발전성</small></div>
+          <div class="flow-arrow">+</div>
+          <div class="flow-step">역량 : 직무가치 &amp; 역량평가 <strong>80%</strong><br><small>'25 역량평가 × 직무/경력 등급</small></div>
+          <div class="flow-arrow">▶</div>
+          <div class="flow-step">운영위원회 조정 후<br><strong>개별 인상율 결정</strong></div>
+        </div>
+
+        <div class="two-col">
+          <div class="kv-box">
+            <h4>성과(NVT) 산정 로직</h4>
+            <p style="font-size:12px; color:#3a4a5e;">
+              · 기존 실적(매출·매출이익·영업이익)을 반영합니다.<br>
+              · 전년 대비 향상도를 Matrix에 의해 반영합니다.<br>
+              · 프로젝트 가치 → 투입인력의 직무가치 합으로 반영합니다.
+            </p>
+          </div>
+          <div class="kv-box">
+            <h4>역량 산정 로직</h4>
+            <p style="font-size:12px; color:#3a4a5e;">
+              · 역량평가 → 그룹장 조정 → 부서별 평균조정(조정계수)을 반영합니다.<br>
+              · 부서별 평가를 통해 고성과 부서 인상비중을 높입니다.<br>
+              · 반영점수 = '25년 역량평가 점수 × 직무가치
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. 종합 제언 -->
+      <div class="section" id="pay-6">
+        <h2>6. 종합 제언</h2>
+        <div class="callout">
+          <strong>결론</strong> — 영업이익 적자 누적에도 불구하고, 제조업 평균 인상률(4.2~4.8%), 물가상승률(2.2%), 타사 동향(삼성디스플레이 6.2%)을 종합 고려할 때, <strong>1안(4.0%)</strong>을 기본 권고안으로 제안합니다. 기본 2.3%로 실질임금을 방어하고 성과 1.7%로 핵심 인재를 보전하는 균형적 구조이며, 개별 인상률은 NVT 20% + 역량 80%의 성과·역량 Mix를 통해 차등 적용합니다.
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      본 보고서는 「2025년 NVT 평가보고서」 및 「2026년 임금조정안」 원문을 기반으로 작성하였습니다.<br>
+      누리플렉스 인사기획팀 · 2026-04-20 · 배포용 최종본
+    </footer>
+
+  </main>
+</div>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+
+  // 사이드 목차 전환
+  document.getElementById('toc-nvt').style.display = (id === 'nvt') ? 'block' : 'none';
+  document.getElementById('toc-pay').style.display = (id === 'pay') ? 'block' : 'none';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 스크롤 시 현재 섹션 하이라이트
+function updateActiveTOC() {
+  const activePanel = document.querySelector('.panel.active');
+  if (!activePanel) return;
+  const sections = activePanel.querySelectorAll('.section');
+  const tocList = (activePanel.id === 'nvt') ? document.getElementById('toc-nvt') : document.getElementById('toc-pay');
+  const links = tocList.querySelectorAll('.toc-link');
+
+  let currentId = '';
+  const scrollPos = window.scrollY + 120;
+  sections.forEach(sec => {
+    if (sec.offsetTop <= scrollPos) currentId = sec.id;
+  });
+  links.forEach(l => {
+    l.classList.toggle('active', l.getAttribute('href') === '#' + currentId);
+  });
+}
+
+window.addEventListener('scroll', updateActiveTOC);
+window.addEventListener('load', updateActiveTOC);
+
+// 목차 클릭 시 부드러운 스크롤 (이벤트 위임 + 절대좌표 사용)
+document.addEventListener('click', function(e) {
+  const link = e.target.closest('.toc-link');
+  if (!link) return;
+  e.preventDefault();
+  const id = link.getAttribute('href').slice(1);
+  const target = document.getElementById(id);
+  if (!target) return;
+  const rect = target.getBoundingClientRect();
+  const absoluteTop = rect.top + window.pageYOffset;
+  window.scrollTo({ top: absoluteTop - 90, behavior: 'smooth' });
+  history.replaceState(null, '', '#' + id);
+});
+
+// 페이지 진입 시 해시가 있으면 해당 섹션으로 이동
+window.addEventListener('load', () => {
+  if (location.hash) {
+    const target = document.getElementById(location.hash.slice(1));
+    if (target) {
+      const rect = target.getBoundingClientRect();
+      window.scrollTo({ top: rect.top + window.pageYOffset - 90 });
+    }
+  }
+});
+</script>
+
+</body>
+</html>
